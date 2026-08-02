@@ -27,3 +27,16 @@ def menus(request):
         "header_menu": Menu.objects.filter(location="header", parent__isnull=True, is_active=True),
         "footer_menu": Menu.objects.filter(location="footer", parent__isnull=True, is_active=True),
     }
+
+
+def header_categories(request):
+    """دسته‌بندی‌های اصلی محصولات را برای منوی کشویی «دسته‌بندی کالاها» در هدر در دسترس قرار می‌دهد"""
+    try:
+        from apps.products.models import ProductCategory
+        return {
+            "header_categories": ProductCategory.objects.filter(
+                is_active=True, parent__isnull=True
+            ).order_by("order")[:12]
+        }
+    except Exception:
+        return {"header_categories": []}

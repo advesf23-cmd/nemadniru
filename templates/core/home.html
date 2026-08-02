@@ -2,104 +2,12 @@
 {% load static %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/triangle-hero.css' %}">
+<link rel="stylesheet" href="{% static 'css/header-hero-v2.css' %}">
 {% endblock %}
 
 {% block content %}
 
-<section class="hero hero--triangle">
-  {% if hero_bg_image and hero_bg_image.image %}
-  <img src="{{ hero_bg_image.image.url }}" alt="" class="hero-bg-image">
-  <div class="hero-bg-overlay"></div>
-  {% endif %}
-  <div class="container">
-    <div class="row align-items-center g-5">
-      <div class="col-lg-6 text-lg-start text-center order-2 order-lg-1">
-        <span class="eyebrow"><i class="fa-solid fa-industry me-1"></i> CORPORATE</span>
-        <h1 data-aos="fade-up">طراحی و ساخت تابلوهای برق صنعتی</h1>
-        <p class="lead" data-aos="fade-up" data-aos-delay="100">
-          راهکارهای مهندسی توزیع قدرت و اتوماسیون -- با تکیه بر بیش از ۲۰ سال تجربه در صنعت برق
-        </p>
-        <div class="hero-actions justify-content-lg-start" data-aos="fade-up" data-aos-delay="200">
-          <a href="{% url 'contact:quote_request' %}" class="btn btn-orange btn-lg">درخواست مشاوره رایگان</a>
-          <a href="{% url 'products:product_list' %}" class="btn btn-outline-navy btn-lg" style="background:#fff;">مشاهده محصولات</a>
-        </div>
-      </div>
-
-      <div class="col-lg-6 order-1 order-lg-2">
-        <div id="triangle-hero">
-          <div id="triangle-glow-halo"></div>
-          <div id="triangle-rotor-wrapper">
-            <div id="triangle-rotor">
-              <svg id="triangle-svg" viewBox="0 0 500 500">
-                <defs>
-                  <linearGradient id="edge-grad-top" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stop-color="#F97316" stop-opacity="0.9" />
-                    <stop offset="100%" stop-color="#FDBA74" stop-opacity="0.9" />
-                  </linearGradient>
-                  <linearGradient id="edge-grad-left" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stop-color="#38BDF8" stop-opacity="0.9" />
-                    <stop offset="100%" stop-color="#BAE6FD" stop-opacity="0.9" />
-                  </linearGradient>
-                  <linearGradient id="edge-grad-right" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stop-color="#34D399" stop-opacity="0.9" />
-                    <stop offset="100%" stop-color="#A7F3D0" stop-opacity="0.9" />
-                  </linearGradient>
-                  <radialGradient id="core-grad" cx="50%" cy="45%" r="60%">
-                    <stop offset="0%" stop-color="white" stop-opacity="0.95" />
-                    <stop id="core-grad-mid" offset="45%" stop-color="#F97316" stop-opacity="0.55" />
-                    <stop offset="100%" stop-color="#F97316" stop-opacity="0" />
-                  </radialGradient>
-                  <filter id="edge-glow" x="-60%" y="-60%" width="220%" height="220%">
-                    <feGaussianBlur stdDeviation="6" result="blur" />
-                    <feMerge>
-                      <feMergeNode in="blur" />
-                      <feMergeNode in="SourceGraphic" />
-                    </feMerge>
-                  </filter>
-                </defs>
-
-                <g id="triangle-particles"></g>
-
-                <line data-edge="top" x1="90" y1="90" x2="410" y2="90"
-                      stroke="rgba(255,255,255,0.22)" stroke-width="1.4" stroke-linecap="round" />
-                <line data-edge="left" x1="90" y1="90" x2="250" y2="410"
-                      stroke="rgba(255,255,255,0.22)" stroke-width="1.4" stroke-linecap="round" />
-                <line data-edge="right" x1="410" y1="90" x2="250" y2="410"
-                      stroke="rgba(255,255,255,0.22)" stroke-width="1.4" stroke-linecap="round" />
-
-                <g id="triangle-traveler"></g>
-                <g id="triangle-beam"></g>
-
-                <circle id="triangle-core" class="triangle-core" cx="250" cy="210" r="34" fill="url(#core-grad)" />
-                <text x="250" y="216" text-anchor="middle" font-size="15" font-weight="600"
-                      fill="rgba(255,255,255,0.85)" letter-spacing="0.06em">STE</text>
-              </svg>
-            </div>
-          </div>
-          <div id="triangle-cards"></div>
-        </div>
-        <p class="triangle-hint">موس را نزدیک هر ضلع مثلث ببرید</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="stats-section py-5">
-  <div class="container row text-center g-4">
-    {% for stat in statistics %}
-    <div class="col-6 col-md-3 stat-item" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:'50' }}">
-      <h2>{{ stat.value }}</h2>
-      <p>{{ stat.title }}</p>
-    </div>
-    {% empty %}
-    <div class="col-6 col-md-3 stat-item"><h2>۳۰۰+</h2><p>پروژه انجام شده</p></div>
-    <div class="col-6 col-md-3 stat-item"><h2>۱۰۰٪</h2><p>تضمین کیفیت</p></div>
-    <div class="col-6 col-md-3 stat-item"><h2>۶</h2><p>حوزه صنعتی</p></div>
-    <div class="col-6 col-md-3 stat-item"><h2>۲۰+</h2><p>سال تجربه</p></div>
-    {% endfor %}
-  </div>
-</section>
+{% include "partials/hero_slider.html" %}
 
 <section class="section-padding">
   <div class="container">
@@ -310,5 +218,5 @@
 {% endblock %}
 
 {% block extra_js %}
-<script src="{% static 'js/triangle-hero.js' %}"></script>
+<script src="{% static 'js/hero-slider.js' %}"></script>
 {% endblock %}

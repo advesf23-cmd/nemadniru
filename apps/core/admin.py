@@ -1,6 +1,6 @@
 from django.contrib import admin
 from .models import (
-    SiteSetting, Statistic, Certificate, Partner, Testimonial, FAQ, HomeSlide, Menu
+    SiteSetting, Statistic, Certificate, Partner, Testimonial, FAQ, HomeSlide, Menu, PromoBanner
 )
 
 
@@ -54,3 +54,9 @@ class MenuAdmin(admin.ModelAdmin):
     list_display = ("title", "url", "location", "parent", "order", "is_active")
     list_editable = ("order", "is_active")
     list_filter = ("location", "is_active")
+
+@admin.register(PromoBanner)
+class PromoBannerAdmin(admin.ModelAdmin):
+    list_display = ("title", "order", "is_active")
+    list_editable = ("order", "is_active")
+ 

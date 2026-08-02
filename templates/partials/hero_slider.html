@@ -1,0 +1,66 @@
+{% load static %}
+<!--
+  اسلایدر بنر اصلی -- ابعاد استاندارد تصاویر: 1600×400 پیکسل
+  تصاویر از پنل مدیریت → داشبورد → (بخش اسلایدرهای صفحه اصلی) یا از Django Admin
+  مدل HomeSlide (apps/core/models.py) قابل مدیریت است.
+-->
+<section class="hero-slider-section">
+  <div class="hero-slider" id="heroSlider" data-interval="5000">
+    <div class="hero-slider-track">
+      {% for slide in slides %}
+      <div class="hero-slide {% if forloop.first %}active{% endif %}">
+        <a href="{{ slide.button_url|default:'#' }}" class="hero-slide-link">
+          <img src="{{ slide.image.url }}" alt="{{ slide.title }}">
+        </a>
+        {% if slide.title or slide.subtitle or slide.button_text %}
+        <div class="hero-slide-caption">
+          {% if slide.title %}<h3>{{ slide.title }}</h3>{% endif %}
+          {% if slide.subtitle %}<p>{{ slide.subtitle }}</p>{% endif %}
+          {% if slide.button_text and slide.button_url %}
+          <a href="{{ slide.button_url }}" class="btn btn-orange btn-sm">{{ slide.button_text }}</a>
+          {% endif %}
+        </div>
+        {% endif %}
+      </div>
+      {% empty %}
+      <div class="hero-slide active">
+        <div class="hero-slide-placeholder">
+          <i class="fa-regular fa-image fa-2x mb-2"></i>
+          <p>برای نمایش بنر، از پنل مدیریت یک اسلاید با ابعاد ۱۶۰۰×۴۰۰ اضافه کنید.</p>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    {% if slides|length > 1 %}
+    <div class="hero-slider-dots">
+      {% for slide in slides %}
+      <button type="button" class="hero-dot {% if forloop.first %}active{% endif %}" data-index="{{ forloop.counter0 }}" aria-label="اسلاید {{ forloop.counter }}"></button>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
+</section>
+
+<!--
+  چهار کادر تبلیغاتی -- مدل PromoBanner (apps/core/models.py)، از پنل مدیریت قابل مدیریت.
+  هر تصویری که در آینده بخواهید، از همان‌جا جایگزین می‌شود؛ فقط کافیست همان نسبت تصویر رعایت شود.
+-->
+<section class="promo-banners-section">
+  <div class="container">
+    <div class="promo-banners-grid">
+      {% for banner in promo_banners %}
+      <a href="{{ banner.link_url|default:'#' }}" class="promo-banner-box">
+        <img src="{{ banner.image.url }}" alt="{{ banner.title }}">
+      </a>
+      {% empty %}
+        {% for i in "1234" %}
+        <div class="promo-banner-box promo-banner-placeholder">
+          <i class="fa-regular fa-image fa-2x"></i>
+          <span>کادر تبلیغاتی {{ forloop.counter }}</span>
+        </div>
+        {% endfor %}
+      {% endfor %}
+    </div>
+  </div>
+</section>

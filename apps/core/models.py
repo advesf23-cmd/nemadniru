@@ -207,3 +207,27 @@ class Menu(TimeStampedModel):
 
     def __str__(self):
         return self.title
+
+# =====================================================================
+# این بلوک را به انتهای فایل apps/core/models.py اضافه کنید
+# (بعد از کلاس Menu، بدون تغییر در بقیه‌ی فایل)
+# =====================================================================
+
+class PromoBanner(TimeStampedModel):
+    """
+    چهار کادر تبلیغاتی زیر اسلایدر اصلی صفحه خانه.
+    هر تصویری که در آینده بخواهید، از پنل مدیریت جایگزین همین رکوردها می‌شود.
+    """
+    image = models.ImageField(_("تصویر تبلیغاتی"), upload_to="promo_banners/")
+    title = models.CharField(_("عنوان (اختیاری، فقط برای مدیریت داخلی)"), max_length=150, blank=True)
+    link_url = models.CharField(_("لینک مقصد (اختیاری)"), max_length=255, blank=True)
+    order = models.PositiveIntegerField(_("ترتیب نمایش"), default=0)
+    is_active = models.BooleanField(_("فعال"), default=True)
+
+    class Meta:
+        ordering = ["order"]
+        verbose_name = _("بنر تبلیغاتی")
+        verbose_name_plural = _("بنرهای تبلیغاتی (۴ کادر زیر اسلایدر)")
+
+    def __str__(self):
+        return self.title or f"بنر تبلیغاتی #{self.pk}"

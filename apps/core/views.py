@@ -1,6 +1,6 @@
 from django.views.generic import TemplateView
 
-from apps.core.models import Statistic, Certificate, Partner, Testimonial, FAQ, HomeSlide
+from apps.core.models import Statistic, Certificate, Partner, Testimonial, FAQ, HomeSlide, PromoBanner
 from apps.products.models import Product
 from apps.services.models import Service
 from apps.projects.models import Project
@@ -15,6 +15,7 @@ class HomeView(TemplateView):
         ctx = super().get_context_data(**kwargs)
         ctx.update({
             "slides": HomeSlide.objects.filter(is_active=True),
+            "promo_banners": PromoBanner.objects.filter(is_active=True),
             "statistics": Statistic.objects.all(),
             "certificates": Certificate.objects.all(),
             "partners": Partner.objects.all(),

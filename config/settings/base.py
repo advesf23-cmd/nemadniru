@@ -81,6 +81,7 @@ TEMPLATES = [
                 "apps.core.context_processors.site_settings",
                 "apps.core.context_processors.menus",
                 "apps.core.context_processors.cart_summary",
+                "apps.core.context_processors.header_categories",
             ],
         },
     },

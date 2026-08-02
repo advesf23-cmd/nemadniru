@@ -1,39 +1,91 @@
-<header class="site-header">
-  <nav class="navbar navbar-expand-lg py-3">
-    <div class="container">
-      <a class="navbar-brand d-flex align-items-center gap-2" href="{% url 'core:home' %}">
+{% load static %}
+<header class="site-header-v2">
+
+  <!-- ردیف اول: لوگو + نام / جستجو / آیکون‌ها (سبد خرید، ورود، اعلان‌ها) -->
+  <div class="header-top">
+    <div class="container header-top-inner">
+
+      <!-- لوگو + نام شرکت (سمت راست) -->
+      <a href="{% url 'core:home' %}" class="header-brand">
         {% if site_settings.logo %}
-          <img src="{{ site_settings.logo.url }}" alt="{{ site_settings.site_name }}" height="42">
+          <img src="{{ site_settings.logo.url }}" alt="{{ site_settings.site_name }}">
         {% else %}
-          <i class="fa-solid fa-bolt text-orange"></i> {{ site_settings.site_name }}
+          <i class="fa-solid fa-bolt"></i>
         {% endif %}
+        <span>{{ site_settings.site_name }}</span>
       </a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="mainNav">
-        <ul class="navbar-nav ms-auto align-items-lg-center">
-          <li class="nav-item"><a class="nav-link" href="{% url 'core:home' %}">خانه</a></li>
-          <li class="nav-item"><a class="nav-link" href="{% url 'pages:about' %}">درباره ما</a></li>
-          <li class="nav-item"><a class="nav-link" href="{% url 'products:product_list' %}">محصولات</a></li>
-          <li class="nav-item"><a class="nav-link" href="{% url 'services:service_list' %}">خدمات</a></li>
-          <li class="nav-item"><a class="nav-link" href="{% url 'projects:project_list' %}">پروژه‌ها</a></li>
-          <li class="nav-item"><a class="nav-link" href="{% url 'gallery:gallery_list' %}">گالری</a></li>
-          <li class="nav-item"><a class="nav-link" href="{% url 'blog:post_list' %}">وبلاگ</a></li>
-          <li class="nav-item"><a class="nav-link" href="{% url 'contact:contact' %}">تماس با ما</a></li>
-          <li class="nav-item"><a class="nav-link" href="{% url 'products:wishlist' %}" title="علاقه‌مندی‌ها"><i class="fa-regular fa-heart"></i></a></li>
-          <li class="nav-item"><a class="nav-link" href="{% url 'products:compare' %}" title="مقایسه محصولات"><i class="fa-solid fa-scale-balanced"></i></a></li>
-          <li class="nav-item">
-            <a class="nav-link position-relative" href="{% url 'shop:cart_detail' %}" title="سبد خرید">
-              <i class="fa-solid fa-cart-shopping"></i>
-              {% if cart_items_count %}<span id="cart-count-badge" class="badge bg-orange rounded-pill position-absolute" style="top:-5px;right:-8px;font-size:.6rem;">{{ cart_items_count }}</span>{% endif %}
-            </a>
-          </li>
-          <li class="nav-item ms-lg-3">
-            <a class="btn btn-orange" href="{% url 'contact:quote_request' %}">درخواست استعلام قیمت</a>
-          </li>
-        </ul>
+
+      <!-- کادر جستجو (وسط) -->
+      <form action="{% url 'products:product_list' %}" method="get" class="header-search-form">
+        <input type="text" name="q" class="header-search-input" placeholder="جستجو..." value="{{ request.GET.q }}">
+        <button type="submit" class="header-search-btn"><i class="fa-solid fa-magnifying-glass"></i></button>
+      </form>
+
+      <!-- آیکون‌ها: سبد خرید / ورود-ثبت‌نام / اعلان‌ها (سمت چپ) -->
+      <div class="header-top-icons">
+        <a href="{% url 'shop:cart_detail' %}" class="header-icon-link" title="سبد خرید">
+          <i class="fa-solid fa-cart-shopping"></i>
+          {% if cart_items_count %}<span id="cart-count-badge" class="header-icon-badge">{{ cart_items_count }}</span>{% endif %}
+        </a>
+
+        {% if request.user.is_authenticated %}
+        <a href="{% url 'accounts:profile' %}" class="header-login-btn">
+          <i class="fa-solid fa-circle-user"></i> {{ request.user.get_full_name|default:request.user.username }}
+        </a>
+        {% else %}
+        <a href="{% url 'accounts:login' %}" class="header-login-btn">
+          ورود | ثبت‌نام <i class="fa-solid fa-arrow-right-to-bracket"></i>
+        </a>
+        {% endif %}
+
+        <a href="#" class="header-icon-link" title="اعلان‌ها">
+          <i class="fa-regular fa-bell"></i>
+        </a>
       </div>
+
+    </div>
+  </div>
+
+  <!-- ردیف دوم: دسته‌بندی کالاها / حساب کاربری من / تماس با ما / وبلاگ -->
+  <nav class="header-nav">
+    <div class="container header-nav-inner">
+
+      <div class="header-nav-categories">
+        <button class="categories-toggle" id="categoriesToggle" type="button">
+          <i class="fa-solid fa-bars"></i> دسته‌بندی کالاها
+        </button>
+        <div class="categories-dropdown" id="categoriesDropdown">
+          {% for cat in header_categories %}
+          <a href="{% url 'products:category_detail' cat.slug %}">{{ cat.name }}</a>
+          {% empty %}
+          <a href="{% url 'products:product_list' %}">مشاهده همه محصولات</a>
+          {% endfor %}
+        </div>
+      </div>
+
+      <ul class="header-nav-links">
+        <li><a href="{% url 'accounts:profile' %}"><i class="fa-regular fa-user"></i> حساب کاربری من</a></li>
+        <li><a href="{% url 'contact:contact' %}"><i class="fa-solid fa-phone"></i> تماس با ما</a></li>
+        <li><a href="{% url 'blog:post_list' %}"><i class="fa-regular fa-newspaper"></i> وبلاگ</a></li>
+      </ul>
+
     </div>
   </nav>
 </header>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const toggle = document.getElementById('categoriesToggle');
+  const dropdown = document.getElementById('categoriesDropdown');
+  if (!toggle || !dropdown) return;
+  toggle.addEventListener('click', function (e) {
+    e.stopPropagation();
+    dropdown.classList.toggle('open');
+  });
+  document.addEventListener('click', function (e) {
+    if (!dropdown.contains(e.target) && e.target !== toggle) {
+      dropdown.classList.remove('open');
+    }
+  });
+});
+</script>
