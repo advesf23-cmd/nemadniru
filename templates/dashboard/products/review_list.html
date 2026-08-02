@@ -1,0 +1,42 @@
+{% extends "dashboard/base_dashboard.html" %}
+{% block title %}مدیریت نظرات محصولات{% endblock %}
+{% block dash_content %}
+<h5 class="mb-3">مدیریت نظرات و امتیازات محصولات</h5>
+<div class="dash-table-card">
+  <table class="table align-middle">
+    <thead><tr><th>نام</th><th>محصول</th><th>امتیاز</th><th>متن</th><th>وضعیت</th><th>عملیات</th></tr></thead>
+    <tbody>
+      {% for review in reviews %}
+      <tr>
+        <td>{{ review.full_name }}</td>
+        <td>{{ review.product.name|truncatechars:25 }}</td>
+        <td>{{ review.rating }} ★</td>
+        <td>{{ review.comment|truncatechars:40 }}</td>
+        <td>{% if review.is_approved %}<span class="badge bg-success">تأیید‌شده</span>{% else %}<span class="badge bg-orange">در انتظار</span>{% endif %}</td>
+        <td>
+          {% if not review.is_approved %}
+          <form method="post" action="{% url 'dashboard:product_review_approve' review.pk %}" class="d-inline">
+            {% csrf_token %}<button class="btn btn-sm btn-outline-navy">تأیید</button>
+          </form>
+          {% endif %}
+          <form method="post" action="{% url 'dashboard:product_review_delete' review.pk %}" class="d-inline">
+            {% csrf_token %}<button class="btn btn-sm btn-outline-danger">حذف</button>
+          </form>
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="6" class="text-center text-muted py-4">نظری ثبت نشده است.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% if is_paginated %}
+  <nav class="mt-3">
+    <ul class="pagination justify-content-center">
+      {% if page_obj.has_previous %}<li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">قبلی</a></li>{% endif %}
+      <li class="page-item disabled"><span class="page-link">{{ page_obj.number }} از {{ page_obj.paginator.num_pages }}</span></li>
+      {% if page_obj.has_next %}<li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">بعدی</a></li>{% endif %}
+    </ul>
+  </nav>
+  {% endif %}
+</div>
+{% endblock %}

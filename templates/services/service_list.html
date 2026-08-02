@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}خدمات - {{ site_settings.site_name }}{% endblock %}
+{% block content %}
+{% include "partials/page_header.html" with page_title="خدمات مهندسی کامل" %}
+
+<section class="section-padding">
+  <div class="container">
+    <div class="row g-4">
+      {% for service in services %}
+      <div class="col-md-4" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:'50' }}">
+        <a href="{{ service.get_absolute_url }}" class="text-decoration-none">
+          <div class="card service-card h-100">
+            <div class="icon-box"><i class="fa-solid {{ service.icon|default:'fa-bolt' }}"></i></div>
+            <h5>{{ service.title }}</h5>
+            <p class="text-muted mb-0">{{ service.short_description }}</p>
+          </div>
+        </a>
+      </div>
+      {% empty %}
+      <div class="col-12 text-center text-muted py-5">خدمات به‌زودی از پنل مدیریت اضافه می‌شوند.</div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% if process_steps %}
+<section class="section-padding bg-light-gray">
+  <div class="container">
+    <div class="section-title" data-aos="fade-up">
+      <span class="eyebrow">OUR PROCESS</span>
+      <h2>فرآیند کاری ما</h2>
+    </div>
+    <div class="row g-4 text-center">
+      {% for step in process_steps %}
+      <div class="col-md-3" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:'50' }}">
+        <div class="icon-box mx-auto" style="background:var(--color-navy);width:56px;height:56px;">
+          <span class="text-white fw-bold">{{ step.step_number }}</span>
+        </div>
+        <h6>{{ step.title }}</h6>
+        <p class="text-muted small mb-0">{{ step.description }}</p>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+{% endblock %}

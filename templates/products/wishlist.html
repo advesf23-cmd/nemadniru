@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block title %}علاقه‌مندی‌های من - {{ site_settings.site_name }}{% endblock %}
+{% block content %}
+{% include "partials/page_header.html" with page_title="علاقه‌مندی‌های من" %}
+<section class="section-padding">
+  <div class="container">
+    <div class="row g-4" id="wishlist-grid">
+      {% for product in products %}
+      <div class="col-6 col-md-3">
+        <div class="card product-card h-100">
+          <a href="{{ product.get_absolute_url }}">
+            {% if product.cover_image %}<img src="{{ product.cover_image.url }}" alt="{{ product.name }}">{% endif %}
+          </a>
+          <div class="p-3">
+            <h6 class="mb-1">{{ product.name }}</h6>
+            {% if product.final_price %}<span class="fw-bold">{{ product.final_price|intcomma }} تومان</span>{% endif %}
+            <button class="btn btn-sm btn-outline-danger w-100 mt-2 wishlist-remove" data-product="{{ product.pk }}">
+              <i class="fa-solid fa-trash"></i> حذف
+            </button>
+          </div>
+        </div>
+      </div>
+      {% empty %}
+      <div class="col-12 text-center text-muted py-5">
+        <i class="fa-solid fa-heart fa-2x mb-2 d-block"></i>
+        فهرست علاقه‌مندی‌های شما خالی است.
+        <br><a href="{% url 'products:product_list' %}" class="btn btn-orange mt-3">مشاهده محصولات</a>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+<script>
+document.querySelectorAll('.wishlist-remove').forEach((btn) => {
+  btn.addEventListener('click', () => {
+    const id = btn.dataset.product;
+    fetch(`/products/wishlist/${id}/toggle/`, {
+      method: 'POST',
+      headers: { 'X-CSRFToken': document.cookie.match(/csrftoken=([^;]+)/)?.[1] || '' },
+    }).then(() => window.location.reload());
+  });
+});
+</script>
+{% endblock %}

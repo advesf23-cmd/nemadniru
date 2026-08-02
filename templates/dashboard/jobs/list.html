@@ -1,0 +1,24 @@
+{% extends "dashboard/base_dashboard.html" %}
+{% block title %}فرصت‌های شغلی{% endblock %}
+{% block dash_content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h5 class="mb-0">فرصت‌های شغلی</h5>
+  <a href="{% url 'dashboard:job_position_add' %}" class="btn btn-orange"><i class="fa-solid fa-plus me-1"></i> افزودن موقعیت</a>
+</div>
+<div class="dash-table-card">
+  <table class="table align-middle">
+    <thead><tr><th>عنوان</th><th>واحد</th><th>نوع همکاری</th><th>فعال</th><th>عملیات</th></tr></thead>
+    <tbody>
+      {% for p in positions %}
+      <tr>
+        <td>{{ p.title }}</td><td>{{ p.department|default:"—" }}</td><td>{{ p.get_employment_type_display }}</td>
+        <td>{% if p.is_active %}<span class="badge bg-success">فعال</span>{% else %}<span class="badge bg-secondary">غیرفعال</span>{% endif %}</td>
+        <td><a href="{% url 'dashboard:job_position_edit' p.pk %}" class="btn btn-sm btn-outline-navy"><i class="fa-solid fa-pen"></i></a></td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="5" class="text-center text-muted py-4">موقعیت شغلی ثبت نشده است.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block title %}سفارشات من - {{ site_settings.site_name }}{% endblock %}
+{% block content %}
+{% include "partials/page_header.html" with page_title="سفارشات من" %}
+<section class="section-padding">
+  <div class="container">
+    {% if messages %}
+      {% for m in messages %}
+      <div class="alert alert-{% if m.tags == 'error' %}danger{% else %}{{ m.tags|default:'info' }}{% endif %}">{{ m }}</div>
+      {% endfor %}
+    {% endif %}
+    <div class="form-card">
+      <table class="table align-middle">
+        <thead><tr><th>شماره سفارش</th><th>تاریخ</th><th>مبلغ</th><th>وضعیت</th><th>عملیات</th></tr></thead>
+        <tbody>
+          {% for order in orders %}
+          <tr>
+            <td>{{ order.order_number }}</td>
+            <td>{{ order.created_at|date:"Y/m/d" }}</td>
+            <td>{{ order.total|intcomma }} تومان</td>
+            <td>
+              <span class="badge
+                {% if order.status == 'delivered' %}bg-success
+                {% elif order.status == 'cancelled' %}bg-danger
+                {% else %}bg-orange{% endif %}">{{ order.get_status_display }}</span>
+            </td>
+            <td>
+              <a href="{% url 'shop:order_detail' order.order_number %}" class="btn btn-sm btn-outline-navy">جزئیات</a>
+              {% if order.is_cancellable_by_customer %}
+              <form method="post" action="{% url 'shop:cancel_order' order.order_number %}"
+                    onsubmit="return confirm('آیا از لغو این سفارش مطمئن هستید؟');" class="d-inline">
+                {% csrf_token %}
+                <input type="hidden" name="phone" value="{{ order.phone }}">
+                <button type="submit" class="btn btn-sm btn-outline-danger">لغو سفارش</button>
+              </form>
+              {% endif %}
+            </td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="5" class="text-center text-muted py-4">سفارشی ثبت نشده است.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+{% endblock %}

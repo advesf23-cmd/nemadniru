@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}ورود - {{ site_settings.site_name }}{% endblock %}
+{% block content %}
+{% include "partials/page_header.html" with page_title="ورود به حساب کاربری" %}
+<section class="section-padding">
+  <div class="container" style="max-width:480px;">
+    <div class="form-card">
+      {% if form.non_field_errors %}
+        {% for error in form.non_field_errors %}
+        <div class="alert alert-danger">{{ error }}</div>
+        {% endfor %}
+      {% endif %}
+      <form method="post">
+        {% csrf_token %}
+        <div class="mb-3">
+          <label class="form-label">نام کاربری</label>
+          <input type="text" name="username" class="form-control" required autofocus>
+          {% if form.username.errors %}<div class="text-danger small mt-1">{{ form.username.errors }}</div>{% endif %}
+        </div>
+        <div class="mb-3">
+          <label class="form-label">رمز عبور</label>
+          <input type="password" name="password" class="form-control" required>
+          {% if form.password.errors %}<div class="text-danger small mt-1">{{ form.password.errors }}</div>{% endif %}
+        </div>
+        <input type="hidden" name="next" value="{{ next }}">
+        <button type="submit" class="btn btn-orange w-100">ورود</button>
+      </form>
+      <div class="d-flex justify-content-between mt-3 small">
+        <a href="{% url 'accounts:password_reset' %}" class="text-muted">رمز عبور را فراموش کرده‌اید؟</a>
+        <a href="{% url 'accounts:register' %}" class="text-orange">ثبت‌نام کنید</a>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

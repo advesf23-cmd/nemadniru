@@ -1,0 +1,21 @@
+{% extends "dashboard/base_dashboard.html" %}
+{% block title %}{% if object %}ویرایش محصول{% else %}افزودن محصول{% endif %}{% endblock %}
+{% block dash_content %}
+<div class="dash-table-card">
+  <h5 class="mb-4">{% if object %}ویرایش محصول: {{ object.name }}{% else %}افزودن محصول جدید{% endif %}</h5>
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="row g-3">
+      {% for field in form %}
+      <div class="col-md-6 {% if field.name == 'description' or field.name == 'short_description' %}col-12{% endif %}">
+        <label class="form-label">{{ field.label }}</label>
+        {{ field }}
+        {% if field.errors %}<div class="text-danger small mt-1">{{ field.errors }}</div>{% endif %}
+      </div>
+      {% endfor %}
+    </div>
+    <button type="submit" class="btn btn-orange mt-4">ذخیره محصول</button>
+    <a href="{% url 'dashboard:product_list' %}" class="btn btn-outline-navy mt-4">انصراف</a>
+  </form>
+</div>
+{% endblock %}

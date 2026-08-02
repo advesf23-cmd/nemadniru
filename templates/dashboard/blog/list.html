@@ -1,0 +1,27 @@
+{% extends "dashboard/base_dashboard.html" %}
+{% block title %}مدیریت وبلاگ{% endblock %}
+{% block dash_content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h5 class="mb-0">مدیریت مقالات</h5>
+  <a href="{% url 'dashboard:post_add' %}" class="btn btn-orange"><i class="fa-solid fa-plus me-1"></i> افزودن مقاله</a>
+</div>
+<div class="dash-table-card">
+  <table class="table align-middle">
+    <thead><tr><th>عنوان</th><th>دسته‌بندی</th><th>نویسنده</th><th>وضعیت</th><th>عملیات</th></tr></thead>
+    <tbody>
+      {% for post in posts %}
+      <tr>
+        <td>{{ post.title }}</td><td>{{ post.category.name }}</td><td>{{ post.author|default:"—" }}</td>
+        <td>{% if post.status == 'published' %}<span class="badge bg-success">منتشر شده</span>{% else %}<span class="badge bg-secondary">پیش‌نویس</span>{% endif %}</td>
+        <td>
+          <a href="{% url 'dashboard:post_edit' post.pk %}" class="btn btn-sm btn-outline-navy"><i class="fa-solid fa-pen"></i></a>
+          <a href="{% url 'dashboard:post_delete' post.pk %}" class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-trash"></i></a>
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="5" class="text-center text-muted py-4">مقاله‌ای ثبت نشده است.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

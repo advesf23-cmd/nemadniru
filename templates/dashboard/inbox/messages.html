@@ -1,0 +1,27 @@
+{% extends "dashboard/base_dashboard.html" %}
+{% block title %}پیام‌های تماس{% endblock %}
+{% block dash_content %}
+<h5 class="mb-3">پیام‌های تماس</h5>
+<div class="dash-table-card">
+  <table class="table align-middle">
+    <thead><tr><th>نام</th><th>ایمیل</th><th>موضوع</th><th>تاریخ</th><th>وضعیت</th><th>عملیات</th></tr></thead>
+    <tbody>
+      {% for m in messages_list %}
+      <tr class="{% if not m.is_read %}fw-bold{% endif %}">
+        <td>{{ m.full_name }}</td><td>{{ m.email }}</td><td>{{ m.subject|truncatechars:30 }}</td><td>{{ m.created_at|date:"Y/m/d H:i" }}</td>
+        <td>{% if m.is_read %}<span class="badge bg-secondary">خوانده‌شده</span>{% else %}<span class="badge bg-orange">جدید</span>{% endif %}</td>
+        <td>
+          {% if not m.is_read %}
+          <form method="post" action="{% url 'dashboard:message_mark_read' m.pk %}" class="d-inline">
+            {% csrf_token %}<button class="btn btn-sm btn-outline-navy">علامت‌گذاری به‌عنوان خوانده‌شده</button>
+          </form>
+          {% endif %}
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="6" class="text-center text-muted py-4">پیامی ثبت نشده است.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

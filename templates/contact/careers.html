@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}فرصت‌های شغلی - {{ site_settings.site_name }}{% endblock %}
+{% block content %}
+{% include "partials/page_header.html" with page_title="فرصت‌های شغلی" %}
+
+<section class="section-padding">
+  <div class="container">
+    <div class="row g-4">
+      {% for position in positions %}
+      <div class="col-md-6" data-aos="fade-up">
+        <div class="card service-card h-100">
+          <div class="d-flex justify-content-between align-items-start mb-2">
+            <h5 class="mb-0">{{ position.title }}</h5>
+            <span class="badge bg-orange">{{ position.get_employment_type_display }}</span>
+          </div>
+          <p class="text-muted small mb-2">
+            {% if position.department %}<i class="fa-solid fa-building me-1"></i>{{ position.department }}{% endif %}
+            {% if position.location %} &middot; <i class="fa-solid fa-location-dot me-1"></i>{{ position.location }}{% endif %}
+          </p>
+          <p class="text-muted">{{ position.description|truncatewords:25 }}</p>
+          <a href="{% url 'contact:job_apply' %}?position={{ position.pk }}" class="btn btn-outline-navy mt-2">ارسال رزومه</a>
+        </div>
+      </div>
+      {% empty %}
+      <div class="col-12 text-center text-muted py-5">در حال حاضر فرصت شغلی فعالی وجود ندارد.</div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}

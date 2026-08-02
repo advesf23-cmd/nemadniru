@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block title %}تسویه‌حساب - {{ site_settings.site_name }}{% endblock %}
+{% block content %}
+{% include "partials/page_header.html" with page_title="تسویه‌حساب" %}
+
+<section class="section-padding">
+  <div class="container">
+    {% if not cart.items.exists %}
+    <div class="text-center py-5">
+      <p class="text-muted">سبد خرید شما خالی است.</p>
+      <a href="{% url 'products:product_list' %}" class="btn btn-orange">مشاهده محصولات</a>
+    </div>
+    {% else %}
+    <div class="row g-4">
+      <div class="col-lg-7">
+        <div class="form-card">
+          <h6 class="mb-3">اطلاعات ارسال</h6>
+          {% if messages %}
+            {% for message in messages %}<div class="alert alert-danger">{{ message }}</div>{% endfor %}
+          {% endif %}
+          <form method="post" id="checkout-form" novalidate>
+            {% csrf_token %}
+            <input type="hidden" name="checkout_token" value="{{ checkout_token }}">
+            <div class="row g-3">
+              <div class="col-md-6"><input type="text" name="full_name" class="form-control" placeholder="نام و نام خانوادگی" value="{{ form_data.full_name|default:'' }}" required></div>
+              <div class="col-md-6"><input type="text" name="phone" class="form-control" placeholder="شماره تماس" value="{{ form_data.phone|default:'' }}" required></div>
+              <div class="col-12"><input type="email" name="email" class="form-control" placeholder="ایمیل (اختیاری)" value="{{ form_data.email|default:'' }}"></div>
+              <div class="col-md-8"><input type="text" name="shipping_address" class="form-control" placeholder="آدرس کامل ارسال" value="{{ form_data.shipping_address|default:'' }}" required></div>
+              <div class="col-md-4">
+                <input type="text" name="postal_code" id="postal-code-input" class="form-control" placeholder="کد پستی (۱۰ رقم)" value="{{ form_data.postal_code|default:'' }}" inputmode="numeric" pattern="[0-9]{10}" maxlength="10" required>
+                <div class="invalid-feedback-custom text-danger small mt-1" id="postal-code-error" style="display:none;">کد پستی باید دقیقاً ۱۰ رقم و فقط عدد باشد.</div>
+              </div>
+              <div class="col-12"><textarea name="notes" class="form-control" rows="3" placeholder="توضیحات سفارش (اختیاری)">{{ form_data.notes|default:'' }}</textarea></div>
+            </div>
+            <div class="alert alert-info small mt-3">
+              <i class="fa-solid fa-circle-info me-1"></i>
+              پس از ثبت سفارش، کارشناسان فروش برای هماهنگی پرداخت و ارسال با شما تماس خواهند گرفت.
+              (اتصال درگاه پرداخت آنلاین در آینده به همین فرم افزوده می‌شود)
+            </div>
+            <button type="submit" class="btn btn-orange w-100 mt-2">ثبت نهایی سفارش</button>
+          </form>
+        </div>
+      </div>
+      <div class="col-lg-5">
+        <div class="form-card">
+          <h6 class="mb-3">خلاصه سفارش</h6>
+          {% for item in cart.items.all %}
+          <div class="d-flex justify-content-between mb-2 small">
+            <span>{{ item.product.name }} × {{ item.quantity }}</span>
+            <span>{{ item.line_total|intcomma }} تومان</span>
+          </div>
+          {% endfor %}
+          <hr>
+          <div class="d-flex justify-content-between mb-2"><span>جمع کل</span><span>{{ cart.subtotal|intcomma }} تومان</span></div>
+          {% if cart.coupon %}<div class="d-flex justify-content-between mb-2 text-success"><span>تخفیف</span><span>-{{ cart.discount_amount|intcomma }} تومان</span></div>{% endif %}
+          <div class="d-flex justify-content-between"><strong>مبلغ نهایی</strong><strong>{{ cart.total|intcomma }} تومان</strong></div>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</section>
+
+<script>
+(function () {
+  const form = document.getElementById('checkout-form');
+  if (!form) return;
+  const postalInput = document.getElementById('postal-code-input');
+  const postalError = document.getElementById('postal-code-error');
+
+  function isValidPostalCode(value) {
+    return /^[0-9]{10}$/.test(value.trim());
+  }
+
+  postalInput.addEventListener('input', () => {
+    // فقط رقم مجاز است
+    postalInput.value = postalInput.value.replace(/[^0-9]/g, '');
+  });
+
+  form.addEventListener('submit', (e) => {
+    if (!isValidPostalCode(postalInput.value)) {
+      e.preventDefault();
+      postalError.style.display = 'block';
+      postalInput.classList.add('is-invalid');
+      postalInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      postalInput.focus();
+      return;
+    }
+    postalError.style.display = 'none';
+    postalInput.classList.remove('is-invalid');
+
+    // جلوگیری از ثبت دوباره سفارش با کلیک مکرر روی دکمه
+    const submitBtn = form.querySelector('button[type="submit"]');
+    if (submitBtn) {
+      if (submitBtn.dataset.submitted === 'true') {
+        e.preventDefault();
+        return;
+      }
+      submitBtn.dataset.submitted = 'true';
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'در حال ثبت سفارش...';
+    }
+  });
+
+  postalInput.addEventListener('input', () => {
+    if (isValidPostalCode(postalInput.value)) {
+      postalError.style.display = 'none';
+      postalInput.classList.remove('is-invalid');
+    }
+  });
+})();
+</script>
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends "dashboard/base_dashboard.html" %}
+{% block title %}مدیریت نظرات{% endblock %}
+{% block dash_content %}
+<h5 class="mb-3">مدیریت نظرات وبلاگ</h5>
+<div class="dash-table-card">
+  <table class="table align-middle">
+    <thead><tr><th>نام</th><th>مقاله</th><th>متن</th><th>وضعیت</th><th>عملیات</th></tr></thead>
+    <tbody>
+      {% for c in comments %}
+      <tr>
+        <td>{{ c.full_name }}</td>
+        <td>{{ c.post.title|truncatechars:25 }}</td>
+        <td>{{ c.text|truncatechars:40 }}</td>
+        <td>{% if c.is_approved %}<span class="badge bg-success">تأیید‌شده</span>{% else %}<span class="badge bg-orange">در انتظار</span>{% endif %}</td>
+        <td>
+          {% if not c.is_approved %}
+          <form method="post" action="{% url 'dashboard:comment_approve' c.pk %}" class="d-inline">
+            {% csrf_token %}<button class="btn btn-sm btn-outline-navy">تأیید</button>
+          </form>
+          {% endif %}
+          <form method="post" action="{% url 'dashboard:comment_delete' c.pk %}" class="d-inline">
+            {% csrf_token %}<button class="btn btn-sm btn-outline-danger">حذف</button>
+          </form>
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="5" class="text-center text-muted py-4">نظری ثبت نشده است.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

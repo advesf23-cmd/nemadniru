@@ -1,0 +1,47 @@
+{% extends "dashboard/base_dashboard.html" %}
+{% block title %}مدیریت گالری{% endblock %}
+{% block dash_content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h5 class="mb-0">مدیریت گالری</h5>
+  <a href="{% url 'dashboard:gallery_add' %}" class="btn btn-orange"><i class="fa-solid fa-plus me-1"></i> افزودن آیتم</a>
+</div>
+<div class="alert alert-info small">
+  <i class="fa-solid fa-circle-info me-1"></i>
+  برای اینکه یک تصویر به‌صورت نیمه‌شفاف در پس‌زمینه صفحه اصلی سایت نمایش داده شود، روی دکمه
+  «تنظیم به‌عنوان پس‌زمینه صفحه اصلی» زیر همان تصویر کلیک کنید. فقط یک تصویر می‌تواند فعال باشد.
+</div>
+<div class="row g-3">
+  {% for item in items %}
+  <div class="col-6 col-md-3">
+    <div class="dash-table-card p-2 {% if item.use_as_hero_background %}border border-2{% endif %}" style="{% if item.use_as_hero_background %}border-color:#F97316 !important;{% endif %}">
+      {% if item.image %}<img src="{{ item.image.url }}" class="w-100 rounded-2 mb-2" style="height:120px;object-fit:cover;">{% endif %}
+      <p class="small mb-1">{{ item.title|default:"بدون عنوان" }}</p>
+      {% if item.use_as_hero_background %}
+      <span class="badge bg-orange d-block mb-2">پس‌زمینه فعلی صفحه اصلی</span>
+      {% endif %}
+      <div class="d-flex flex-column gap-1">
+        {% if item.media_type == 'image' %}
+          {% if item.use_as_hero_background %}
+          <form method="post" action="{% url 'dashboard:gallery_remove_hero_bg' item.pk %}">
+            {% csrf_token %}
+            <button class="btn btn-sm btn-outline-navy w-100"><i class="fa-solid fa-xmark"></i> حذف از پس‌زمینه</button>
+          </form>
+          {% else %}
+          <form method="post" action="{% url 'dashboard:gallery_set_hero_bg' item.pk %}">
+            {% csrf_token %}
+            <button class="btn btn-sm btn-outline-navy w-100"><i class="fa-solid fa-image"></i> تنظیم به‌عنوان پس‌زمینه صفحه اصلی</button>
+          </form>
+          {% endif %}
+        {% endif %}
+        <div class="d-flex gap-1">
+          <a href="{% url 'dashboard:gallery_edit' item.pk %}" class="btn btn-sm btn-outline-navy flex-grow-1"><i class="fa-solid fa-pen"></i></a>
+          <a href="{% url 'dashboard:gallery_delete' item.pk %}" class="btn btn-sm btn-outline-danger flex-grow-1"><i class="fa-solid fa-trash"></i></a>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% empty %}
+  <div class="col-12 text-center text-muted py-4">آیتمی در گالری ثبت نشده است.</div>
+  {% endfor %}
+</div>
+{% endblock %}

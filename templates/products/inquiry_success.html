@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}درخواست ثبت شد - {{ site_settings.site_name }}{% endblock %}
+{% block content %}
+<section class="section-padding text-center">
+  <div class="container">
+    <i class="fa-solid fa-circle-check fa-4x text-orange mb-4"></i>
+    <h2>درخواست استعلام قیمت شما ثبت شد</h2>
+    <p class="text-muted">کارشناسان فروش ما در کوتاه‌ترین زمان ممکن با شما تماس خواهند گرفت.</p>
+    <a href="{% url 'products:product_list' %}" class="btn btn-orange btn-lg mt-3">بازگشت به محصولات</a>
+  </div>
+</section>
+{% endblock %}

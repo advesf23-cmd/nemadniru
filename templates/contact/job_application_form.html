@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}ارسال رزومه - {{ site_settings.site_name }}{% endblock %}
+{% block content %}
+{% include "partials/page_header.html" with page_title="ارسال رزومه" %}
+<section class="section-padding">
+  <div class="container" style="max-width:700px;">
+    <div class="form-card" data-aos="fade-up">
+      {% if messages %}
+        {% for message in messages %}<div class="alert alert-success">{{ message }}</div>{% endfor %}
+      {% endif %}
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {% for field in form %}
+        <div class="mb-3">
+          <label class="form-label">{{ field.label }}</label>
+          {{ field }}
+        </div>
+        {% endfor %}
+        <button type="submit" class="btn btn-orange w-100">ارسال درخواست استخدام</button>
+      </form>
+    </div>
+  </div>
+</section>
+{% endblock %}

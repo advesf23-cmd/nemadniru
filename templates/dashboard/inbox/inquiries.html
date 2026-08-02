@@ -1,0 +1,27 @@
+{% extends "dashboard/base_dashboard.html" %}
+{% block title %}استعلام قیمت محصولات{% endblock %}
+{% block dash_content %}
+<h5 class="mb-3">استعلام قیمت محصولات</h5>
+<div class="dash-table-card">
+  <table class="table align-middle">
+    <thead><tr><th>نام</th><th>محصول</th><th>تلفن</th><th>تعداد</th><th>تاریخ</th><th>وضعیت</th><th>عملیات</th></tr></thead>
+    <tbody>
+      {% for i in inquiries %}
+      <tr class="{% if not i.is_read %}fw-bold{% endif %}">
+        <td>{{ i.full_name }}</td><td>{{ i.product|default:"—" }}</td><td>{{ i.phone }}</td><td>{{ i.quantity }}</td><td>{{ i.created_at|date:"Y/m/d" }}</td>
+        <td>{% if i.is_read %}<span class="badge bg-secondary">خوانده‌شده</span>{% else %}<span class="badge bg-orange">جدید</span>{% endif %}</td>
+        <td>
+          {% if not i.is_read %}
+          <form method="post" action="{% url 'dashboard:inquiry_mark_read' i.pk %}" class="d-inline">
+            {% csrf_token %}<button class="btn btn-sm btn-outline-navy">خوانده‌شد</button>
+          </form>
+          {% endif %}
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="7" class="text-center text-muted py-4">استعلامی ثبت نشده است.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

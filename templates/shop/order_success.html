@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block title %}سفارش ثبت شد - {{ site_settings.site_name }}{% endblock %}
+{% block content %}
+<section class="section-padding text-center">
+  <div class="container">
+    <i class="fa-solid fa-circle-check fa-4x text-orange mb-4"></i>
+    <h2>سفارش شما با موفقیت ثبت شد</h2>
+    <p class="text-muted">شماره پیگیری سفارش: <strong>{{ order.order_number }}</strong></p>
+    <p class="text-muted">مبلغ نهایی: <strong>{{ order.total|intcomma }} تومان</strong></p>
+    <div class="d-flex gap-2 justify-content-center mt-4">
+      <a href="{% url 'shop:order_tracking' %}" class="btn btn-outline-navy">پیگیری سفارش</a>
+      <a href="{% url 'core:home' %}" class="btn btn-orange">بازگشت به صفحه اصلی</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

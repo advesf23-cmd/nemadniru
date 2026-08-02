@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}ثبت‌نام - {{ site_settings.site_name }}{% endblock %}
+{% block content %}
+{% include "partials/page_header.html" with page_title="ثبت‌نام" %}
+<section class="section-padding">
+  <div class="container" style="max-width:520px;">
+    <div class="form-card">
+      {% if form.non_field_errors %}
+        {% for error in form.non_field_errors %}<div class="alert alert-danger">{{ error }}</div>{% endfor %}
+      {% endif %}
+      <form method="post" id="register-form">
+        {% csrf_token %}
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label">نام</label>
+            <input type="text" name="first_name" class="form-control">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">نام خانوادگی</label>
+            <input type="text" name="last_name" class="form-control">
+          </div>
+          <div class="col-12">
+            <label class="form-label">نام کاربری *</label>
+            <input type="text" name="username" class="form-control" required>
+            {% if form.username.errors %}<div class="text-danger small mt-1">{{ form.username.errors }}</div>{% endif %}
+          </div>
+          <div class="col-12">
+            <label class="form-label">ایمیل</label>
+            <input type="email" name="email" class="form-control">
+            {% if form.email.errors %}<div class="text-danger small mt-1">{{ form.email.errors }}</div>{% endif %}
+          </div>
+          <div class="col-12">
+            <label class="form-label">شماره تماس</label>
+            <input type="text" name="phone" class="form-control">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">رمز عبور *</label>
+            <input type="password" name="password" id="reg-password" class="form-control" required minlength="8">
+            {% if form.password.errors %}
+              {% for err in form.password.errors %}<div class="text-danger small mt-1">{{ err }}</div>{% endfor %}
+            {% endif %}
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">تکرار رمز عبور *</label>
+            <input type="password" id="reg-password-confirm" class="form-control" required minlength="8">
+            <div class="text-danger small mt-1" id="password-mismatch-error" style="display:none;">رمز عبور و تکرار آن یکسان نیستند.</div>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-orange w-100 mt-4">ثبت‌نام</button>
+      </form>
+      <p class="text-center small mt-3 mb-0">
+        قبلاً ثبت‌نام کرده‌اید؟ <a href="{% url 'accounts:login' %}" class="text-orange">وارد شوید</a>
+      </p>
+    </div>
+  </div>
+</section>
+<script>
+document.getElementById('register-form').addEventListener('submit', function (e) {
+  const pass = document.getElementById('reg-password').value;
+  const confirm = document.getElementById('reg-password-confirm').value;
+  const errorBox = document.getElementById('password-mismatch-error');
+  if (pass !== confirm) {
+    e.preventDefault();
+    errorBox.style.display = 'block';
+  } else {
+    errorBox.style.display = 'none';
+  }
+});
+</script>
+{% endblock %}

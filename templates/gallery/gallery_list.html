@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}گالری - {{ site_settings.site_name }}{% endblock %}
+{% block content %}
+{% include "partials/page_header.html" with page_title="گالری تصاویر و ویدیو" %}
+
+<section class="section-padding">
+  <div class="container">
+    <div class="filter-bar d-flex flex-wrap gap-2">
+      <a href="{% url 'gallery:gallery_list' %}" class="btn btn-sm {% if not request.GET.category %}btn-orange{% else %}btn-outline-navy{% endif %}">همه</a>
+      {% for cat in categories %}
+      <a href="?category={{ cat.pk }}" class="btn btn-sm {% if request.GET.category == cat.pk|stringformat:'s' %}btn-orange{% else %}btn-outline-navy{% endif %}">{{ cat.name }}</a>
+      {% endfor %}
+    </div>
+
+    <div class="row g-3">
+      {% for item in items %}
+      <div class="col-6 col-md-4 col-lg-3" data-aos="zoom-in">
+        <div class="card overflow-hidden">
+          {% if item.media_type == 'video' and item.video_url %}
+          <div class="ratio ratio-16x9">
+            <iframe src="{{ item.video_url }}" allowfullscreen></iframe>
+          </div>
+          {% elif item.image %}
+          <img src="{{ item.image.url }}" class="w-100" style="height:180px;object-fit:cover;" alt="{{ item.title }}">
+          {% endif %}
+          {% if item.title %}<div class="p-2"><small>{{ item.title }}</small></div>{% endif %}
+        </div>
+      </div>
+      {% empty %}
+      <div class="col-12 text-center text-muted py-5">موردی در گالری ثبت نشده است.</div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}

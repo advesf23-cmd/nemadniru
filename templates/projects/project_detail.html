@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+{% block title %}{{ project.meta_title|default:project.title }} - {{ site_settings.site_name }}{% endblock %}
+{% block content %}
+{% include "partials/page_header.html" with page_title=project.title %}
+
+<section class="section-padding">
+  <div class="container">
+    {% if project.cover_image %}<img src="{{ project.cover_image.url }}" class="rounded-4 w-100 mb-4" style="max-height:450px;object-fit:cover;">{% endif %}
+    <div class="row g-5">
+      <div class="col-lg-8" data-aos="fade-up">
+        <div class="content">{{ project.description|linebreaks }}</div>
+
+        {% if project.images.all %}
+        <h6 class="mt-4">تصاویر پروژه</h6>
+        <div class="row g-2" id="project-lightbox-gallery">
+          {% for img in project.images.all %}
+          <div class="col-4">
+            <a href="{{ img.image.url }}" class="lightbox-trigger d-block" data-caption="{{ img.caption }}">
+              <img src="{{ img.image.url }}" class="rounded-3 w-100" style="height:150px;object-fit:cover;cursor:zoom-in;" alt="{{ img.caption }}">
+            </a>
+          </div>
+          {% endfor %}
+        </div>
+        {% endif %}
+      </div>
+      <div class="col-lg-4" data-aos="fade-up" data-aos-delay="100">
+        <div class="form-card">
+          <h6 class="mb-3">مشخصات پروژه</h6>
+          <p class="mb-2"><i class="fa-solid fa-industry me-2 text-orange"></i>{{ project.category.name }}</p>
+          {% if project.client_name %}<p class="mb-2"><i class="fa-solid fa-building me-2 text-orange"></i>{{ project.client_name }}</p>{% endif %}
+          {% if project.location %}<p class="mb-2"><i class="fa-solid fa-location-dot me-2 text-orange"></i>{{ project.location }}</p>{% endif %}
+          {% if project.execution_year %}<p class="mb-0"><i class="fa-solid fa-calendar me-2 text-orange"></i>{{ project.execution_year }}</p>{% endif %}
+        </div>
+      </div>
+    </div>
+
+    {% if related_projects %}
+    <div class="section-title mt-5" data-aos="fade-up"><h2>پروژه‌های مرتبط</h2></div>
+    <div class="row g-4">
+      {% for rp in related_projects %}
+      <div class="col-md-4">
+        <a href="{{ rp.get_absolute_url }}">
+          <div class="project-card" style="background: linear-gradient(135deg, var(--color-navy-light), var(--color-navy)); {% if rp.cover_image %}background-image:url('{{ rp.cover_image.url }}');background-size:cover;background-position:center;{% endif %}">
+            <div class="overlay">
+              <span class="small text-uppercase text-orange">{{ rp.category.name }}</span>
+              <h5 class="mb-0">{{ rp.title }}</h5>
+            </div>
+          </div>
+        </a>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
+</section>
+
+<!-- Lightbox سفارشی برای گالری تصاویر پروژه -->
+<div id="lightbox-modal" class="lightbox-modal">
+  <span class="lightbox-close">&times;</span>
+  <span class="lightbox-prev">&#10094;</span>
+  <span class="lightbox-next">&#10095;</span>
+  <img id="lightbox-image" src="" alt="">
+  <div id="lightbox-caption"></div>
+</div>
+
+<style>
+.lightbox-modal {
+  display: none; position: fixed; inset: 0; z-index: 2000;
+  background: rgba(11,36,71,.95); text-align: center;
+}
+.lightbox-modal.open { display: flex; align-items: center; justify-content: center; flex-direction: column; }
+.lightbox-modal img { max-width: 85%; max-height: 75vh; border-radius: 12px; }
+.lightbox-modal #lightbox-caption { color: #fff; margin-top: 1rem; }
+.lightbox-close, .lightbox-prev, .lightbox-next {
+  position: absolute; color: #fff; font-size: 2rem; cursor: pointer;
+  user-select: none; padding: .5rem 1rem;
+}
+.lightbox-close { top: 20px; left: 30px; }
+.lightbox-prev { top: 50%; right: 30px; transform: translateY(-50%); }
+.lightbox-next { top: 50%; left: 30px; transform: translateY(-50%); }
+</style>
+
+<script>
+(function () {
+  const triggers = Array.from(document.querySelectorAll('.lightbox-trigger'));
+  if (!triggers.length) return;
+  const modal = document.getElementById('lightbox-modal');
+  const modalImg = document.getElementById('lightbox-image');
+  const modalCaption = document.getElementById('lightbox-caption');
+  let currentIndex = 0;
+
+  function openLightbox(index) {
+    currentIndex = index;
+    modalImg.src = triggers[index].getAttribute('href');
+    modalCaption.textContent = triggers[index].dataset.caption || '';
+    modal.classList.add('open');
+  }
+  function closeLightbox() { modal.classList.remove('open'); }
+  function showNext() { openLightbox((currentIndex + 1) % triggers.length); }
+  function showPrev() { openLightbox((currentIndex - 1 + triggers.length) % triggers.length); }
+
+  triggers.forEach((trigger, index) => {
+    trigger.addEventListener('click', (e) => {
+      e.preventDefault();
+      openLightbox(index);
+    });
+  });
+  document.querySelector('.lightbox-close').addEventListener('click', closeLightbox);
+  document.querySelector('.lightbox-next').addEventListener('click', showNext);
+  document.querySelector('.lightbox-prev').addEventListener('click', showPrev);
+  modal.addEventListener('click', (e) => { if (e.target === modal) closeLightbox(); });
+  document.addEventListener('keydown', (e) => {
+    if (!modal.classList.contains('open')) return;
+    if (e.key === 'Escape') closeLightbox();
+    if (e.key === 'ArrowRight') showPrev();
+    if (e.key === 'ArrowLeft') showNext();
+  });
+})();
+</script>
+{% endblock %}

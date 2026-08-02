@@ -1,0 +1,70 @@
+{% extends "dashboard/base_dashboard.html" %}
+{% load humanize %}
+{% block title %}سفارش {{ order.order_number }}{% endblock %}
+{% block dash_content %}
+<h5 class="mb-3">سفارش {{ order.order_number }}</h5>
+
+<div class="row g-3">
+  <div class="col-lg-8">
+    <div class="dash-table-card mb-3">
+      <h6 class="mb-3">آیتم‌های سفارش</h6>
+      <table class="table">
+        <thead><tr><th>محصول</th><th>قیمت واحد</th><th>تعداد</th><th>جمع</th></tr></thead>
+        <tbody>
+          {% for item in order.items.all %}
+          <tr>
+            <td>{{ item.product_name }}</td>
+            <td>{{ item.unit_price|intcomma }} تومان</td>
+            <td>{{ item.quantity }}</td>
+            <td>{{ item.line_total|intcomma }} تومان</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <hr>
+      <div class="d-flex justify-content-between"><span>جمع کل</span><span>{{ order.subtotal|intcomma }} تومان</span></div>
+      {% if order.discount_amount %}<div class="d-flex justify-content-between text-success"><span>تخفیف</span><span>-{{ order.discount_amount|intcomma }} تومان</span></div>{% endif %}
+      <div class="d-flex justify-content-between fw-bold"><span>مبلغ نهایی</span><span>{{ order.total|intcomma }} تومان</span></div>
+    </div>
+
+    <div class="dash-table-card">
+      <h6 class="mb-3">اطلاعات ارسال</h6>
+      <p class="mb-1"><strong>نام:</strong> {{ order.full_name }}</p>
+      <p class="mb-1"><strong>تلفن:</strong> {{ order.phone }}</p>
+      {% if order.email %}<p class="mb-1"><strong>ایمیل:</strong> {{ order.email }}</p>{% endif %}
+      <p class="mb-1"><strong>آدرس:</strong> {{ order.shipping_address }}</p>
+      {% if order.postal_code %}<p class="mb-1"><strong>کد پستی:</strong> {{ order.postal_code }}</p>{% endif %}
+      {% if order.notes %}<p class="mb-0"><strong>توضیحات:</strong> {{ order.notes }}</p>{% endif %}
+    </div>
+  </div>
+
+  <div class="col-lg-4">
+    <div class="dash-table-card">
+      <h6 class="mb-3">وضعیت سفارش</h6>
+      <p><span class="badge bg-orange">{{ order.get_status_display }}</span></p>
+      <form method="post" action="{% url 'dashboard:order_update_status' order.pk %}"
+            onsubmit="const s=this.status.value; if(s==='cancelled'){return confirm('با لغو سفارش، موجودی انبار اقلام آن به‌صورت خودکار بازگردانده می‌شود. ادامه می‌دهید؟');}">
+        {% csrf_token %}
+        <select name="status" class="form-select mb-2">
+          {% for value, label in order.STATUS_CHOICES %}
+          <option value="{{ value }}" {% if order.status == value %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+        <button class="btn btn-orange w-100">بروزرسانی وضعیت</button>
+      </form>
+      {% if order.status == 'cancelled' %}
+      <div class="alert alert-danger small mt-3 mb-0">
+        <i class="fa-solid fa-ban me-1"></i> این سفارش لغو شده است.
+        {% if order.cancel_reason %}<br>دلیل: {{ order.cancel_reason }}{% endif %}
+        {% if order.cancelled_at %}<br>زمان لغو: {{ order.cancelled_at|date:"Y/m/d H:i" }}{% endif %}
+        {% if order.stock_restored %}<br><span class="text-success">موجودی انبار بازگردانده شد.</span>{% endif %}
+      </div>
+      {% endif %}
+      <hr>
+      <p class="small text-muted mb-0">
+        وضعیت پرداخت: {% if order.is_paid %}<span class="text-success">پرداخت‌شده</span>{% else %}<span class="text-danger">پرداخت‌نشده</span>{% endif %}
+      </p>
+    </div>
+  </div>
+</div>
+{% endblock %}

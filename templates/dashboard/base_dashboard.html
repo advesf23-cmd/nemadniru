@@ -1,0 +1,75 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}داشبورد مدیریت{% endblock %} - {{ site_settings.site_name }}</title>
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+</head>
+<body>
+<div class="dash-wrapper">
+  <aside class="dash-sidebar">
+    <div class="dash-brand">
+      <i class="fa-solid fa-bolt text-orange"></i> {{ site_settings.site_name|default:"سامان تجهیز اسپادان" }}
+    </div>
+    <nav class="dash-nav">
+      <a href="{% url 'dashboard:home' %}" class="{% if request.resolver_match.url_name == 'home' %}active{% endif %}"><i class="fa-solid fa-gauge"></i> داشبورد</a>
+
+      <span class="dash-nav-title">محتوا</span>
+      <a href="{% url 'dashboard:product_list' %}"><i class="fa-solid fa-box"></i> محصولات</a>
+      <a href="{% url 'dashboard:product_review_list' %}"><i class="fa-solid fa-star"></i> نظرات محصولات</a>
+      <a href="{% url 'dashboard:product_category_list' %}"><i class="fa-solid fa-layer-group"></i> دسته‌بندی محصولات</a>
+      <a href="{% url 'dashboard:service_list' %}"><i class="fa-solid fa-screwdriver-wrench"></i> خدمات</a>
+      <a href="{% url 'dashboard:project_list' %}"><i class="fa-solid fa-diagram-project"></i> پروژه‌ها</a>
+      <a href="{% url 'dashboard:post_list' %}"><i class="fa-solid fa-newspaper"></i> وبلاگ</a>
+      <a href="{% url 'dashboard:comment_list' %}"><i class="fa-solid fa-comments"></i> نظرات وبلاگ</a>
+      <a href="{% url 'dashboard:gallery_list' %}"><i class="fa-solid fa-images"></i> گالری</a>
+      <a href="{% url 'dashboard:order_list' %}"><i class="fa-solid fa-cart-shopping"></i> سفارشات فروشگاه</a>
+      <a href="{% url 'dashboard:coupon_list' %}"><i class="fa-solid fa-ticket"></i> کدهای تخفیف</a>
+      <a href="{% url 'dashboard:job_position_list' %}"><i class="fa-solid fa-briefcase"></i> فرصت‌های شغلی</a>
+
+      <span class="dash-nav-title">صندوق ورودی</span>
+      <a href="{% url 'dashboard:message_list' %}"><i class="fa-solid fa-envelope"></i> پیام‌های تماس</a>
+      <a href="{% url 'dashboard:quote_list' %}"><i class="fa-solid fa-file-invoice-dollar"></i> استعلام قیمت</a>
+      <a href="{% url 'dashboard:inquiry_list' %}"><i class="fa-solid fa-circle-question"></i> استعلام محصولات</a>
+      <a href="{% url 'dashboard:application_list' %}"><i class="fa-solid fa-user-tie"></i> درخواست‌های استخدام</a>
+
+      <span class="dash-nav-title">سیستم</span>
+      <a href="/admin/" target="_blank"><i class="fa-solid fa-user-shield"></i> پنل ادمین کامل (Django Admin)</a>
+      <a href="{% url 'core:home' %}"><i class="fa-solid fa-arrow-up-right-from-square"></i> مشاهده سایت</a>
+      <a href="{% url 'accounts:logout' %}"><i class="fa-solid fa-right-from-bracket"></i> خروج</a>
+    </nav>
+  </aside>
+
+  <main class="dash-main">
+    <header class="dash-topbar">
+      <button class="dash-toggle d-lg-none"><i class="fa-solid fa-bars"></i></button>
+      <div class="ms-auto d-flex align-items-center gap-2">
+        <span class="text-muted small">{{ request.user.get_full_name|default:request.user.username }}</span>
+        <span class="badge bg-orange">{{ request.user.get_role_display }}</span>
+      </div>
+    </header>
+
+    <div class="dash-content">
+      {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %}">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+      {% block dash_content %}{% endblock %}
+    </div>
+  </main>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+document.querySelector('.dash-toggle')?.addEventListener('click', () => {
+  document.querySelector('.dash-sidebar').classList.toggle('open');
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+{% block title %}وبلاگ - {{ site_settings.site_name }}{% endblock %}
+{% block content %}
+{% include "partials/page_header.html" with page_title="وبلاگ" %}
+
+<section class="section-padding">
+  <div class="container">
+    <div class="row g-5">
+      <div class="col-lg-8">
+        <div class="filter-bar d-flex justify-content-between align-items-center flex-wrap gap-2">
+          <div class="d-flex gap-2 flex-grow-1" style="max-width:400px;">
+            <input type="text" id="search-input" class="form-control" placeholder="جستجو در مقالات..." value="{{ request.GET.q }}">
+          </div>
+          <select id="sort-select" class="form-select" style="width:auto;">
+            <option value="newest" {% if current_sort == "newest" %}selected{% endif %}>جدیدترین</option>
+            <option value="oldest" {% if current_sort == "oldest" %}selected{% endif %}>قدیمی‌ترین</option>
+            <option value="popular" {% if current_sort == "popular" %}selected{% endif %}>پربازدیدترین</option>
+          </select>
+        </div>
+
+        <div id="post-grid-wrapper">{% include "blog/_post_grid.html" %}</div>
+        <div id="pagination-wrapper">{% include "blog/_pagination.html" %}</div>
+      </div>
+
+      <div class="col-lg-4">
+        <div class="form-card mb-4">
+          <h6 class="mb-3">دسته‌بندی‌ها</h6>
+          <ul class="list-unstyled d-flex flex-column gap-2" id="category-filter">
+            <li><a href="#" data-category="" class="filter-link {% if not request.GET.category %}text-orange fw-bold{% else %}text-dark{% endif %}">همه مقالات</a></li>
+            {% for cat in categories %}
+            <li><a href="#" data-category="{{ cat.slug }}" class="filter-link {% if request.GET.category == cat.slug %}text-orange fw-bold{% else %}text-dark{% endif %}">{{ cat.name }}</a></li>
+            {% endfor %}
+          </ul>
+        </div>
+        <div class="form-card">
+          <h6 class="mb-3">برچسب‌ها</h6>
+          <div class="d-flex flex-wrap gap-2" id="tag-filter">
+            {% for tag in tags %}
+            <a href="#" data-tag="{{ tag.name }}" class="btn btn-sm btn-outline-navy tag-link">{{ tag.name }}</a>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+(function () {
+  const grid = document.getElementById('post-grid-wrapper');
+  const pagination = document.getElementById('pagination-wrapper');
+  const searchInput = document.getElementById('search-input');
+  const sortSelect = document.getElementById('sort-select');
+  const categoryLinks = document.querySelectorAll('.filter-link');
+  const tagLinks = document.querySelectorAll('.tag-link');
+  const baseUrl = "{% url 'blog:post_list' %}";
+
+  let state = {
+    q: searchInput.value || "",
+    category: "{{ request.GET.category|default:'' }}",
+    tag: "{{ request.GET.tag|default:'' }}",
+    sort: sortSelect.value,
+    page: 1,
+  };
+
+  function buildQuery(s) {
+    const p = new URLSearchParams();
+    Object.entries(s).forEach(([k, v]) => { if (v) p.set(k, v); });
+    return p.toString();
+  }
+
+  function load(pushHistory = true) {
+    const query = buildQuery(state);
+    fetch(`${baseUrl}?${query}`, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+      .then((r) => r.json())
+      .then((data) => {
+        grid.innerHTML = data.html;
+        pagination.innerHTML = data.pagination;
+        bindPagination();
+        if (pushHistory) window.history.pushState({}, "", `${baseUrl}?${query}`);
+      });
+  }
+
+  function bindPagination() {
+    pagination.querySelectorAll('[data-page]').forEach((link) => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        state.page = link.dataset.page;
+        load();
+        window.scrollTo({ top: grid.offsetTop - 100, behavior: 'smooth' });
+      });
+    });
+  }
+  bindPagination();
+
+  let timer;
+  searchInput.addEventListener('input', () => {
+    clearTimeout(timer);
+    timer = setTimeout(() => { state.q = searchInput.value.trim(); state.page = 1; load(); }, 400);
+  });
+
+  categoryLinks.forEach((link) => {
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      categoryLinks.forEach((l) => l.classList.remove('text-orange', 'fw-bold'));
+      link.classList.add('text-orange', 'fw-bold');
+      state.category = link.dataset.category;
+      state.page = 1;
+      load();
+    });
+  });
+
+  tagLinks.forEach((link) => {
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      state.tag = state.tag === link.dataset.tag ? "" : link.dataset.tag;
+      state.page = 1;
+      load();
+    });
+  });
+
+  sortSelect.addEventListener('change', () => {
+    state.sort = sortSelect.value;
+    state.page = 1;
+    load();
+  });
+})();
+</script>
+{% endblock %}

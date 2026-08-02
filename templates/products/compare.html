@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block title %}مقایسه محصولات - {{ site_settings.site_name }}{% endblock %}
+{% block content %}
+{% include "partials/page_header.html" with page_title="مقایسه محصولات" %}
+<section class="section-padding">
+  <div class="container">
+    {% if products %}
+    <div class="table-responsive">
+      <table class="table table-bordered align-middle text-center">
+        <thead>
+          <tr>
+            <th style="width:180px;">مشخصه</th>
+            {% for product in products %}
+            <th>
+              {% if product.cover_image %}<img src="{{ product.cover_image.url }}" style="width:100px;height:100px;object-fit:cover;" class="rounded-3 mb-2">{% endif %}
+              <div><a href="{{ product.get_absolute_url }}">{{ product.name }}</a></div>
+            </th>
+            {% endfor %}
+          </tr>
+        </thead>
+        <tbody>
+          <tr><th>برند</th>{% for p in products %}<td>{{ p.brand|default:"—" }}</td>{% endfor %}</tr>
+          <tr><th>قیمت</th>{% for p in products %}<td>{% if p.final_price %}{{ p.final_price|intcomma }} تومان{% else %}—{% endif %}</td>{% endfor %}</tr>
+          <tr><th>موجودی</th>{% for p in products %}<td>{% if p.is_in_stock %}<span class="badge bg-success">موجود</span>{% else %}<span class="badge bg-danger">ناموجود</span>{% endif %}</td>{% endfor %}</tr>
+          {% for key in spec_keys %}
+          <tr>
+            <th>{{ key }}</th>
+            {% for product in products %}
+            <td>
+              {% for spec in product.specifications.all %}
+                {% if spec.key == key %}{{ spec.value }}{% endif %}
+              {% endfor %}
+            </td>
+            {% endfor %}
+          </tr>
+          {% endfor %}
+          <tr>
+            <th></th>
+            {% for product in products %}
+            <td><a href="{% url 'products:inquiry_create' %}?product={{ product.pk }}" class="btn btn-sm btn-orange">استعلام قیمت</a></td>
+            {% endfor %}
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="text-center text-muted py-5">
+      <i class="fa-solid fa-scale-balanced fa-2x mb-2 d-block"></i>
+      محصولی برای مقایسه انتخاب نشده است.
+      <br><a href="{% url 'products:product_list' %}" class="btn btn-orange mt-3">مشاهده محصولات</a>
+    </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

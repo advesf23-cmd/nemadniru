@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}پروفایل کاربری - {{ site_settings.site_name }}{% endblock %}
+{% block content %}
+{% include "partials/page_header.html" with page_title="پروفایل کاربری" %}
+<section class="section-padding">
+  <div class="container" style="max-width:600px;">
+    <div class="form-card">
+      {% if messages %}{% for m in messages %}<div class="alert alert-success">{{ m }}</div>{% endfor %}{% endif %}
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="row g-3">
+          {% for field in form %}
+          <div class="col-md-6 {% if field.name == 'avatar' %}col-12{% endif %}">
+            <label class="form-label">{{ field.label }}</label>
+            {{ field }}
+            {% if field.errors %}<div class="text-danger small mt-1">{{ field.errors }}</div>{% endif %}
+          </div>
+          {% endfor %}
+        </div>
+        <button type="submit" class="btn btn-orange mt-4">ذخیره تغییرات</button>
+      </form>
+      <hr>
+      <div class="d-flex justify-content-between">
+        <a href="{% url 'accounts:password_change' %}" class="text-orange small">تغییر رمز عبور</a>
+        {% if request.user.is_staff_role %}<a href="{% url 'dashboard:home' %}" class="text-orange small">ورود به داشبورد مدیریت</a>{% endif %}
+        <a href="{% url 'shop:my_orders' %}" class="text-orange small">سفارشات من</a>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

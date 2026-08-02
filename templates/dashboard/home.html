@@ -1,0 +1,104 @@
+{% extends "dashboard/base_dashboard.html" %}
+{% block title %}داشبورد مدیریت{% endblock %}
+{% block dash_content %}
+<h4 class="mb-4">خوش آمدید، {{ request.user.get_full_name|default:request.user.username }} 👋</h4>
+
+<div class="row g-3 mb-4">
+  <div class="col-6 col-lg-3">
+    <div class="stat-card">
+      <div class="stat-icon"><i class="fa-solid fa-box"></i></div>
+      <div><h3>{{ products_count }}</h3><p>محصولات</p></div>
+    </div>
+  </div>
+  <div class="col-6 col-lg-3">
+    <div class="stat-card">
+      <div class="stat-icon"><i class="fa-solid fa-diagram-project"></i></div>
+      <div><h3>{{ projects_count }}</h3><p>پروژه‌ها</p></div>
+    </div>
+  </div>
+  <div class="col-6 col-lg-3">
+    <div class="stat-card">
+      <div class="stat-icon"><i class="fa-solid fa-screwdriver-wrench"></i></div>
+      <div><h3>{{ services_count }}</h3><p>خدمات</p></div>
+    </div>
+  </div>
+  <div class="col-6 col-lg-3">
+    <div class="stat-card">
+      <div class="stat-icon"><i class="fa-solid fa-newspaper"></i></div>
+      <div><h3>{{ posts_count }}</h3><p>مقالات</p></div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-6 col-lg-3">
+    <a href="{% url 'dashboard:message_list' %}" class="text-decoration-none">
+      <div class="stat-card"><div class="stat-icon"><i class="fa-solid fa-envelope"></i></div>
+      <div><h3>{{ unread_messages }}</h3><p>پیام خوانده‌نشده</p></div></div>
+    </a>
+  </div>
+  <div class="col-6 col-lg-3">
+    <a href="{% url 'dashboard:quote_list' %}" class="text-decoration-none">
+      <div class="stat-card"><div class="stat-icon"><i class="fa-solid fa-file-invoice-dollar"></i></div>
+      <div><h3>{{ unread_quotes }}</h3><p>استعلام قیمت جدید</p></div></div>
+    </a>
+  </div>
+  <div class="col-6 col-lg-3">
+    <a href="{% url 'dashboard:inquiry_list' %}" class="text-decoration-none">
+      <div class="stat-card"><div class="stat-icon"><i class="fa-solid fa-circle-question"></i></div>
+      <div><h3>{{ unread_inquiries }}</h3><p>استعلام محصول جدید</p></div></div>
+    </a>
+  </div>
+  <div class="col-6 col-lg-3">
+    <a href="{% url 'dashboard:order_list' %}" class="text-decoration-none">
+      <div class="stat-card"><div class="stat-icon"><i class="fa-solid fa-cart-shopping"></i></div>
+      <div><h3>{{ pending_orders }}</h3><p>سفارش در انتظار پرداخت</p></div></div>
+    </a>
+  </div>
+  <div class="col-6 col-lg-3">
+    <a href="{% url 'dashboard:application_list' %}" class="text-decoration-none">
+      <div class="stat-card"><div class="stat-icon"><i class="fa-solid fa-user-tie"></i></div>
+      <div><h3>{{ new_applications }}</h3><p>درخواست استخدام جدید</p></div></div>
+    </a>
+  </div>
+  <div class="col-6 col-lg-3">
+    <a href="{% url 'dashboard:order_list' %}" class="text-decoration-none">
+      <div class="stat-card"><div class="stat-icon"><i class="fa-solid fa-receipt"></i></div>
+      <div><h3>{{ total_orders }}</h3><p>کل سفارشات</p></div></div>
+    </a>
+  </div>
+</div>
+
+<div class="row g-3">
+  <div class="col-lg-6">
+    <div class="dash-table-card">
+      <h6 class="mb-3">آخرین پیام‌های تماس</h6>
+      <table class="table">
+        <thead><tr><th>نام</th><th>موضوع</th><th>تاریخ</th></tr></thead>
+        <tbody>
+          {% for m in recent_messages %}
+          <tr><td>{{ m.full_name }}</td><td>{{ m.subject|truncatechars:25 }}</td><td>{{ m.created_at|date:"Y/m/d" }}</td></tr>
+          {% empty %}
+          <tr><td colspan="3" class="text-center text-muted">پیامی وجود ندارد.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="col-lg-6">
+    <div class="dash-table-card">
+      <h6 class="mb-3">آخرین درخواست‌های استعلام قیمت</h6>
+      <table class="table">
+        <thead><tr><th>نام</th><th>نوع پروژه</th><th>تاریخ</th></tr></thead>
+        <tbody>
+          {% for q in recent_quotes %}
+          <tr><td>{{ q.full_name }}</td><td>{{ q.project_type|truncatechars:20 }}</td><td>{{ q.created_at|date:"Y/m/d" }}</td></tr>
+          {% empty %}
+          <tr><td colspan="3" class="text-center text-muted">درخواستی وجود ندارد.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

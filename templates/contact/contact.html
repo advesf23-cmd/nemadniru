@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}تماس با ما - {{ site_settings.site_name }}{% endblock %}
+{% block content %}
+{% include "partials/page_header.html" with page_title="تماس با ما" %}
+
+<section class="section-padding">
+  <div class="container">
+    <div class="row g-5">
+      <div class="col-lg-5" data-aos="fade-left">
+        <h4 class="mb-4">اطلاعات تماس</h4>
+        <div class="d-flex gap-3 mb-4">
+          <div class="icon-box flex-shrink-0"><i class="fa-solid fa-phone"></i></div>
+          <div><h6 class="mb-0">تلفن تماس</h6><p class="text-muted mb-0">{{ site_settings.phone|default:"+98 31 3387 1732" }}</p></div>
+        </div>
+        <div class="d-flex gap-3 mb-4">
+          <div class="icon-box flex-shrink-0"><i class="fa-solid fa-envelope"></i></div>
+          <div><h6 class="mb-0">ایمیل</h6><p class="text-muted mb-0">{{ site_settings.email|default:"SamanTajhizeSpadan@gmail.com" }}</p></div>
+        </div>
+        <div class="d-flex gap-3 mb-4">
+          <div class="icon-box flex-shrink-0"><i class="fa-solid fa-location-dot"></i></div>
+          <div><h6 class="mb-0">آدرس</h6><p class="text-muted mb-0">{{ site_settings.address|default:"اصفهان، خیابان امام خمینی، خیابان عطا الملک" }}</p></div>
+        </div>
+        <div class="d-flex gap-3">
+          <div class="icon-box flex-shrink-0"><i class="fa-solid fa-clock"></i></div>
+          <div><h6 class="mb-0">ساعات کاری</h6><p class="text-muted mb-0">{{ site_settings.working_hours|default:"شنبه تا چهارشنبه، ۸ الی ۱۷" }}</p></div>
+        </div>
+      </div>
+      <div class="col-lg-7" data-aos="fade-right">
+        <div class="form-card">
+          {% if messages %}
+            {% for message in messages %}<div class="alert alert-success">{{ message }}</div>{% endfor %}
+          {% endif %}
+          <form method="post">
+            {% csrf_token %}
+            <div class="row g-3">
+              {% for field in form %}
+              <div class="col-md-6 {% if field.name == 'message' %}col-12{% endif %}">
+                <label class="form-label">{{ field.label }}</label>
+                {{ field }}
+              </div>
+              {% endfor %}
+            </div>
+            <button type="submit" class="btn btn-orange mt-4">ارسال پیام</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% if site_settings.map_embed_url %}
+<section><iframe src="{{ site_settings.map_embed_url }}" width="100%" height="400" style="border:0;display:block;" loading="lazy"></iframe></section>
+{% endif %}
+{% endblock %}

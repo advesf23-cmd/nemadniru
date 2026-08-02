@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block title %}پیگیری سفارش - {{ site_settings.site_name }}{% endblock %}
+{% block content %}
+{% include "partials/page_header.html" with page_title="پیگیری سفارش" %}
+<section class="section-padding">
+  <div class="container" style="max-width:600px;">
+    <div class="form-card">
+      {% if messages %}
+        {% for m in messages %}
+        <div class="alert alert-{% if m.tags == 'error' %}danger{% else %}{{ m.tags|default:'info' }}{% endif %}">{{ m }}</div>
+        {% endfor %}
+      {% endif %}
+      <form method="post">
+        {% csrf_token %}
+        <div class="mb-3"><input type="text" name="order_number" class="form-control" placeholder="شماره سفارش (مثال: STE-XXXXXXXX)" required></div>
+        <div class="mb-3"><input type="text" name="phone" class="form-control" placeholder="شماره تماس ثبت‌شده در سفارش" required></div>
+        <button class="btn btn-orange w-100">پیگیری سفارش</button>
+      </form>
+    </div>
+
+    {% if order %}
+    <div class="form-card mt-4">
+      <h6 class="mb-3">سفارش {{ order.order_number }}</h6>
+      <p>وضعیت: <span class="badge bg-orange">{{ order.get_status_display }}</span></p>
+      <p>مبلغ نهایی: {{ order.total|intcomma }} تومان</p>
+      <p>تاریخ ثبت: {{ order.created_at|date:"Y/m/d H:i" }}</p>
+
+      <div class="d-flex gap-2 mb-2">
+        <a href="{% url 'shop:order_detail' order.order_number %}?phone={{ order.phone }}" class="btn btn-outline-navy flex-grow-1">
+          <i class="fa-solid fa-list-ul me-1"></i> جزئیات کامل سفارش
+        </a>
+        <a href="{% url 'shop:order_invoice' order.order_number %}?phone={{ order.phone }}" class="btn btn-outline-navy flex-grow-1" target="_blank">
+          <i class="fa-solid fa-file-invoice me-1"></i> دریافت فاکتور
+        </a>
+      </div>
+
+      {% if order.is_cancellable_by_customer %}
+      <form method="post" action="{% url 'shop:cancel_order' order.order_number %}"
+            onsubmit="return confirm('آیا از لغو این سفارش مطمئن هستید؟ این عملیات غیرقابل بازگشت است.');">
+        {% csrf_token %}
+        <input type="hidden" name="phone" value="{{ order.phone }}">
+        <button type="submit" class="btn btn-outline-danger w-100 mt-2">
+          <i class="fa-solid fa-ban me-1"></i> لغو سفارش
+        </button>
+      </form>
+      {% elif order.status == 'cancelled' %}
+      <p class="text-danger small mb-0"><i class="fa-solid fa-circle-xmark me-1"></i>این سفارش لغو شده است.</p>
+      {% else %}
+      <p class="text-muted small mb-0">این سفارش وارد مرحله پردازش شده و دیگر قابل لغو توسط مشتری نیست. برای لغو با پشتیبانی تماس بگیرید.</p>
+      {% endif %}
+    </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

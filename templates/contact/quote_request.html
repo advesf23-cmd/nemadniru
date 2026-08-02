@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}درخواست استعلام قیمت - {{ site_settings.site_name }}{% endblock %}
+{% block content %}
+{% include "partials/page_header.html" with page_title="درخواست استعلام قیمت" %}
+
+<section class="section-padding">
+  <div class="container" style="max-width:800px;">
+    <p class="text-center text-muted mb-4">برای دریافت پیشنهاد فنی و قیمت دقیق، فرم زیر را تکمیل کنید. کارشناسان ما در کوتاه‌ترین زمان با شما تماس خواهند گرفت.</p>
+    <div class="form-card" data-aos="fade-up">
+      {% if messages %}
+        {% for message in messages %}<div class="alert alert-success">{{ message }}</div>{% endfor %}
+      {% endif %}
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="row g-3">
+          {% for field in form %}
+          <div class="col-md-6 {% if field.name == 'description' or field.name == 'attachment' %}col-12{% endif %}">
+            <label class="form-label">{{ field.label }}</label>
+            {{ field }}
+          </div>
+          {% endfor %}
+        </div>
+        <button type="submit" class="btn btn-orange mt-4 w-100">ارسال درخواست استعلام قیمت</button>
+      </form>
+    </div>
+  </div>
+</section>
+{% endblock %}

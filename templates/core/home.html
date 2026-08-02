@@ -1,0 +1,314 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/triangle-hero.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<section class="hero hero--triangle">
+  {% if hero_bg_image and hero_bg_image.image %}
+  <img src="{{ hero_bg_image.image.url }}" alt="" class="hero-bg-image">
+  <div class="hero-bg-overlay"></div>
+  {% endif %}
+  <div class="container">
+    <div class="row align-items-center g-5">
+      <div class="col-lg-6 text-lg-start text-center order-2 order-lg-1">
+        <span class="eyebrow"><i class="fa-solid fa-industry me-1"></i> CORPORATE</span>
+        <h1 data-aos="fade-up">طراحی و ساخت تابلوهای برق صنعتی</h1>
+        <p class="lead" data-aos="fade-up" data-aos-delay="100">
+          راهکارهای مهندسی توزیع قدرت و اتوماسیون -- با تکیه بر بیش از ۲۰ سال تجربه در صنعت برق
+        </p>
+        <div class="hero-actions justify-content-lg-start" data-aos="fade-up" data-aos-delay="200">
+          <a href="{% url 'contact:quote_request' %}" class="btn btn-orange btn-lg">درخواست مشاوره رایگان</a>
+          <a href="{% url 'products:product_list' %}" class="btn btn-outline-navy btn-lg" style="background:#fff;">مشاهده محصولات</a>
+        </div>
+      </div>
+
+      <div class="col-lg-6 order-1 order-lg-2">
+        <div id="triangle-hero">
+          <div id="triangle-glow-halo"></div>
+          <div id="triangle-rotor-wrapper">
+            <div id="triangle-rotor">
+              <svg id="triangle-svg" viewBox="0 0 500 500">
+                <defs>
+                  <linearGradient id="edge-grad-top" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#F97316" stop-opacity="0.9" />
+                    <stop offset="100%" stop-color="#FDBA74" stop-opacity="0.9" />
+                  </linearGradient>
+                  <linearGradient id="edge-grad-left" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#38BDF8" stop-opacity="0.9" />
+                    <stop offset="100%" stop-color="#BAE6FD" stop-opacity="0.9" />
+                  </linearGradient>
+                  <linearGradient id="edge-grad-right" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#34D399" stop-opacity="0.9" />
+                    <stop offset="100%" stop-color="#A7F3D0" stop-opacity="0.9" />
+                  </linearGradient>
+                  <radialGradient id="core-grad" cx="50%" cy="45%" r="60%">
+                    <stop offset="0%" stop-color="white" stop-opacity="0.95" />
+                    <stop id="core-grad-mid" offset="45%" stop-color="#F97316" stop-opacity="0.55" />
+                    <stop offset="100%" stop-color="#F97316" stop-opacity="0" />
+                  </radialGradient>
+                  <filter id="edge-glow" x="-60%" y="-60%" width="220%" height="220%">
+                    <feGaussianBlur stdDeviation="6" result="blur" />
+                    <feMerge>
+                      <feMergeNode in="blur" />
+                      <feMergeNode in="SourceGraphic" />
+                    </feMerge>
+                  </filter>
+                </defs>
+
+                <g id="triangle-particles"></g>
+
+                <line data-edge="top" x1="90" y1="90" x2="410" y2="90"
+                      stroke="rgba(255,255,255,0.22)" stroke-width="1.4" stroke-linecap="round" />
+                <line data-edge="left" x1="90" y1="90" x2="250" y2="410"
+                      stroke="rgba(255,255,255,0.22)" stroke-width="1.4" stroke-linecap="round" />
+                <line data-edge="right" x1="410" y1="90" x2="250" y2="410"
+                      stroke="rgba(255,255,255,0.22)" stroke-width="1.4" stroke-linecap="round" />
+
+                <g id="triangle-traveler"></g>
+                <g id="triangle-beam"></g>
+
+                <circle id="triangle-core" class="triangle-core" cx="250" cy="210" r="34" fill="url(#core-grad)" />
+                <text x="250" y="216" text-anchor="middle" font-size="15" font-weight="600"
+                      fill="rgba(255,255,255,0.85)" letter-spacing="0.06em">STE</text>
+              </svg>
+            </div>
+          </div>
+          <div id="triangle-cards"></div>
+        </div>
+        <p class="triangle-hint">موس را نزدیک هر ضلع مثلث ببرید</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="stats-section py-5">
+  <div class="container row text-center g-4">
+    {% for stat in statistics %}
+    <div class="col-6 col-md-3 stat-item" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:'50' }}">
+      <h2>{{ stat.value }}</h2>
+      <p>{{ stat.title }}</p>
+    </div>
+    {% empty %}
+    <div class="col-6 col-md-3 stat-item"><h2>۳۰۰+</h2><p>پروژه انجام شده</p></div>
+    <div class="col-6 col-md-3 stat-item"><h2>۱۰۰٪</h2><p>تضمین کیفیت</p></div>
+    <div class="col-6 col-md-3 stat-item"><h2>۶</h2><p>حوزه صنعتی</p></div>
+    <div class="col-6 col-md-3 stat-item"><h2>۲۰+</h2><p>سال تجربه</p></div>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="section-padding">
+  <div class="container">
+    <div class="section-title" data-aos="fade-up">
+      <span class="eyebrow">OUR SERVICES</span>
+      <h2>خدمات مهندسی کامل</h2>
+      <p>از مشاوره و طراحی تا ساخت، تأمین تجهیزات و پشتیبانی پس از فروش -- شریک قابل اعتماد شما در پروژه‌های برق و اتوماسیون</p>
+    </div>
+    <div class="row g-4">
+      {% for service in services %}
+      <div class="col-md-4" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:'50' }}">
+        <div class="card service-card">
+          <div class="icon-box"><i class="fa-solid {{ service.icon|default:'fa-bolt' }}"></i></div>
+          <h5>{{ service.title }}</h5>
+          <p class="text-muted mb-0">{{ service.short_description }}</p>
+        </div>
+      </div>
+      {% empty %}
+      {% for s in "123456"|make_list %}
+      <div class="col-md-4">
+        <div class="card service-card">
+          <div class="icon-box"><i class="fa-solid fa-bolt"></i></div>
+          <h5>خدمات مهندسی</h5>
+          <p class="text-muted mb-0">در حال بارگذاری اطلاعات از پنل مدیریت...</p>
+        </div>
+      </div>
+      {% endfor %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="section-padding bg-light-gray">
+  <div class="container">
+    <div class="section-title" data-aos="fade-up">
+      <span class="eyebrow">FEATURED PRODUCTS</span>
+      <h2>محصولات ویژه</h2>
+    </div>
+    <div class="row g-4">
+      {% for product in featured_products %}
+      <div class="col-6 col-md-3" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:'50' }}">
+        <a href="{{ product.get_absolute_url }}" class="text-decoration-none text-dark">
+          <div class="card product-card h-100">
+            {% if product.cover_image %}<img src="{{ product.cover_image.url }}" alt="{{ product.name }}">{% endif %}
+            <div class="p-3">
+              <h6 class="mb-0">{{ product.name }}</h6>
+            </div>
+          </div>
+        </a>
+      </div>
+      {% empty %}
+      <div class="col-12 text-center text-muted">محصولات ویژه به‌زودی از پنل مدیریت اضافه می‌شوند.</div>
+      {% endfor %}
+    </div>
+    <div class="text-center mt-4">
+      <a href="{% url 'products:product_list' %}" class="btn btn-outline-navy">مشاهده همه محصولات</a>
+    </div>
+  </div>
+</section>
+
+<section class="section-padding">
+  <div class="container">
+    <div class="row align-items-center g-5">
+      <div class="col-lg-6" data-aos="fade-left">
+        <span class="eyebrow">WHY CHOOSE US</span>
+        <h2>چرا سامان تجهیز اسپادان؟</h2>
+        <ul class="list-unstyled mt-4">
+          <li class="d-flex gap-3 mb-4">
+            <div class="icon-box flex-shrink-0"><i class="fa-solid fa-people-group"></i></div>
+            <div><h6 class="mb-1">تیم مهندسی مجرب</h6><p class="text-muted mb-0">تمرکز بر کیفیت، ایمنی و رضایت مشتری</p></div>
+          </li>
+          <li class="d-flex gap-3 mb-4">
+            <div class="icon-box flex-shrink-0"><i class="fa-solid fa-truck-fast"></i></div>
+            <div><h6 class="mb-1">تحویل سریع و به‌موقع</h6><p class="text-muted mb-0">تحویل به‌موقع پروژه‌ها و تجهیزات</p></div>
+          </li>
+          <li class="d-flex gap-3 mb-4">
+            <div class="icon-box flex-shrink-0"><i class="fa-solid fa-headset"></i></div>
+            <div><h6 class="mb-1">پشتیبانی فنی کامل</h6><p class="text-muted mb-0">از طراحی تا اجرا و خدمات پس از فروش</p></div>
+          </li>
+          <li class="d-flex gap-3">
+            <div class="icon-box flex-shrink-0"><i class="fa-solid fa-shield-halved"></i></div>
+            <div><h6 class="mb-1">فناوری روز دنیا</h6><p class="text-muted mb-0">استفاده از تجهیزات و فناوری‌های روز</p></div>
+          </li>
+        </ul>
+      </div>
+      <div class="col-lg-6" data-aos="fade-right">
+        <div class="bg-navy rounded-4 p-5 text-center">
+          <i class="fa-solid fa-industry fa-4x text-orange mb-3"></i>
+          <h3 class="text-white">۲۰+ سال تجربه تخصصی در صنعت برق</h3>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section-padding bg-light-gray">
+  <div class="container">
+    <div class="section-title" data-aos="fade-up">
+      <span class="eyebrow">CERTIFICATES</span>
+      <h2>مجوزها و تأییدیه‌ها</h2>
+    </div>
+    <div class="row g-4">
+      {% for cert in certificates %}
+      <div class="col-6 col-md-3" data-aos="zoom-in" data-aos-delay="{{ forloop.counter0|add:'30' }}">
+        <div class="cert-item">
+          {% if cert.image %}<img src="{{ cert.image.url }}" alt="{{ cert.title }}" class="mb-2" style="max-height:60px;">{% else %}<i class="fa-solid fa-certificate fa-2x text-orange mb-2"></i>{% endif %}
+          <p class="mb-0 small">{{ cert.title }}</p>
+        </div>
+      </div>
+      {% empty %}
+      <div class="col-12 text-center text-muted">گواهینامه‌ها از پنل مدیریت اضافه می‌شوند.</div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="section-padding">
+  <div class="container">
+    <div class="section-title" data-aos="fade-up">
+      <span class="eyebrow">PROJECT PORTFOLIO</span>
+      <h2>آخرین پروژه‌ها</h2>
+    </div>
+    <div class="row g-4">
+      {% for project in latest_projects %}
+      <div class="col-md-4" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:'50' }}">
+        <a href="{{ project.get_absolute_url }}" class="d-block">
+          <div class="project-card" style="background: linear-gradient(135deg, var(--color-navy-light), var(--color-navy)); {% if project.cover_image %}background-image:url('{{ project.cover_image.url }}');background-size:cover;background-position:center;{% endif %}">
+            <div class="overlay">
+              <span class="small text-uppercase text-orange">{{ project.category.name }}</span>
+              <h5 class="mb-0">{{ project.title }}</h5>
+            </div>
+          </div>
+        </a>
+      </div>
+      {% empty %}
+      <div class="col-12 text-center text-muted">پروژه‌ها از پنل مدیریت اضافه می‌شوند.</div>
+      {% endfor %}
+    </div>
+    <div class="text-center mt-4">
+      <a href="{% url 'projects:project_list' %}" class="btn btn-outline-navy">مشاهده همه پروژه‌ها</a>
+    </div>
+  </div>
+</section>
+
+{% if testimonials %}
+<section class="section-padding bg-light-gray">
+  <div class="container">
+    <div class="section-title" data-aos="fade-up">
+      <span class="eyebrow">TESTIMONIALS</span>
+      <h2>نظرات مشتریان</h2>
+    </div>
+    <div class="row g-4">
+      {% for t in testimonials %}
+      <div class="col-md-4" data-aos="fade-up">
+        <div class="card testimonial-card">
+          {% if t.photo %}<img src="{{ t.photo.url }}" alt="{{ t.client_name }}">{% endif %}
+          <div class="rating">{% for i in "12345" %}<i class="fa-solid fa-star"></i>{% endfor %}</div>
+          <p>«{{ t.text }}»</p>
+          <h6 class="mb-0">{{ t.client_name }}</h6>
+          <small class="text-muted">{{ t.company_name }}</small>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<section class="section-padding">
+  <div class="container">
+    <div class="section-title" data-aos="fade-up">
+      <span class="eyebrow">FAQ</span>
+      <h2>سوالات متداول</h2>
+    </div>
+    <div class="accordion mx-auto" style="max-width:800px;" id="faqAccordion">
+      {% for faq in faqs %}
+      <div class="accordion-item mb-2 rounded-3 overflow-hidden">
+        <h2 class="accordion-header">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq{{ forloop.counter }}">
+            {{ faq.question }}
+          </button>
+        </h2>
+        <div id="faq{{ forloop.counter }}" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+          <div class="accordion-body">{{ faq.answer }}</div>
+        </div>
+      </div>
+      {% empty %}
+      <p class="text-center text-muted">سوالات متداول از پنل مدیریت اضافه می‌شوند.</p>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="section-padding bg-navy text-center">
+  <div class="container" data-aos="zoom-in">
+    <h2 class="text-white mb-3">همراه شما در اجرای پروژه‌های آینده</h2>
+    <p class="text-white-50 mb-4">برای دریافت مشاوره تخصصی، پیشنهاد فنی و استعلام قیمت، با تیم مهندسی ما در ارتباط باشید</p>
+    <a href="{% url 'contact:quote_request' %}" class="btn btn-orange btn-lg">درخواست استعلام قیمت</a>
+  </div>
+</section>
+
+{% if site_settings.map_embed_url %}
+<section>
+  <iframe src="{{ site_settings.map_embed_url }}" width="100%" height="400" style="border:0;display:block;" loading="lazy"></iframe>
+</section>
+{% endif %}
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/triangle-hero.js' %}"></script>
+{% endblock %}

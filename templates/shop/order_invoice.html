@@ -1,0 +1,74 @@
+{% load humanize static %}
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>فاکتور {{ order.order_number }}</title>
+  <style>
+    body { font-family: Tahoma, sans-serif; color: #1E293B; padding: 40px; max-width: 800px; margin: 0 auto; }
+    .invoice-header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 3px solid #0B2447; padding-bottom: 20px; margin-bottom: 20px; }
+    .invoice-header h1 { color: #0B2447; font-size: 20px; margin: 0; }
+    .invoice-meta { text-align: left; font-size: 13px; color: #64748B; }
+    .section-title { font-weight: bold; color: #0B2447; margin: 20px 0 8px; font-size: 14px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 8px; }
+    th, td { border: 1px solid #E2E8F0; padding: 8px 10px; font-size: 13px; text-align: right; }
+    th { background: #F4F6F8; }
+    .totals { margin-top: 15px; width: 300px; margin-right: auto; }
+    .totals div { display: flex; justify-content: space-between; padding: 4px 0; font-size: 13px; }
+    .totals .final { font-weight: bold; font-size: 15px; border-top: 2px solid #0B2447; padding-top: 8px; margin-top: 4px; }
+    .print-btn { margin-bottom: 20px; }
+    .print-btn button { background: #F97316; color: #fff; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-size: 14px; }
+    .footer-note { margin-top: 30px; font-size: 12px; color: #94A3B8; text-align: center; }
+    @media print { .print-btn { display: none; } body { padding: 0; } }
+  </style>
+</head>
+<body>
+  <div class="print-btn">
+    <button onclick="window.print()">🖨️ چاپ / ذخیره به‌عنوان PDF</button>
+  </div>
+
+  <div class="invoice-header">
+    <div>
+      <h1>{{ site_settings.site_name|default:"سامان تجهیز اسپادان" }}</h1>
+      <p style="font-size:12px;color:#64748B;margin-top:4px;">{{ site_settings.address }}</p>
+      <p style="font-size:12px;color:#64748B;">{{ site_settings.phone }} -- {{ site_settings.email }}</p>
+    </div>
+    <div class="invoice-meta">
+      <p><strong>شماره فاکتور:</strong> {{ order.order_number }}</p>
+      <p><strong>تاریخ:</strong> {{ order.created_at|date:"Y/m/d H:i" }}</p>
+      <p><strong>وضعیت پرداخت:</strong> {% if order.is_paid %}پرداخت‌شده{% else %}پرداخت‌نشده{% endif %}</p>
+    </div>
+  </div>
+
+  <div class="section-title">اطلاعات خریدار</div>
+  <p style="font-size:13px;margin:2px 0;">نام: {{ order.full_name }}</p>
+  <p style="font-size:13px;margin:2px 0;">تلفن: {{ order.phone }}</p>
+  <p style="font-size:13px;margin:2px 0;">آدرس: {{ order.shipping_address }}</p>
+
+  <div class="section-title">اقلام سفارش</div>
+  <table>
+    <thead>
+      <tr><th>#</th><th>شرح کالا</th><th>قیمت واحد (تومان)</th><th>تعداد</th><th>جمع (تومان)</th></tr>
+    </thead>
+    <tbody>
+      {% for item in order.items.all %}
+      <tr>
+        <td>{{ forloop.counter }}</td>
+        <td>{{ item.product_name }}</td>
+        <td>{{ item.unit_price|intcomma }}</td>
+        <td>{{ item.quantity }}</td>
+        <td>{{ item.line_total|intcomma }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <div class="totals">
+    <div><span>جمع کل:</span><span>{{ order.subtotal|intcomma }} تومان</span></div>
+    {% if order.discount_amount %}<div><span>تخفیف:</span><span>-{{ order.discount_amount|intcomma }} تومان</span></div>{% endif %}
+    <div class="final"><span>مبلغ قابل‌پرداخت:</span><span>{{ order.total|intcomma }} تومان</span></div>
+  </div>
+
+  <p class="footer-note">این فاکتور به‌صورت الکترونیکی صادر شده و فاقد مهر و امضا معتبر است.</p>
+</body>
+</html>

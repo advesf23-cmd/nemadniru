@@ -1,0 +1,20 @@
+<div class="row g-4" id="project-grid">
+  {% for project in projects %}
+  <div class="col-md-4">
+    <a href="{{ project.get_absolute_url }}">
+      <div class="project-card" style="background: linear-gradient(135deg, var(--color-navy-light), var(--color-navy)); {% if project.cover_image %}background-image:url('{{ project.cover_image.url }}');background-size:cover;background-position:center;{% endif %}">
+        <div class="overlay">
+          <span class="small text-uppercase text-orange">{{ project.category.name }}</span>
+          <h5 class="mb-1">{{ project.title }}</h5>
+          <small>{{ project.location }}{% if project.execution_year %} &middot; {{ project.execution_year }}{% endif %}</small>
+        </div>
+      </div>
+    </a>
+  </div>
+  {% empty %}
+  <div class="col-12 text-center text-muted py-5">
+    <i class="fa-solid fa-diagram-project fa-2x mb-2 d-block"></i>
+    پروژه‌ای با این مشخصات یافت نشد.
+  </div>
+  {% endfor %}
+</div>

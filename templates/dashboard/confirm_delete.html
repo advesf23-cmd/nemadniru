@@ -1,0 +1,13 @@
+{% extends "dashboard/base_dashboard.html" %}
+{% block title %}حذف مورد{% endblock %}
+{% block dash_content %}
+<div class="dash-table-card" style="max-width:500px;">
+  <h5 class="mb-3">آیا از حذف «{{ object }}» مطمئن هستید؟</h5>
+  <p class="text-muted">این عملیات غیرقابل بازگشت است.</p>
+  <form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">بله، حذف شود</button>
+    <a href="javascript:history.back()" class="btn btn-outline-navy">انصراف</a>
+  </form>
+</div>
+{% endblock %}

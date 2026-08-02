@@ -1,0 +1,272 @@
+/* =========================================================
+   سامان تجهیز اسپادان -- استایل اصلی سایت
+   پالت: سرمه‌ای تیره (Navy) / سفید / خاکستری روشن / نارنجی (Accent)
+   ========================================================= */
+
+:root {
+  --color-navy: #0B2447;
+  --color-navy-light: #173A6B;
+  --color-navy-lighter: #1F4E8C;
+  --color-orange: #F97316;
+  --color-orange-dark: #DB5F0B;
+  --color-light-gray: #F4F6F8;
+  --color-gray: #64748B;
+  --color-white: #FFFFFF;
+  --radius-lg: 1.25rem;
+  --radius-md: 0.85rem;
+  --shadow-soft: 0 10px 30px rgba(11, 36, 71, 0.08);
+  --shadow-hover: 0 20px 40px rgba(11, 36, 71, 0.14);
+  --transition: all 0.3s ease;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  font-family: "Vazirmatn", "Tahoma", sans-serif;
+  color: #1E293B;
+  background: var(--color-white);
+  line-height: 1.85;
+}
+
+h1, h2, h3, h4, h5, h6 { font-weight: 700; color: var(--color-navy); }
+a { transition: var(--transition); }
+.section-padding { padding: 90px 0; }
+.section-title { text-align: center; margin-bottom: 3rem; }
+.section-title .eyebrow {
+  display: inline-block;
+  color: var(--color-orange);
+  font-weight: 600;
+  letter-spacing: 2px;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+}
+.section-title h2 { font-size: 2.2rem; margin: 0; }
+.section-title p { color: var(--color-gray); max-width: 640px; margin: 1rem auto 0; }
+.bg-light-gray { background: var(--color-light-gray); }
+.bg-navy { background: var(--color-navy); color: #fff; }
+
+/* ---------------- Buttons ---------------- */
+.btn-orange {
+  background: var(--color-orange);
+  color: #fff !important;
+  border: none;
+  padding: 0.75rem 2rem;
+  border-radius: 50px;
+  font-weight: 600;
+  box-shadow: 0 8px 20px rgba(249, 115, 22, 0.35);
+}
+.btn-orange:hover { background: var(--color-orange-dark); transform: translateY(-2px); }
+.btn-outline-navy {
+  border: 2px solid var(--color-navy);
+  color: var(--color-navy) !important;
+  padding: 0.7rem 1.9rem;
+  border-radius: 50px;
+  font-weight: 600;
+  background: transparent;
+}
+.btn-outline-navy:hover { background: var(--color-navy); color: #fff !important; }
+
+/* ---------------- Header / Navbar ---------------- */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 2px 20px rgba(11, 36, 71, 0.06);
+}
+.site-header .navbar-brand { font-weight: 700; color: var(--color-navy); font-size: 1.25rem; }
+.site-header .nav-link { color: var(--color-navy); font-weight: 500; margin: 0 0.4rem; }
+.site-header .nav-link:hover { color: var(--color-orange); }
+
+/* ---------------- Hero ---------------- */
+.hero {
+  position: relative;
+  background: radial-gradient(circle at 20% 20%, var(--color-navy-lighter), var(--color-navy) 60%);
+  color: #fff;
+  padding: 150px 0 130px;
+  overflow: hidden;
+  text-align: center;
+}
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(255,255,255,.06) 1px, transparent 1px);
+  background-size: 26px 26px;
+  opacity: .5;
+}
+.hero .eyebrow {
+  display: inline-block;
+  border: 1px solid rgba(255,255,255,.35);
+  padding: 0.3rem 1rem;
+  border-radius: 50px;
+  font-size: 0.8rem;
+  letter-spacing: 2px;
+  margin-bottom: 1.25rem;
+  position: relative;
+}
+.hero h1 { color: #fff; font-size: 3rem; margin-bottom: 1rem; position: relative; }
+.hero .lead { color: #CBD5E1; font-size: 1.2rem; margin-bottom: 2rem; position: relative; }
+.hero .hero-actions { position: relative; display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+
+/* ---------------- Stats ---------------- */
+.stats-section { background: var(--color-navy); color: #fff; }
+.stats-section .stat-item h2 { font-size: 2.8rem; font-weight: 800; color: #fff; }
+.stats-section .stat-item h2 span { color: var(--color-orange); }
+.stats-section .stat-item p { color: #CBD5E1; margin: 0; }
+
+/* ---------------- Cards ---------------- */
+.card {
+  border: none;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-soft);
+  transition: var(--transition);
+  overflow: hidden;
+}
+.card:hover { transform: translateY(-6px); box-shadow: var(--shadow-hover); }
+.icon-box {
+  width: 60px; height: 60px;
+  border-radius: 16px;
+  background: rgba(249, 115, 22, 0.12);
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 1rem;
+}
+.icon-box i { font-size: 1.5rem; color: var(--color-orange); }
+
+.service-card, .value-card { padding: 2rem; height: 100%; }
+.product-card img, .project-card img { height: 220px; object-fit: cover; width: 100%; }
+.project-card { color: #fff; border-radius: var(--radius-lg); overflow: hidden; position: relative; min-height: 220px; }
+.project-card .overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(180deg, rgba(11,36,71,.1), rgba(11,36,71,.85));
+  display: flex; flex-direction: column; justify-content: flex-end; padding: 1.5rem;
+}
+
+/* ---------------- Glass effect ---------------- */
+.glass-panel {
+  background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.15);
+  backdrop-filter: blur(12px);
+  border-radius: var(--radius-lg);
+}
+
+/* ---------------- Certificates / Partners ---------------- */
+.cert-item, .partner-item {
+  text-align: center;
+  padding: 1.5rem;
+  border-radius: var(--radius-md);
+  background: var(--color-light-gray);
+  height: 100%;
+}
+.partner-item { display: flex; flex-direction: column; align-items: center; justify-content: center; }
+
+/* ---------------- FAQ ---------------- */
+.accordion-button:not(.collapsed) { background: rgba(249,115,22,.08); color: var(--color-orange); }
+.accordion-button:focus { box-shadow: none; }
+
+/* ---------------- Testimonials ---------------- */
+.testimonial-card { padding: 2rem; text-align: center; }
+.testimonial-card img { width: 70px; height: 70px; border-radius: 50%; object-fit: cover; margin: 0 auto 1rem; }
+.testimonial-card .rating { color: var(--color-orange); margin-bottom: .5rem; }
+
+/* ---------------- Footer ---------------- */
+.site-footer { background: var(--color-navy); color: #CBD5E1; }
+.site-footer h5, .site-footer h6 { color: #fff; }
+.site-footer a { color: #CBD5E1; text-decoration: none; }
+.site-footer a:hover { color: var(--color-orange); }
+.site-footer .social-icons a {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 38px; height: 38px; border-radius: 50%;
+  background: rgba(255,255,255,.08); margin-left: 0.5rem;
+}
+.site-footer .social-icons a:hover { background: var(--color-orange); }
+.site-footer hr { border-color: rgba(255,255,255,.1); }
+
+/* ---------------- Page header (inner pages) ---------------- */
+.page-header {
+  background: linear-gradient(135deg, var(--color-navy), var(--color-navy-light));
+  color: #fff;
+  padding: 90px 0 60px;
+  text-align: center;
+}
+.page-header h1 { color: #fff; margin-bottom: .5rem; }
+.breadcrumb-nav a { color: #CBD5E1; text-decoration: none; }
+.breadcrumb-nav .fa-angle-left { margin: 0 .4rem; font-size: .75rem; }
+
+/* ---------------- Forms ---------------- */
+.form-control, .form-select {
+  border-radius: 0.6rem;
+  padding: 0.7rem 1rem;
+  border: 1px solid #E2E8F0;
+}
+.form-control:focus, .form-select:focus {
+  border-color: var(--color-orange);
+  box-shadow: 0 0 0 0.2rem rgba(249,115,22,.15);
+}
+.form-card {
+  background: #fff;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-soft);
+  padding: 2.5rem;
+}
+
+/* ---------------- Filters (products/projects/blog) ---------------- */
+.filter-bar { background: var(--color-light-gray); border-radius: var(--radius-md); padding: 1.25rem; margin-bottom: 2rem; }
+.filter-bar .btn { border-radius: 50px; }
+
+/* ---------------- 404 ---------------- */
+.error-page { text-align: center; padding: 140px 0; }
+.error-page .error-code { font-size: 8rem; font-weight: 800; color: var(--color-orange); line-height: 1; }
+
+/* ---------------- Responsive ---------------- */
+@media (max-width: 768px) {
+  .hero { padding: 110px 0 80px; }
+  .hero h1 { font-size: 2.1rem; }
+  .section-padding { padding: 60px 0; }
+  .page-header { padding: 70px 0 40px; }
+}
+
+/* badges */
+.badge.bg-orange { background: var(--color-orange) !important; }
+
+/* Comments */
+.comment-card { background: #fff; border-radius: 1rem; padding: 1.25rem; box-shadow: 0 4px 14px rgba(11,36,71,.06); }
+
+/* Stock status (product detail) */
+.stock-status { font-size: 0.9rem; font-weight: 600; display: flex; align-items: center; gap: 0.3rem; }
+.stock-status--in { color: #16A34A; }
+.stock-status--out { color: #DC2626; }
+.stock-status-count { color: var(--color-gray); font-weight: 400; font-size: 0.85rem; }
+.stock-status-low { color: var(--color-orange); font-weight: 400; font-size: 0.85rem; }
+
+/* Hero background image (managed via Gallery -> "use as hero background") */
+.hero-bg-image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.22;
+  z-index: 0;
+  pointer-events: none;
+}
+/* لایه‌ی تیره روی عکس تا خوانایی متن و کنتراست با مثلث حفظ شود */
+.hero-bg-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(11,36,71,.55), rgba(11,36,71,.85));
+  z-index: 0;
+  pointer-events: none;
+}
+/* اطمینان از اینکه محتوای اصلی هیرو بالای عکس پس‌زمینه قرار می‌گیرد */
+.hero .container { position: relative; z-index: 1; }
+
+/* Star rating input (product review form) */
+.rating-input { display: inline-flex; flex-direction: row-reverse; gap: 4px; font-size: 1.5rem; }
+.rating-input input { display: none; }
+.rating-input label { color: #E2E8F0; cursor: pointer; transition: color .15s; }
+.rating-input input:checked ~ label,
+.rating-input label:hover,
+.rating-input label:hover ~ label { color: var(--color-orange); }

@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+{% block title %}پروژه‌ها - {{ site_settings.site_name }}{% endblock %}
+{% block content %}
+{% include "partials/page_header.html" with page_title="نمونه پروژه‌ها" %}
+
+<section class="section-padding">
+  <div class="container">
+    <div class="row g-4">
+
+      <div class="col-lg-3">
+        <div class="form-card mb-3">
+          <label class="form-label">جستجوی پروژه</label>
+          <input type="text" id="search-input" class="form-control" placeholder="عنوان، کارفرما، محل اجرا..." value="{{ request.GET.q }}">
+        </div>
+
+        <div class="form-card mb-3">
+          <label class="form-label">دسته‌بندی صنعت</label>
+          <ul class="list-unstyled d-flex flex-column gap-1" id="category-filter">
+            <li><a href="#" data-category="" class="filter-link d-block py-1 {% if not request.GET.category %}text-orange fw-bold{% else %}text-dark{% endif %}">همه صنایع</a></li>
+            {% for cat in categories %}
+            <li><a href="#" data-category="{{ cat.slug }}" class="filter-link d-block py-1 {% if request.GET.category == cat.slug %}text-orange fw-bold{% else %}text-dark{% endif %}">{{ cat.name }}</a></li>
+            {% endfor %}
+          </ul>
+        </div>
+
+        {% if years %}
+        <div class="form-card">
+          <label class="form-label">سال اجرا</label>
+          <select id="year-filter" class="form-select">
+            <option value="">همه سال‌ها</option>
+            {% for year in years %}
+            <option value="{{ year }}" {% if request.GET.year == year|stringformat:'s' %}selected{% endif %}>{{ year }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        {% endif %}
+      </div>
+
+      <div class="col-lg-9">
+        <div class="filter-bar d-flex justify-content-between align-items-center flex-wrap gap-2">
+          <span id="result-count" class="text-muted small">{{ paginator.count }} پروژه یافت شد</span>
+          <select id="sort-select" class="form-select" style="width:auto;">
+            <option value="newest" {% if current_sort == "newest" %}selected{% endif %}>جدیدترین</option>
+            <option value="oldest" {% if current_sort == "oldest" %}selected{% endif %}>قدیمی‌ترین</option>
+            <option value="name" {% if current_sort == "name" %}selected{% endif %}>نام پروژه</option>
+          </select>
+        </div>
+
+        <div id="project-grid-wrapper">{% include "projects/_project_grid.html" %}</div>
+        <div id="pagination-wrapper">{% include "projects/_pagination.html" %}</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<script>
+(function () {
+  const grid = document.getElementById('project-grid-wrapper');
+  const pagination = document.getElementById('pagination-wrapper');
+  const resultCount = document.getElementById('result-count');
+  const searchInput = document.getElementById('search-input');
+  const sortSelect = document.getElementById('sort-select');
+  const yearFilter = document.getElementById('year-filter');
+  const categoryLinks = document.querySelectorAll('.filter-link');
+  const baseUrl = "{% url 'projects:project_list' %}";
+
+  let currentState = {
+    q: searchInput.value || "",
+    category: "{{ request.GET.category|default:'' }}",
+    year: "{{ request.GET.year|default:'' }}",
+    sort: sortSelect.value,
+    page: 1,
+  };
+
+  function buildQuery(state) {
+    const params = new URLSearchParams();
+    Object.entries(state).forEach(([k, v]) => { if (v) params.set(k, v); });
+    return params.toString();
+  }
+
+  function loadProjects() {
+    const query = buildQuery(currentState);
+    fetch(`${baseUrl}?${query}`, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+      .then((res) => res.json())
+      .then((data) => {
+        grid.innerHTML = data.html;
+        pagination.innerHTML = data.pagination;
+        resultCount.textContent = `${data.count} پروژه یافت شد`;
+        bindPaginationLinks();
+        window.history.pushState({}, "", `${baseUrl}?${query}`);
+      });
+  }
+
+  function bindPaginationLinks() {
+    pagination.querySelectorAll('[data-page]').forEach((link) => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        currentState.page = link.dataset.page;
+        loadProjects();
+        window.scrollTo({ top: grid.offsetTop - 100, behavior: 'smooth' });
+      });
+    });
+  }
+  bindPaginationLinks();
+
+  let searchTimer;
+  searchInput.addEventListener('input', () => {
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(() => {
+      currentState.q = searchInput.value.trim();
+      currentState.page = 1;
+      loadProjects();
+    }, 400);
+  });
+
+  categoryLinks.forEach((link) => {
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      categoryLinks.forEach((l) => l.classList.remove('text-orange', 'fw-bold'));
+      link.classList.add('text-orange', 'fw-bold');
+      currentState.category = link.dataset.category;
+      currentState.page = 1;
+      loadProjects();
+    });
+  });
+
+  if (yearFilter) {
+    yearFilter.addEventListener('change', () => {
+      currentState.year = yearFilter.value;
+      currentState.page = 1;
+      loadProjects();
+    });
+  }
+
+  sortSelect.addEventListener('change', () => {
+    currentState.sort = sortSelect.value;
+    currentState.page = 1;
+    loadProjects();
+  });
+})();
+</script>
+{% endblock %}

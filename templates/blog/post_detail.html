@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+{% block title %}{{ post.meta_title|default:post.title }} - {{ site_settings.site_name }}{% endblock %}
+{% block meta_description %}{{ post.meta_description|default:post.summary }}{% endblock %}
+{% block og_type %}article{% endblock %}
+{% block og_title %}{{ post.title }}{% endblock %}
+{% block og_description %}{{ post.summary }}{% endblock %}
+{% block og_image %}{% if post.cover_image %}<meta property="og:image" content="https://{{ request.get_host }}{{ post.cover_image.url }}">{% endif %}{% endblock %}
+{% block extra_schema %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "{{ post.title|escapejs }}",
+  "description": "{{ post.summary|escapejs }}",
+  {% if post.cover_image %}"image": "https://{{ request.get_host }}{{ post.cover_image.url }}",{% endif %}
+  "datePublished": "{{ post.published_at|date:'c' }}",
+  "dateModified": "{{ post.updated_at|date:'c' }}",
+  "author": {"@type": "Person", "name": "{{ post.author|default:site_settings.site_name|escapejs }}"},
+  "publisher": {"@type": "Organization", "name": "{{ site_settings.site_name|escapejs }}"}
+}
+</script>
+{% endblock %}
+{% block content %}
+{% include "partials/page_header.html" with page_title=post.title %}
+
+<section class="section-padding">
+  <div class="container">
+    <div class="row g-5">
+      <div class="col-lg-8">
+        {% if post.cover_image %}<img src="{{ post.cover_image.url }}" class="rounded-4 w-100 mb-4" style="max-height:420px;object-fit:cover;">{% endif %}
+        <div class="d-flex gap-3 text-muted small mb-3">
+          <span><i class="fa-solid fa-folder me-1"></i>{{ post.category.name }}</span>
+          <span><i class="fa-solid fa-eye me-1"></i>{{ post.views_count }} بازدید</span>
+          {% if post.published_at %}<span><i class="fa-solid fa-calendar me-1"></i>{{ post.published_at|date:"Y/m/d" }}</span>{% endif %}
+        </div>
+        <div class="content">{{ post.content|linebreaks }}</div>
+        {% if post.tags.all %}
+        <div class="d-flex flex-wrap gap-2 mt-4">
+          {% for tag in post.tags.all %}<span class="btn btn-sm btn-outline-navy">{{ tag.name }}</span>{% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- بخش نظرات -->
+        <div id="comments" class="mt-5">
+          <h5 class="mb-4">نظرات ({{ comments.count }})</h5>
+
+          {% if messages %}
+            {% for message in messages %}<div class="alert alert-{% if message.tags == 'error' %}danger{% else %}success{% endif %}">{{ message }}</div>{% endfor %}
+          {% endif %}
+
+          {% for comment in comments %}
+          <div class="comment-card mb-3">
+            <div class="d-flex justify-content-between">
+              <strong>{{ comment.full_name }}</strong>
+              <small class="text-muted">{{ comment.created_at|date:"Y/m/d H:i" }}</small>
+            </div>
+            <p class="mb-2 mt-2">{{ comment.text }}</p>
+            <a href="#comment-form" class="small text-orange reply-trigger" data-parent="{{ comment.pk }}" data-name="{{ comment.full_name }}">پاسخ</a>
+
+            {% for reply in comment.replies.all %}
+              {% if reply.is_approved %}
+              <div class="border-start border-3 ps-3 mt-3" style="border-color: var(--color-orange) !important;">
+                <div class="d-flex justify-content-between">
+                  <strong>{{ reply.full_name }}</strong>
+                  <small class="text-muted">{{ reply.created_at|date:"Y/m/d H:i" }}</small>
+                </div>
+                <p class="mb-0 mt-1">{{ reply.text }}</p>
+              </div>
+              {% endif %}
+            {% endfor %}
+          </div>
+          {% empty %}
+          <p class="text-muted">هنوز نظری برای این مقاله ثبت نشده است. اولین نفر باشید!</p>
+          {% endfor %}
+
+          <div class="form-card mt-4" id="comment-form">
+            <h6 class="mb-3">ثبت نظر</h6>
+            <form method="post" action="{% url 'blog:add_comment' post.slug %}">
+              {% csrf_token %}
+              <input type="hidden" name="parent_id" id="parent-id-input" value="">
+              <div id="reply-note" class="text-muted small mb-2" style="display:none;"></div>
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <input type="text" name="full_name" class="form-control" placeholder="نام شما" required>
+                </div>
+                <div class="col-md-6">
+                  <input type="email" name="email" class="form-control" placeholder="ایمیل (اختیاری)">
+                </div>
+                <div class="col-12">
+                  <textarea name="text" class="form-control" rows="4" placeholder="متن نظر شما..." required></textarea>
+                </div>
+              </div>
+              <button type="submit" class="btn btn-orange mt-3">ارسال نظر</button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-4">
+        {% if related_posts %}
+        <div class="form-card">
+          <h6 class="mb-3">مقالات مرتبط</h6>
+          {% for rp in related_posts %}
+          <a href="{{ rp.get_absolute_url }}" class="d-block mb-2 text-dark text-decoration-none">
+            <i class="fa-solid fa-angle-left me-1 text-orange"></i>{{ rp.title }}
+          </a>
+          {% endfor %}
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+document.querySelectorAll('.reply-trigger').forEach((btn) => {
+  btn.addEventListener('click', (e) => {
+    e.preventDefault();
+    document.getElementById('parent-id-input').value = btn.dataset.parent;
+    const note = document.getElementById('reply-note');
+    note.style.display = 'block';
+    note.innerHTML = `در حال پاسخ به ${btn.dataset.name} <a href="#" id="cancel-reply">(انصراف)</a>`;
+    document.getElementById('cancel-reply').addEventListener('click', (ev) => {
+      ev.preventDefault();
+      document.getElementById('parent-id-input').value = '';
+      note.style.display = 'none';
+    });
+  });
+});
+</script>
+{% endblock %}

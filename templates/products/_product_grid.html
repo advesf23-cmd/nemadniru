@@ -1,0 +1,83 @@
+{% load humanize %}
+<div class="row g-4" id="product-grid">
+  {% for product in products %}
+  <div class="col-6 col-md-4 col-lg-3">
+    <div class="card product-card h-100 position-relative">
+      <button class="wishlist-btn btn-icon" data-product="{{ product.pk }}" title="افزودن به علاقه‌مندی‌ها">
+        <i class="fa-regular fa-heart"></i>
+      </button>
+      {% if not product.is_in_stock %}
+      <span class="badge bg-danger stock-badge">ناموجود</span>
+      {% elif product.discount_price %}
+      <span class="badge bg-orange stock-badge">تخفیف‌دار</span>
+      {% endif %}
+      <a href="{{ product.get_absolute_url }}" class="text-decoration-none text-dark">
+        {% if product.cover_image %}
+          <img src="{{ product.cover_image.url }}" alt="{{ product.name }}">
+        {% else %}
+          <div class="d-flex align-items-center justify-content-center bg-light-gray" style="height:220px;">
+            <i class="fa-solid fa-box-open fa-2x text-muted"></i>
+          </div>
+        {% endif %}
+        <div class="p-3 pb-1">
+          <small class="text-orange text-uppercase">{{ product.category.name }}</small>
+          <h6 class="mb-1">{{ product.name }}</h6>
+          {% if product.final_price %}
+          <span class="fw-bold">{{ product.final_price|intcomma }} تومان</span>
+          {% if product.discount_price %}<del class="text-muted small ms-2">{{ product.price|intcomma }}</del>{% endif %}
+          {% endif %}
+          {% if product.is_orderable and product.is_in_stock and product.stock_quantity <= 5 %}
+          <div class="small text-orange mt-1">تنها {{ product.stock_quantity }} عدد باقی مانده</div>
+          {% endif %}
+        </div>
+      </a>
+      <div class="px-3 pb-3">
+        <label class="d-flex align-items-center gap-2 small text-muted">
+          <input type="checkbox" class="compare-checkbox" data-product="{{ product.pk }}"> افزودن به مقایسه
+        </label>
+      </div>
+    </div>
+  </div>
+  {% empty %}
+  <div class="col-12 text-center text-muted py-5">
+    <i class="fa-solid fa-box-open fa-2x mb-2 d-block"></i>
+    محصولی با این مشخصات یافت نشد.
+  </div>
+  {% endfor %}
+</div>
+
+<style>
+.btn-icon { position:absolute; top:10px; left:10px; z-index:5; width:36px; height:36px; border-radius:50%; background:#fff; border:none; box-shadow:0 4px 10px rgba(0,0,0,.1); }
+.btn-icon.active i { color:#F97316; font-weight:900; }
+.stock-badge { position:absolute; top:10px; right:10px; z-index:5; }
+</style>
+
+<script>
+(function(){
+  function csrf() { return document.cookie.match(/csrftoken=([^;]+)/)?.[1] || ''; }
+
+  document.querySelectorAll('.wishlist-btn').forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const id = btn.dataset.product;
+      fetch(`/products/wishlist/${id}/toggle/`, { method: 'POST', headers: { 'X-CSRFToken': csrf() } })
+        .then((r) => r.json())
+        .then((data) => {
+          btn.classList.toggle('active', data.added);
+          btn.querySelector('i').className = data.added ? 'fa-solid fa-heart' : 'fa-regular fa-heart';
+        });
+    });
+  });
+
+  document.querySelectorAll('.compare-checkbox').forEach((cb) => {
+    cb.addEventListener('change', () => {
+      const id = cb.dataset.product;
+      fetch(`/products/compare/${id}/toggle/`, { method: 'POST', headers: { 'X-CSRFToken': csrf() } })
+        .then((r) => r.json())
+        .then((data) => {
+          if (data.error) { alert(data.error); cb.checked = false; }
+        });
+    });
+  });
+})();
+</script>

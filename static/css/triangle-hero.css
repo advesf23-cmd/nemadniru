@@ -1,0 +1,150 @@
+/* =========================================================
+   Triangle Hero -- مثلث تعاملی صفحه اصلی
+   ========================================================= */
+
+#triangle-hero {
+  position: relative;
+  width: 100%;
+  max-width: 560px;
+  aspect-ratio: 1 / 1;
+  margin: 0 auto;
+  user-select: none;
+}
+
+#triangle-glow-halo {
+  position: absolute;
+  inset: -15%;
+  border-radius: 50%;
+  filter: blur(60px);
+  pointer-events: none;
+  transition: background 0.15s linear;
+}
+
+#triangle-rotor-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  perspective: 1400px;
+}
+
+#triangle-rotor {
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+#triangle-svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.triangle-core {
+  transition: opacity 0.3s ease;
+  animation: triangle-breathe 3.2s ease-in-out infinite;
+  transform-origin: 250px 210px;
+}
+.triangle-core--active {
+  animation: triangle-breathe-active 1.2s ease-in-out infinite;
+}
+@keyframes triangle-breathe {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.04); }
+}
+@keyframes triangle-breathe-active {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.12); }
+}
+
+/* کارت‌های اطلاعاتی شناور */
+.triangle-card {
+  position: absolute;
+  z-index: 20;
+  max-width: 240px;
+  opacity: 0;
+  transform: scale(0.96);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  pointer-events: none;
+}
+.triangle-card--visible {
+  opacity: 1;
+  transform: scale(1);
+}
+.triangle-card--top {
+  left: 50%;
+  top: -10px;
+  transform: translateX(-50%) scale(0.96);
+}
+.triangle-card--top.triangle-card--visible {
+  transform: translateX(-50%) scale(1);
+}
+.triangle-card--left {
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%) translateX(-92%) scale(0.96);
+}
+.triangle-card--left.triangle-card--visible {
+  transform: translateY(-50%) translateX(-92%) scale(1);
+}
+.triangle-card--right {
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%) translateX(92%) scale(0.96);
+}
+.triangle-card--right.triangle-card--visible {
+  transform: translateY(-50%) translateX(92%) scale(1);
+}
+
+.triangle-card-inner {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(16px);
+  border-radius: 1rem;
+  padding: 1rem 1.25rem;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.45);
+}
+.triangle-card-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+}
+.triangle-card-title {
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: #fff;
+  margin: 0 0 0.25rem;
+}
+.triangle-card-desc {
+  font-size: 0.8rem;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.6);
+  margin: 0;
+}
+
+.triangle-hint {
+  text-align: center;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.35);
+  margin-top: 1rem;
+  letter-spacing: 0.02em;
+}
+
+@media (max-width: 768px) {
+  #triangle-hero { max-width: 340px; }
+  .triangle-card { max-width: 170px; }
+  .triangle-card-desc { font-size: 0.72rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .triangle-core,
+  .triangle-core--active {
+    animation: none !important;
+  }
+}

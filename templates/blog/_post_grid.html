@@ -1,0 +1,22 @@
+<div class="row g-4" id="post-grid">
+  {% for post in posts %}
+  <div class="col-md-6">
+    <a href="{{ post.get_absolute_url }}" class="text-decoration-none text-dark">
+      <div class="card h-100">
+        {% if post.cover_image %}<img src="{{ post.cover_image.url }}" class="w-100" style="height:200px;object-fit:cover;">{% endif %}
+        <div class="p-3">
+          <small class="text-orange">{{ post.category.name }}</small>
+          <h6>{{ post.title }}</h6>
+          <p class="text-muted small mb-0">{{ post.summary|truncatewords:18 }}</p>
+          <div class="d-flex justify-content-between mt-2 text-muted small">
+            <span><i class="fa-solid fa-eye me-1"></i>{{ post.views_count }}</span>
+            {% if post.published_at %}<span>{{ post.published_at|date:"Y/m/d" }}</span>{% endif %}
+          </div>
+        </div>
+      </div>
+    </a>
+  </div>
+  {% empty %}
+  <div class="col-12 text-center text-muted py-5">مقاله‌ای یافت نشد.</div>
+  {% endfor %}
+</div>

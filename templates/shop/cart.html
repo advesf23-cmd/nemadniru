@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block title %}سبد خرید - {{ site_settings.site_name }}{% endblock %}
+{% block content %}
+{% include "partials/page_header.html" with page_title="سبد خرید" %}
+
+<section class="section-padding">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-lg-8">
+        <div class="form-card">
+          <div id="cart-items-wrapper">{% include "shop/_cart_items.html" %}</div>
+        </div>
+      </div>
+      <div class="col-lg-4">
+        <div class="form-card">
+          <h6 class="mb-3">خلاصه سبد خرید</h6>
+          <div class="d-flex justify-content-between mb-2">
+            <span class="text-muted">جمع کل</span>
+            <span id="cart-subtotal">{{ cart.subtotal|intcomma }} تومان</span>
+          </div>
+          {% if cart.coupon %}
+          <div class="d-flex justify-content-between mb-2 text-success">
+            <span>تخفیف ({{ cart.coupon.code }})</span>
+            <span>-{{ cart.discount_amount|intcomma }} تومان</span>
+          </div>
+          {% endif %}
+          <hr>
+          <div class="d-flex justify-content-between mb-3">
+            <strong>مبلغ نهایی</strong>
+            <strong id="cart-total">{{ cart.total|intcomma }} تومان</strong>
+          </div>
+
+          <form method="post" action="{% url 'shop:apply_coupon' %}" class="d-flex gap-2 mb-3">
+            {% csrf_token %}
+            <input type="text" name="code" class="form-control" placeholder="کد تخفیف">
+            <button class="btn btn-outline-navy">اعمال</button>
+          </form>
+
+          {% if messages %}
+            {% for message in messages %}<div class="alert alert-{% if message.tags == 'error' %}danger{% else %}success{% endif %} small py-2">{{ message }}</div>{% endfor %}
+          {% endif %}
+
+          {% if cart.items.exists %}
+          <a href="{% url 'shop:checkout' %}" class="btn btn-orange w-100">ادامه فرآیند خرید</a>
+          {% else %}
+          <a href="{% url 'products:product_list' %}" class="btn btn-outline-navy w-100">مشاهده محصولات</a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+document.addEventListener('click', (e) => {
+  const btn = e.target.closest('.qty-btn');
+  if (!btn || btn.disabled) return;
+  const itemId = btn.dataset.item;
+  const row = btn.closest('[data-item-id]');
+  const qtySpan = row.querySelector('.qty-value');
+  let qty = parseInt(qtySpan.textContent);
+
+  if (btn.dataset.action === 'increase') {
+    const max = parseInt(btn.dataset.max, 10);
+    if (!isNaN(max) && qty >= max) {
+      alert('موجودی انبار این محصول تکمیل است.');
+      return;
+    }
+    qty += 1;
+  } else {
+    qty -= 1;
+  }
+
+  const formData = new FormData();
+  formData.append('quantity', qty);
+  formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+
+  fetch(`/shop/cart/update/${itemId}/`, {
+    method: 'POST', body: formData, headers: { 'X-Requested-With': 'XMLHttpRequest' },
+  })
+    .then((r) => r.json())
+    .then((data) => {
+      document.getElementById('cart-items-wrapper').innerHTML = data.html;
+      document.getElementById('cart-total').textContent = new Intl.NumberFormat('fa-IR').format(data.total) + ' تومان';
+      const cartBadge = document.getElementById('cart-count-badge');
+      if (cartBadge) cartBadge.textContent = data.count;
+      if (data.error) {
+        alert(data.error);
+      }
+    });
+});
+</script>
+{% endblock %}
