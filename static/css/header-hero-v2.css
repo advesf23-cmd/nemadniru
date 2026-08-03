@@ -1,6 +1,6 @@
 /* =========================================================
    هدر جدید (دو ردیفه) + اسلایدر بنر اصلی + کادرهای تبلیغاتی
-   این فایل را در base.html بعد از style.css لود کنید.
+   نسخه اصلاح‌شده -- این فایل باید در base.html (سراسری) لود شود، نه فقط در home.html
    ========================================================= */
 
 /* ---------------- هدر: ردیف بالا ---------------- */
@@ -97,6 +97,8 @@
   justify-content: center;
   padding: 0 3px;
 }
+
+/* دکمه ورود/ثبت‌نام (کاربر مهمان) */
 .header-login-btn {
   display: flex;
   align-items: center;
@@ -109,8 +111,33 @@
   font-size: 0.88rem;
   font-weight: 600;
   white-space: nowrap;
+  background: transparent;
 }
 .header-login-btn:hover { background: var(--color-navy); color: #fff; }
+
+/* بلوک کاربر واردشده: نام کاربر + دکمه خروج، کنار هم */
+.header-user-menu {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.header-logout-form { margin: 0; }
+.header-logout-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  border: 1.5px solid #DC2626;
+  background: transparent;
+  color: #DC2626;
+  padding: 0.5rem 0.9rem;
+  border-radius: 50px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  font-family: inherit;
+}
+.header-logout-btn:hover { background: #DC2626; color: #fff; }
 
 /* ---------------- هدر: ردیف منو ---------------- */
 .header-nav {
@@ -120,11 +147,15 @@
 .header-nav-inner {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  /* مهم: به‌جای space-between از flex-start + gap استفاده می‌شود
+     تا منوهای «حساب کاربری من / تماس با ما / وبلاگ» بلافاصله بعد از
+     «دسته‌بندی کالاها» بیایند، نه اینکه با فاصله‌ی زیاد به انتهای ردیف پرتاب شوند. */
+  justify-content: flex-start;
+  gap: 2rem;
   min-height: 46px;
 }
 
-.header-nav-categories { position: relative; }
+.header-nav-categories { position: relative; flex-shrink: 0; }
 .categories-toggle {
   display: flex;
   align-items: center;
@@ -167,6 +198,7 @@
   list-style: none;
   margin: 0;
   padding: 0;
+  flex-wrap: wrap;
 }
 .header-nav-links a {
   display: flex;
@@ -176,6 +208,7 @@
   text-decoration: none;
   font-size: 0.88rem;
   font-weight: 500;
+  white-space: nowrap;
 }
 .header-nav-links a:hover { color: var(--color-orange); }
 
@@ -282,11 +315,50 @@
   font-size: 0.85rem;
 }
 
+/* =========================================================
+   رفع به‌هم‌ریختگی فرم‌ها در صفحاتی که فیلدها بدون کلاس
+   form-control رندر می‌شوند (تماس، استعلام قیمت، استخدام و...).
+   این قوانین روی همه‌ی input/select/textarea داخل .form-card
+   یا هر <form> عمومی سایت اعمال می‌شود، حتی بدون کلاس دستی.
+   ========================================================= */
+.form-card form input[type="text"],
+.form-card form input[type="email"],
+.form-card form input[type="tel"],
+.form-card form input[type="number"],
+.form-card form input[type="password"],
+.form-card form input[type="url"],
+.form-card form input[type="file"],
+.form-card form select,
+.form-card form textarea,
+form.header-search-form ~ form input[type="text"] {
+  display: block;
+  width: 100%;
+  border-radius: 0.6rem;
+  padding: 0.7rem 1rem;
+  border: 1px solid #E2E8F0;
+  font-family: inherit;
+  font-size: 0.95rem;
+  background: #fff;
+  margin-bottom: 0;
+}
+.form-card form input:focus,
+.form-card form select:focus,
+.form-card form textarea:focus {
+  outline: none;
+  border-color: var(--color-orange);
+  box-shadow: 0 0 0 0.2rem rgba(249,115,22,.15);
+}
+.form-card form textarea { min-height: 110px; resize: vertical; }
+.form-card form ul { list-style: none; padding: 0; margin: 0; }
+.form-card form > div,
+.form-card form .row > div { margin-bottom: 1rem; }
+
 /* ---------------- Responsive ---------------- */
 @media (max-width: 992px) {
   .header-top-inner { flex-wrap: wrap; }
   .header-search-form { order: 3; max-width: 100%; flex: 1 1 100%; }
   .promo-banners-grid { grid-template-columns: repeat(2, 1fr); }
+  .header-nav-inner { flex-wrap: wrap; gap: 0.75rem; padding: 0.5rem 0; }
 }
 @media (max-width: 768px) {
   .header-nav-links { gap: 1rem; flex-wrap: wrap; }
