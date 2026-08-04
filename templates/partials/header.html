@@ -54,7 +54,7 @@
     </div>
   </div>
 
-  <!-- ردیف دوم: دسته‌بندی کالاها، بلافاصله بعدش (سمت راست) حساب کاربری من / تماس با ما / وبلاگ -->
+  <!-- ردیف دوم: دسته‌بندی کالاها / خانه / حساب کاربری من / تماس با ما / وبلاگ -->
   <nav class="header-nav">
     <div class="container header-nav-inner">
 
@@ -62,9 +62,22 @@
         <button class="categories-toggle" id="categoriesToggle" type="button">
           <i class="fa-solid fa-bars"></i> دسته‌بندی کالاها
         </button>
+
         <div class="categories-dropdown" id="categoriesDropdown">
           {% for cat in header_categories %}
-          <a href="{% url 'products:category_detail' cat.slug %}">{{ cat.name }}</a>
+          <div class="categories-dropdown-item {% if cat.children.all %}has-children{% endif %}">
+            <a href="{% url 'products:category_detail' cat.slug %}">
+              {{ cat.name }}
+              {% if cat.children.all %}<i class="fa-solid fa-angle-left submenu-caret"></i>{% endif %}
+            </a>
+            {% if cat.children.all %}
+            <div class="categories-submenu">
+              {% for sub in cat.children.all %}
+              <a href="{% url 'products:category_detail' sub.slug %}">{{ sub.name }}</a>
+              {% endfor %}
+            </div>
+            {% endif %}
+          </div>
           {% empty %}
           <a href="{% url 'products:product_list' %}">مشاهده همه محصولات</a>
           {% endfor %}
@@ -72,6 +85,7 @@
       </div>
 
       <ul class="header-nav-links">
+        <li><a href="{% url 'core:home' %}"><i class="fa-solid fa-house"></i> خانه</a></li>
         <li><a href="{% url 'accounts:profile' %}"><i class="fa-regular fa-user"></i> حساب کاربری من</a></li>
         <li><a href="{% url 'contact:contact' %}"><i class="fa-solid fa-phone"></i> تماس با ما</a></li>
         <li><a href="{% url 'blog:post_list' %}"><i class="fa-regular fa-newspaper"></i> وبلاگ</a></li>
@@ -86,6 +100,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const toggle = document.getElementById('categoriesToggle');
   const dropdown = document.getElementById('categoriesDropdown');
   if (!toggle || !dropdown) return;
+
   toggle.addEventListener('click', function (e) {
     e.stopPropagation();
     dropdown.classList.toggle('open');
@@ -94,6 +109,15 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!dropdown.contains(e.target) && e.target !== toggle) {
       dropdown.classList.remove('open');
     }
+  });
+
+  dropdown.querySelectorAll('.categories-dropdown-item.has-children > a').forEach(function (link) {
+    link.addEventListener('click', function (e) {
+      if (window.matchMedia('(hover: none)').matches) {
+        e.preventDefault();
+        link.closest('.categories-dropdown-item').classList.toggle('open');
+      }
+    });
   });
 });
 </script>

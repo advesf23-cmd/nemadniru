@@ -42,6 +42,22 @@
 .dash-table-card table { margin: 0; }
 .dash-table-card th { color: #64748B; font-weight: 600; font-size: 0.85rem; border-top: none; }
 
+/* جلوگیری از بیرون‌زدن جداول داشبورد از عرض صفحه در موبایل/تبلت.
+   قبلاً بعضی از قالب‌های داشبورد (سفارشات، نظرات، صندوق ورودی و...) جدول را
+   بدون هیچ راهی برای اسکرول افقی رندر می‌کردند و در گوشی از عرض صفحه بیرون
+   می‌زد. چون همه‌ی آن جداول داخل همین کلاس .dash-table-card قرار دارند،
+   یک قانون CSS این‌جا کل داشبورد را اصلاح می‌کند -- نیازی به تغییر تک‌تک
+   قالب‌ها نیست. */
+@media (max-width: 768px) {
+  .dash-table-card table {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    white-space: nowrap;
+  }
+}
+
 @media (max-width: 992px) {
   .dash-sidebar { position: fixed; right: -260px; z-index: 1050; transition: right .3s; }
   .dash-sidebar.open { right: 0; }

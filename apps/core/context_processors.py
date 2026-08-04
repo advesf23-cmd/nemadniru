@@ -1,3 +1,5 @@
+from django.db.models import Prefetch
+
 from .models import SiteSetting, Menu
 
 
@@ -30,13 +32,20 @@ def menus(request):
 
 
 def header_categories(request):
-    """دسته‌بندی‌های اصلی محصولات را برای منوی کشویی «دسته‌بندی کالاها» در هدر در دسترس قرار می‌دهد"""
+    """
+    دسته‌بندی‌های سطح‌بالای محصولات را به‌همراه زیرمجموعه‌های فعال‌شان (برای منوی
+    کشویی «دسته‌بندی کالاها» در هدر) در دسترس قرار می‌دهد.
+    در قالب با {{ cat.children.all }} به زیرمجموعه‌ی هر دسته دسترسی دارید،
+    چون در مدل ProductCategory، related_name فیلد parent برابر "children" است.
+    """
     try:
         from apps.products.models import ProductCategory
-        return {
-            "header_categories": ProductCategory.objects.filter(
-                is_active=True, parent__isnull=True
-            ).order_by("order")[:12]
-        }
+        children_qs = ProductCategory.objects.filter(is_active=True).order_by("order", "name")
+        top_level = (
+            ProductCategory.objects.filter(is_active=True, parent__isnull=True)
+            .prefetch_related(Prefetch("children", queryset=children_qs))
+            .order_by("order", "name")[:12]
+        )
+        return {"header_categories": top_level}
     except Exception:
         return {"header_categories": []}
