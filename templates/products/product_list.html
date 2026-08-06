@@ -17,12 +17,23 @@
           </div>
         </div>
 
+        <!--
+          سایدبار دسته‌بندی -- این‌ها لینک‌های واقعی هستند (نه فیلتر AJAX)، چون این
+          قالب هم برای صفحه‌ی «همه محصولات» (/products/) و هم برای صفحه‌ی هر
+          دسته‌بندی به‌تنهایی (/products/category/<slug>/) استفاده می‌شود. در حالت
+          دوم، دسته‌بندی از روی خودِ آدرس صفحه قفل شده، پس فیلتر AJAX نمی‌توانست
+          واقعاً به صفحه‌ی دسته‌بندی دیگر برود؛ لینک مستقیم این مشکل را کاملاً حل می‌کند.
+        -->
         <div class="form-card mb-3">
           <label class="form-label">دسته‌بندی</label>
           <ul class="list-unstyled d-flex flex-column gap-1" id="category-filter">
-            <li><a href="#" data-category="" class="filter-link d-block py-1 {% if not request.GET.category %}text-orange fw-bold{% else %}text-dark{% endif %}">همه دسته‌ها</a></li>
+            <li>
+              <a href="{% url 'products:product_list' %}" class="d-block py-1 {% if not current_category %}text-orange fw-bold{% else %}text-dark{% endif %}">همه دسته‌ها</a>
+            </li>
             {% for cat in categories %}
-            <li><a href="#" data-category="{{ cat.slug }}" class="filter-link d-block py-1 {% if request.GET.category == cat.slug %}text-orange fw-bold{% else %}text-dark{% endif %}">{{ cat.name }}</a></li>
+            <li>
+              <a href="{% url 'products:category_detail' cat.slug %}" class="d-block py-1 {% if current_category.slug == cat.slug %}text-orange fw-bold{% else %}text-dark{% endif %}">{{ cat.name }}</a>
+            </li>
             {% endfor %}
           </ul>
         </div>
@@ -85,12 +96,10 @@
   const minPrice = document.getElementById('min-price');
   const maxPrice = document.getElementById('max-price');
   const applyPriceBtn = document.getElementById('apply-price');
-  const categoryLinks = document.querySelectorAll('.filter-link');
 
   const baseUrl = "{{ request.path }}";
   let currentState = {
     q: searchInput.value || "",
-    category: "{{ request.GET.category|default:'' }}",
     brand: "{{ request.GET.brand|default:'' }}",
     min_price: minPrice.value || "",
     max_price: maxPrice.value || "",
@@ -167,18 +176,6 @@
     if (!suggestionsBox.contains(e.target) && e.target !== searchInput) {
       suggestionsBox.style.display = 'none';
     }
-  });
-
-  // فیلتر دسته‌بندی
-  categoryLinks.forEach((link) => {
-    link.addEventListener('click', (e) => {
-      e.preventDefault();
-      categoryLinks.forEach((l) => l.classList.remove('text-orange', 'fw-bold'));
-      link.classList.add('text-orange', 'fw-bold');
-      currentState.category = link.dataset.category;
-      currentState.page = 1;
-      loadProducts();
-    });
   });
 
   // برند
