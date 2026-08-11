@@ -5,6 +5,12 @@
 <section class="section-padding">
   <div class="container" style="max-width:480px;">
     <div class="form-card">
+      {% if request.GET.next %}
+      <div class="alert alert-info small mb-3">
+        <i class="fa-solid fa-circle-info me-1"></i>
+        برای ادامه‌ی خرید، ابتدا وارد حساب کاربری خود شوید.
+      </div>
+      {% endif %}
       {% if form.non_field_errors %}
         {% for error in form.non_field_errors %}
         <div class="alert alert-danger">{{ error }}</div>
@@ -27,7 +33,7 @@
       </form>
       <div class="d-flex justify-content-between mt-3 small">
         <a href="{% url 'accounts:password_reset' %}" class="text-muted">رمز عبور را فراموش کرده‌اید؟</a>
-        <a href="{% url 'accounts:register' %}" class="text-orange">ثبت‌نام کنید</a>
+        <a href="{% url 'accounts:register' %}{% if next %}?next={{ next }}{% endif %}" class="text-orange">ثبت‌نام کنید</a>
       </div>
     </div>
   </div>

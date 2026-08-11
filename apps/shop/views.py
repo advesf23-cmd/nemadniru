@@ -10,7 +10,7 @@ from django.db.models import F
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import render_to_string
-from django.urls import reverse_lazy
+from django.urls import reverse, reverse_lazy
 from django.views import View
 from django.views.generic import TemplateView, ListView, DetailView
 
@@ -51,6 +51,7 @@ def send_order_email(order, subject_prefix, extra_note=""):
     body = (
         f"شماره سفارش: {order.order_number}\n"
         f"مشتری: {order.full_name} -- {order.phone}\n"
+        f"آدرس: {order.full_address}\n"
         f"وضعیت: {order.get_status_display()}\n"
         f"{extra_note}\n\n"
         f"اقلام سفارش:\n{items_text}\n\n"
@@ -87,8 +88,28 @@ class CartDetailView(TemplateView):
 
 
 class AddToCartView(View):
+    """
+    افزودن به سبد خرید -- طبق روال جدید خرید، ابتدا باید کاربر وارد حساب کاربری
+    شده باشد. اگر وارد نشده باشد، به صفحه‌ی ورود هدایت می‌شود و پس از ورود یا
+    ثبت‌نام، دقیقاً به همان صفحه‌ی محصول برمی‌گردد تا خرید را ادامه دهد.
+    """
+
     def post(self, request, product_id):
         product = get_object_or_404(Product, pk=product_id, status="published", is_orderable=True)
+        is_ajax = request.headers.get("X-Requested-With") == "XMLHttpRequest"
+
+        if not request.user.is_authenticated:
+            login_url = f"{reverse('accounts:login')}?next={product.get_absolute_url()}"
+            if is_ajax:
+                return JsonResponse({
+                    "success": False,
+                    "login_required": True,
+                    "redirect_url": login_url,
+                    "error": "برای خرید ابتدا باید وارد حساب کاربری خود شوید.",
+                }, status=401)
+            messages.warning(request, "برای خرید ابتدا باید وارد حساب کاربری خود شوید.")
+            return redirect(login_url)
+
         cart = get_or_create_cart(request)
 
         try:
@@ -96,8 +117,6 @@ class AddToCartView(View):
         except (TypeError, ValueError):
             quantity = 1
         quantity = max(1, quantity)
-
-        is_ajax = request.headers.get("X-Requested-With") == "XMLHttpRequest"
 
         # موجودی صفر -- اصلاً اجازه افزودن نمی‌دهیم
         if product.stock_quantity <= 0:
@@ -197,24 +216,43 @@ class ApplyCouponView(View):
         return redirect("shop:cart_detail")
 
 
-class CheckoutView(TemplateView):
+class CheckoutView(LoginRequiredMixin, TemplateView):
+    """
+    صفحه‌ی تسویه‌حساب -- طبق روال جدید خرید:
+    ۱) کاربر باید وارد حساب کاربری شده باشد (LoginRequiredMixin؛ در غیر این
+       صورت به صفحه‌ی ورود با next=همین صفحه هدایت می‌شود).
+    ۲) قبل از ثبت نهایی سفارش (قبل از رفتن به مرحله‌ی پرداخت)، تمام فیلدهای
+       مشخصات و آدرس (نام، شماره همراه، استان، شهرستان، آدرس دقیق پستی،
+       جزئیات آدرس، کد پستی) اعتبارسنجی و الزامی می‌شوند.
+    """
     template_name = "shop/checkout.html"
+    login_url = "accounts:login"
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         ctx["cart"] = get_or_create_cart(self.request)
 
-        # -----------------------------------------------------------------
-        # توکن ضدِ-سفارش-تکراری: در هر بار *باز کردن* صفحه (GET) یک توکن
-        # جدید تولید و در سشن ذخیره می‌شود. این توکن در فرم پنهان قرار
-        # می‌گیرد و به هر سفارش ثبت‌شده متصل می‌شود (فیلد یکتا در دیتابیس).
-        # اگر همین فرم دوبار ارسال شود (دوبار کلیک/رفرش/دکمه Back+ارسال
-        # مجدد مرورگر)، توکن تکراری خواهد بود و به‌جای سفارش دوم، همان
-        # سفارش اول به کاربر نشان داده می‌شود.
-        # -----------------------------------------------------------------
         if "checkout_token" not in self.request.session:
             self.request.session["checkout_token"] = secrets.token_hex(20)
         ctx["checkout_token"] = self.request.session["checkout_token"]
+
+        # پیش‌پرکردن فرم با آخرین آدرس ثبت‌شده‌ی همین کاربر (در صورت وجود سفارش قبلی)
+        # تا کاربر مجبور نباشد هر بار از صفر همه چیز را تایپ کند.
+        last_order = Order.objects.filter(user=self.request.user).order_by("-created_at").first()
+        ctx["prefill"] = {
+            "full_name": self.request.user.get_full_name() or "",
+            "phone": self.request.user.phone or "",
+        }
+        if last_order:
+            ctx["prefill"].update({
+                "full_name": last_order.full_name,
+                "phone": last_order.phone,
+                "province": last_order.province,
+                "county": last_order.county,
+                "shipping_address": last_order.shipping_address,
+                "address_details": last_order.address_details,
+                "postal_code": last_order.postal_code,
+            })
         return ctx
 
     def post(self, request, *args, **kwargs):
@@ -222,9 +260,6 @@ class CheckoutView(TemplateView):
 
         submitted_token = request.POST.get("checkout_token", "")
 
-        # اگر سفارشی از قبل با همین توکن ثبت شده -- یعنی این دقیقاً همان
-        # درخواستی است که قبلاً پردازش شده (ارسال تکراری فرم). به‌جای ساخت
-        # سفارش دوم، مستقیم کاربر را به همان سفارش قبلی هدایت می‌کنیم.
         if submitted_token:
             existing_order = Order.objects.filter(checkout_token=submitted_token).first()
             if existing_order:
@@ -234,15 +269,48 @@ class CheckoutView(TemplateView):
             messages.error(request, "سبد خرید شما خالی است.")
             return redirect("shop:cart_detail")
 
+        # ---------------------------------------------------------------
+        # اعتبارسنجی کامل مشخصات و آدرس -- قبل از رفتن به مرحله‌ی پرداخت،
+        # تمام این فیلدها باید پر شده باشند.
+        # ---------------------------------------------------------------
+        full_name = request.POST.get("full_name", "").strip()
+        phone = request.POST.get("phone", "").strip()
+        province = request.POST.get("province", "").strip()
+        county = request.POST.get("county", "").strip()
+        shipping_address = request.POST.get("shipping_address", "").strip()
+        address_details = request.POST.get("address_details", "").strip()
         postal_code = request.POST.get("postal_code", "").strip()
+
+        errors = []
+        if not full_name:
+            errors.append("لطفاً نام و نام خانوادگی را وارد کنید.")
+        if not phone or not phone.isdigit() or len(phone) != 11 or not phone.startswith("09"):
+            errors.append("شماره همراه باید ۱۱ رقم و با ۰۹ شروع شود.")
+        if not province:
+            errors.append("لطفاً استان را انتخاب کنید.")
+        if not county:
+            errors.append("لطفاً شهرستان را انتخاب کنید.")
+        if not shipping_address:
+            errors.append("لطفاً آدرس دقیق پستی را وارد کنید.")
+        if not address_details:
+            errors.append("لطفاً جزئیات آدرس (پلاک، واحد، طبقه) را وارد کنید.")
         if not postal_code.isdigit() or len(postal_code) != 10:
-            messages.error(request, "کد پستی باید دقیقاً ۱۰ رقم و فقط عدد باشد. لطفاً اصلاح کنید.")
+            errors.append("کد پستی باید دقیقاً ۱۰ رقم و فقط عدد باشد.")
+
+        if errors:
+            for err in errors:
+                messages.error(request, err)
             ctx = self.get_context_data()
             ctx["form_data"] = request.POST
             return self.render_to_response(ctx)
 
         try:
-            order = self._create_order_atomically(request, cart, postal_code, submitted_token)
+            order = self._create_order_atomically(
+                request, cart, submitted_token,
+                full_name=full_name, phone=phone, province=province, county=county,
+                shipping_address=shipping_address, address_details=address_details,
+                postal_code=postal_code,
+            )
         except InsufficientStockError as exc:
             messages.error(
                 request,
@@ -251,14 +319,12 @@ class CheckoutView(TemplateView):
             )
             return redirect("shop:cart_detail")
         except IntegrityError:
-            # رخ می‌دهد اگر دو درخواست کاملاً هم‌زمان با یک توکن به دیتابیس برسند
             existing_order = Order.objects.filter(checkout_token=submitted_token).first()
             if existing_order:
                 return redirect("shop:order_success", order_number=existing_order.order_number)
             messages.error(request, "خطایی در ثبت سفارش رخ داد. لطفاً دوباره تلاش کنید.")
             return redirect("shop:cart_detail")
 
-        # توکن مصرف‌شده را از سشن پاک می‌کنیم تا صفحه‌ی بعدی تسویه‌حساب توکن تازه بگیرد
         request.session.pop("checkout_token", None)
         request.session["last_order_id"] = order.pk
 
@@ -269,21 +335,23 @@ class CheckoutView(TemplateView):
         # نقطه اتصال درگاه پرداخت واقعی (مثل زرین‌پال) اینجا قرار می‌گیرد:
         # gateway_url = zarinpal_request_payment(order)
         # return redirect(gateway_url)
-        # فعلاً به‌صورت مستقیم سفارش را «در انتظار پرداخت» ثبت و به صفحه موفقیت هدایت می‌کنیم.
         # -----------------------------------------------------------------
         return redirect("shop:order_success", order_number=order.order_number)
 
     @transaction.atomic
-    def _create_order_atomically(self, request, cart, postal_code, checkout_token):
+    def _create_order_atomically(self, request, cart, checkout_token, **address_fields):
         cart_items = list(cart.items.select_related("product"))
 
         order = Order.objects.create(
-            user=request.user if request.user.is_authenticated else None,
-            full_name=request.POST.get("full_name", ""),
-            phone=request.POST.get("phone", ""),
+            user=request.user,
+            full_name=address_fields["full_name"],
+            phone=address_fields["phone"],
             email=request.POST.get("email", ""),
-            shipping_address=request.POST.get("shipping_address", ""),
-            postal_code=postal_code,
+            province=address_fields["province"],
+            county=address_fields["county"],
+            shipping_address=address_fields["shipping_address"],
+            address_details=address_fields["address_details"],
+            postal_code=address_fields["postal_code"],
             notes=request.POST.get("notes", ""),
             subtotal=cart.subtotal,
             discount_amount=cart.discount_amount,
@@ -293,14 +361,6 @@ class CheckoutView(TemplateView):
         )
 
         for item in cart_items:
-            # ------------------------------------------------------------
-            # کسر اتمیک و ایمن در برابر همزمانی: این UPDATE فقط زمانی ردیفی
-            # را تغییر می‌دهد که moment لحظه‌ی اجرا موجودی کافی باشد
-            # (stock_quantity__gte=quantity). اگر دو کاربر هم‌زمان آخرین
-            # واحد یک کالا را بخرند، فقط یکی از این UPDATEها یک ردیف را
-            # تغییر می‌دهد و دیگری صفر ردیف برمی‌گرداند -- بدون نیاز به قفل
-            # صریح و بدون امکان منفی‌شدن موجودی.
-            # ------------------------------------------------------------
             updated_rows = Product.objects.filter(
                 pk=item.product_id, stock_quantity__gte=item.quantity
             ).update(stock_quantity=F("stock_quantity") - item.quantity)
@@ -314,7 +374,6 @@ class CheckoutView(TemplateView):
             )
 
         if cart.coupon:
-            # افزایش اتمیک شمارنده‌ی استفاده از کد تخفیف (بدون race condition)
             Coupon.objects.filter(pk=cart.coupon_id).update(used_count=F("used_count") + 1)
 
         cart.items.all().delete()
@@ -343,7 +402,7 @@ class MyOrdersView(LoginRequiredMixin, ListView):
 
 
 class OrderTrackingView(TemplateView):
-    """پیگیری سفارش بدون نیاز به ورود -- با شماره سفارش و شماره تلفن"""
+    """پیگیری سفارش بدون نیاز به ورود -- با شماره سفارش و شماره تلفن (برای سفارش‌های قدیمی مهمان)"""
     template_name = "shop/order_tracking.html"
 
     def post(self, request, *args, **kwargs):
@@ -359,13 +418,6 @@ class OrderTrackingView(TemplateView):
 
 
 class OrderAccessMixin:
-    """
-    کنترل دسترسی مشترک برای صفحات جزئیات/فاکتور سفارش:
-    - کاربر واردشده فقط سفارش‌های خودش را می‌بیند.
-    - کاربر مهمان باید شماره تلفن سفارش را به‌عنوان پارامتر GET (?phone=...) ارسال کند
-      (که از صفحه‌ی «پیگیری سفارش» پس از تطبیق موفق، به این صفحه لینک داده می‌شود).
-    """
-
     def get_order_or_none(self, request, order_number):
         qs = Order.objects.filter(order_number=order_number)
         if request.user.is_authenticated:
@@ -415,12 +467,6 @@ class OrderInvoiceView(OrderAccessMixin, View):
 
 
 class CancelOrderView(View):
-    """
-    لغو سفارش توسط خود مشتری -- فقط تا زمانی که سفارش «در انتظار پرداخت» است
-    (یعنی هنوز پردازش/ارسال نشده). موجودی انبار به‌صورت خودکار بازگردانده می‌شود.
-    برای احراز هویت کاربر مهمان، شماره تلفن سفارش نیز باید تطبیق داشته باشد.
-    """
-
     def post(self, request, order_number):
         phone = request.POST.get("phone", "").strip()
         qs = Order.objects.filter(order_number=order_number)

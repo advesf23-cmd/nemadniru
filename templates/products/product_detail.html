@@ -98,6 +98,8 @@
               <span class="stock-status-count">({{ product.stock_quantity }} عدد موجود)</span>
             {% endif %}
           </div>
+
+          {% if request.user.is_authenticated %}
           <form method="post" action="{% url 'shop:add_to_cart' product.pk %}" class="d-flex gap-2 mt-2" id="add-to-cart-form">
             {% csrf_token %}
             <input type="number" name="quantity" value="1" min="1" max="{{ product.stock_quantity }}"
@@ -117,6 +119,18 @@
               input.value = val;
             });
           </script>
+          {% else %}
+          <!-- کاربر وارد نشده -- طبق روال جدید خرید، ابتدا باید وارد حساب کاربری شود.
+               بعد از ورود یا ثبت‌نام، دقیقاً به همین صفحه‌ی محصول بازمی‌گردد. -->
+          <div class="alert alert-warning small mt-3 mb-2">
+            <i class="fa-solid fa-triangle-exclamation me-1"></i>
+            برای خرید این محصول ابتدا باید وارد حساب کاربری خود شوید.
+          </div>
+          <a href="{% url 'accounts:login' %}?next={{ product.get_absolute_url }}" class="btn btn-orange w-100">
+            <i class="fa-solid fa-arrow-right-to-bracket me-1"></i> ورود | ثبت‌نام برای ادامه‌ی خرید
+          </a>
+          {% endif %}
+
           {% else %}
           <div class="stock-status stock-status--out mt-3">
             <i class="fa-solid fa-circle-xmark me-1"></i> این محصول در حال حاضر ناموجود است

@@ -126,10 +126,16 @@ class Order(TimeStampedModel):
         settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name="orders"
     )
     full_name = models.CharField(_("نام و نام خانوادگی"), max_length=150)
-    phone = models.CharField(_("شماره تماس"), max_length=20)
+    phone = models.CharField(_("شماره همراه"), max_length=20)
     email = models.EmailField(_("ایمیل"), blank=True)
-    shipping_address = models.TextField(_("آدرس ارسال"))
+
+    # --- آدرس (طبق روال جدید خرید: استان/شهرستان جدا از متن آزاد آدرس) ---
+    province = models.CharField(_("استان"), max_length=100, blank=True)
+    county = models.CharField(_("شهرستان"), max_length=100, blank=True)
+    shipping_address = models.TextField(_("آدرس دقیق پستی"))
+    address_details = models.CharField(_("جزئیات آدرس (پلاک، واحد، طبقه)"), max_length=255, blank=True)
     postal_code = models.CharField(_("کد پستی"), max_length=15, blank=True)
+
     notes = models.TextField(_("توضیحات سفارش"), blank=True)
 
     subtotal = models.DecimalField(max_digits=14, decimal_places=0, default=0)
@@ -170,6 +176,12 @@ class Order(TimeStampedModel):
     def is_cancellable_by_customer(self):
         """مشتری فقط تا قبل از پرداخت/پردازش می‌تواند سفارش را خودش لغو کند"""
         return self.status == self.STATUS_PENDING_PAYMENT
+
+    @property
+    def full_address(self):
+        """آدرس کامل و یک‌جا برای نمایش در فاکتور/پیامک/ایمیل"""
+        parts = [p for p in [self.province, self.county, self.shipping_address, self.address_details] if p]
+        return "، ".join(parts)
 
     def cancel(self, reason="", restore_stock=True):
         """

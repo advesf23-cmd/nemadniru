@@ -1,14 +1,36 @@
 /* =========================================================
    هدر جدید (دو ردیفه) + اسلایدر بنر اصلی + کادرهای تبلیغاتی
-   نسخه اصلاح‌شده (دور چهارم) -- شامل رفع مشکلات نمایش موبایل
+   نسخه اصلاح‌شده (دور هفتم) -- پالت رنگی جدید + دکمه‌های کوچک‌تر
    ========================================================= */
+
+:root {
+  /* پالت رنگی درخواستی */
+  --smart-blue: #0466c8;
+  --sapphire: #0353a4;
+  --regal-navy: #023e7d;
+  --prussian-blue: #002855;
+  --prussian-blue-2: #001845;
+  --prussian-blue-3: #001233;
+  --twilight-indigo: #33415c;
+  --blue-slate: #5c677d;
+  --slate-grey: #7d8597;
+  --lavender-grey: #979dac;
+
+  /* بازتعریف متغیرهای اصلی سایت (تعریف‌شده در style.css) بر اساس پالت جدید.
+     چون این فایل بعد از style.css لود می‌شود، همین مقادیر در کل سایت
+     (دکمه‌ها، هدر، فوتر، بخش‌های navy، هاور کارت‌ها و ...) جایگزین می‌شوند،
+     بدون نیاز به دست‌کاری خود style.css. */
+  --color-navy: var(--prussian-blue);
+  --color-navy-light: var(--regal-navy);
+  --color-navy-lighter: var(--sapphire);
+}
 
 /* ---------------- هدر: ردیف بالا ---------------- */
 .site-header-v2 {
   position: sticky;
   top: 0;
   z-index: 1000;
-  box-shadow: 0 2px 16px rgba(11, 36, 71, 0.06);
+  box-shadow: 0 2px 16px rgba(0, 40, 85, 0.08);
 }
 
 .header-top {
@@ -68,13 +90,13 @@
 .header-top-icons {
   display: flex;
   align-items: center;
-  gap: 0.9rem;
+  gap: 0.7rem;
   flex-shrink: 0;
 }
 .header-icon-link {
   position: relative;
   color: var(--color-navy);
-  font-size: 1.2rem;
+  font-size: 1.15rem;
   text-decoration: none;
 }
 .header-icon-link:hover { color: var(--color-orange); }
@@ -95,43 +117,51 @@
   padding: 0 3px;
 }
 
+/* -----------------------------------------------------------------------
+   دکمه‌های ورود/ثبت‌نام، حساب‌کاربری و خروج -- نسخه‌ی کوچک‌تر و مدرن‌تر
+   (بدون border ضخیم، فقط یک پس‌زمینه‌ی ملایم + رنگ متن از پالت جدید)
+   ----------------------------------------------------------------------- */
 .header-login-btn {
   display: flex;
   align-items: center;
-  gap: 0.4rem;
-  border: 1.5px solid var(--color-navy);
-  color: var(--color-navy);
+  gap: 0.35rem;
+  border: none;
+  background: rgba(4, 102, 200, 0.08);
+  color: var(--sapphire);
   text-decoration: none;
-  padding: 0.5rem 1.1rem;
+  padding: 0.4rem 0.85rem;
   border-radius: 50px;
-  font-size: 0.88rem;
+  font-size: 0.78rem;
   font-weight: 600;
   white-space: nowrap;
-  background: transparent;
+  transition: var(--transition);
 }
-.header-login-btn:hover { background: var(--color-navy); color: #fff; }
+.header-login-btn i { font-size: 0.78rem; }
+.header-login-btn:hover { background: var(--sapphire); color: #fff; }
 
 .header-user-menu {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.4rem;
 }
 .header-logout-form { margin: 0; }
 .header-logout-btn {
   display: flex;
   align-items: center;
-  gap: 0.35rem;
-  border: 1.5px solid #DC2626;
-  background: transparent;
+  gap: 0.3rem;
+  border: none;
+  background: rgba(220, 38, 38, 0.08);
   color: #DC2626;
-  padding: 0.5rem 0.9rem;
+  padding: 0.4rem 0.75rem;
   border-radius: 50px;
-  font-size: 0.85rem;
+  font-size: 0.75rem;
   font-weight: 600;
   cursor: pointer;
   white-space: nowrap;
   font-family: inherit;
+  transition: var(--transition);
 }
+.header-logout-btn i { font-size: 0.75rem; }
 .header-logout-btn:hover { background: #DC2626; color: #fff; }
 
 /* ---------------- هدر: ردیف منو ---------------- */
@@ -168,7 +198,7 @@
   top: 100%;
   right: 0;
   min-width: 240px;
-  max-width: 92vw; /* جلوگیری از بیرون‌زدن منو از لبه‌ی صفحه در گوشی‌های خیلی کوچک */
+  max-width: 92vw;
   background: #fff;
   box-shadow: var(--shadow-hover);
   border-radius: 0 0 0.6rem 0.6rem;
@@ -255,7 +285,7 @@
   position: relative;
   max-width: 1600px;
   margin: 0 auto;
-  aspect-ratio: 1600 / 400; /* نسبت اصلی ۴:۱ -- فقط در دسکتاپ */
+  aspect-ratio: 1600 / 400;
   overflow: hidden;
   border-radius: 0;
 }
@@ -291,7 +321,7 @@
   position: absolute;
   bottom: 0; right: 0; left: 0;
   padding: 2rem 3rem;
-  background: linear-gradient(0deg, rgba(11,36,71,.85), transparent);
+  background: linear-gradient(0deg, rgba(0,40,85,.85), transparent);
   color: #fff;
   text-align: right;
 }
@@ -312,7 +342,7 @@
   height: 9px;
   border-radius: 50%;
   border: none;
-  background: rgba(11,36,71,.35);
+  background: rgba(0,40,85,.35);
   cursor: pointer;
   padding: 0;
   transition: var(--transition);
@@ -385,10 +415,28 @@ form.header-search-form ~ form input[type="text"] {
 .form-card form .row > div { margin-bottom: 1rem; }
 
 /* =========================================================
-   رفع بیرون‌زدن جداول از عرض صفحه در موبایل (سفارشات من، جزئیات
-   سفارش، فاکتور و هر جدولی که داخل .form-card باشد).
-   تمام جداول داشبورد (که داخل .dash-table-card هستند) در فایل
-   dashboard.css به همین ترتیب اصلاح شده‌اند.
+   بنر برجسته‌ی خطای فرم در بالای صفحه (مثلاً تسویه‌حساب ناقص)
+   ========================================================= */
+.top-form-errors {
+  background: #FEF2F2;
+  border: 1px solid #FCA5A5;
+  border-radius: var(--radius-md);
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.5rem;
+}
+.top-form-errors h6 {
+  color: #B91C1C;
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.top-form-errors ul { margin: 0; padding-inline-start: 1.2rem; }
+.top-form-errors li { color: #B91C1C; font-size: 0.88rem; margin-bottom: 0.2rem; }
+
+/* =========================================================
+   رفع بیرون‌زدن جداول از عرض صفحه در موبایل
    ========================================================= */
 @media (max-width: 768px) {
   .form-card table {
@@ -406,8 +454,6 @@ form.header-search-form ~ form input[type="text"] {
   .header-search-form { order: 3; max-width: 100%; flex: 1 1 100%; }
   .promo-banners-grid { grid-template-columns: repeat(2, 1fr); }
   .header-nav-inner { flex-wrap: wrap; gap: 0.75rem; padding: 0.5rem 0; }
-
-  /* نسبت بنر اصلی در تبلت کمی کشیده‌تر می‌شود تا محتوای وسط بنر بریده نشود */
   .hero-slider { aspect-ratio: 3 / 1; }
 }
 
@@ -419,7 +465,6 @@ form.header-search-form ~ form input[type="text"] {
 }
 
 @media (max-width: 576px) {
-  /* در گوشی، نسبت ۴:۱ اصلی خیلی نازک و غیرقابل‌خواندن می‌شود؛ نسبت ۲:۱ خواناتر است */
   .hero-slider { aspect-ratio: 2 / 1; }
   .hero-slide-caption h3 { font-size: 1.05rem; margin-bottom: .2rem; }
   .hero-slide-caption p { font-size: .8rem; margin-bottom: .4rem; }

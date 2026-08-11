@@ -30,9 +30,12 @@
     <div class="dash-table-card">
       <h6 class="mb-3">اطلاعات ارسال</h6>
       <p class="mb-1"><strong>نام:</strong> {{ order.full_name }}</p>
-      <p class="mb-1"><strong>تلفن:</strong> {{ order.phone }}</p>
+      <p class="mb-1"><strong>شماره همراه:</strong> {{ order.phone }}</p>
       {% if order.email %}<p class="mb-1"><strong>ایمیل:</strong> {{ order.email }}</p>{% endif %}
+      {% if order.province %}<p class="mb-1"><strong>استان:</strong> {{ order.province }}</p>{% endif %}
+      {% if order.county %}<p class="mb-1"><strong>شهرستان:</strong> {{ order.county }}</p>{% endif %}
       <p class="mb-1"><strong>آدرس:</strong> {{ order.shipping_address }}</p>
+      {% if order.address_details %}<p class="mb-1"><strong>جزئیات آدرس:</strong> {{ order.address_details }}</p>{% endif %}
       {% if order.postal_code %}<p class="mb-1"><strong>کد پستی:</strong> {{ order.postal_code }}</p>{% endif %}
       {% if order.notes %}<p class="mb-0"><strong>توضیحات:</strong> {{ order.notes }}</p>{% endif %}
     </div>

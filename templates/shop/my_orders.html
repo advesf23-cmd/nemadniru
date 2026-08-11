@@ -25,8 +25,22 @@
                 {% elif order.status == 'cancelled' %}bg-danger
                 {% else %}bg-orange{% endif %}">{{ order.get_status_display }}</span>
             </td>
-            <td>
+            <td class="d-flex flex-wrap gap-1">
+              {% if order.status == 'pending_payment' %}
+              <!-- سفارش هنوز پرداخت نشده -- دکمه‌ی «ادامه فرآیند» برای پیگیری و تکمیل پرداخت -->
+              <a href="{% url 'shop:order_detail' order.order_number %}" class="btn btn-sm btn-orange">
+                <i class="fa-solid fa-arrow-left me-1"></i> ادامه فرآیند / پرداخت
+              </a>
+              {% else %}
               <a href="{% url 'shop:order_detail' order.order_number %}" class="btn btn-sm btn-outline-navy">جزئیات</a>
+              {% endif %}
+
+              {% if order.is_paid %}
+              <a href="{% url 'shop:order_invoice' order.order_number %}" target="_blank" class="btn btn-sm btn-outline-navy">
+                <i class="fa-solid fa-file-invoice me-1"></i> فاکتور
+              </a>
+              {% endif %}
+
               {% if order.is_cancellable_by_customer %}
               <form method="post" action="{% url 'shop:cancel_order' order.order_number %}"
                     onsubmit="return confirm('آیا از لغو این سفارش مطمئن هستید؟');" class="d-inline">

@@ -42,8 +42,12 @@
 
   <div class="section-title">اطلاعات خریدار</div>
   <p style="font-size:13px;margin:2px 0;">نام: {{ order.full_name }}</p>
-  <p style="font-size:13px;margin:2px 0;">تلفن: {{ order.phone }}</p>
-  <p style="font-size:13px;margin:2px 0;">آدرس: {{ order.shipping_address }}</p>
+  <p style="font-size:13px;margin:2px 0;">شماره همراه: {{ order.phone }}</p>
+  {% if order.province or order.county %}
+  <p style="font-size:13px;margin:2px 0;">استان/شهرستان: {{ order.province }}{% if order.county %} -- {{ order.county }}{% endif %}</p>
+  {% endif %}
+  <p style="font-size:13px;margin:2px 0;">آدرس: {{ order.shipping_address }}{% if order.address_details %} ({{ order.address_details }}){% endif %}</p>
+  {% if order.postal_code %}<p style="font-size:13px;margin:2px 0;">کد پستی: {{ order.postal_code }}</p>{% endif %}
 
   <div class="section-title">اقلام سفارش</div>
   <table>
