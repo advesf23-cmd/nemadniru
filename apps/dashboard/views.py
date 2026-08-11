@@ -13,6 +13,9 @@ from apps.blog.models import Post, BlogCategory, Comment
 from apps.gallery.models import GalleryItem
 from apps.contact.models import ContactMessage, QuoteRequest, JobApplication, JobPosition
 from apps.shop.models import Order, Coupon
+from apps.core.models import (
+    SiteSetting, Statistic, Certificate, Partner, Testimonial, FAQ, HomeSlide, Menu, PromoBanner
+)
 
 
 class StaffRequiredMixin(UserPassesTestMixin):
@@ -310,8 +313,6 @@ class DashboardGalleryUpdateView(StaffRequiredMixin, UpdateView):
 
 
 class DashboardSetHeroBackgroundView(StaffRequiredMixin, View):
-    """با یک کلیک، تصویر انتخاب‌شده را به‌عنوان پس‌زمینه صفحه اصلی تنظیم می‌کند"""
-
     def post(self, request, pk):
         item = get_object_or_404(GalleryItem, pk=pk, media_type=GalleryItem.MEDIA_IMAGE)
         item.use_as_hero_background = True
@@ -321,8 +322,6 @@ class DashboardSetHeroBackgroundView(StaffRequiredMixin, View):
 
 
 class DashboardRemoveHeroBackgroundView(StaffRequiredMixin, View):
-    """حذف تصویر پس‌زمینه فعلی از صفحه اصلی (بدون حذف خود تصویر از گالری)"""
-
     def post(self, request, pk):
         item = get_object_or_404(GalleryItem, pk=pk)
         item.use_as_hero_background = False
@@ -458,7 +457,6 @@ class DashboardUpdateOrderStatusView(StaffRequiredMixin, View):
             logger = logging.getLogger("apps.shop")
 
             if new_status == Order.STATUS_CANCELLED:
-                # از متد cancel() استفاده می‌کنیم تا موجودی انبار به‌درستی بازگردانده شود
                 order.cancel(reason="لغو توسط مدیر فروشگاه")
                 logger.info("Order %s cancelled by staff %s", order.order_number, request.user)
             else:
@@ -489,3 +487,237 @@ class DashboardCouponUpdateView(StaffRequiredMixin, UpdateView):
     fields = DashboardCouponCreateView.fields
     template_name = "dashboard/generic_form.html"
     success_url = reverse_lazy("dashboard:coupon_list")
+
+
+# ===========================================================================
+# مدیریت محتوای سراسری سایت (اپ core) -- تنظیمات سایت، اسلایدر صفحه اصلی،
+# بنرهای تبلیغاتی، گواهینامه‌ها، برندهای همکار، نظرات مشتریان، سوالات متداول، منوها.
+# قبلاً این‌ها فقط از Django Admin خام قابل مدیریت بودند؛ حالا در همین داشبورد هم هستند.
+# ===========================================================================
+
+class DashboardSiteSettingUpdateView(StaffRequiredMixin, UpdateView):
+    """تنظیمات سایت -- Singleton (فقط یک رکورد، همیشه pk=1)"""
+    model = SiteSetting
+    fields = [
+        "site_name", "logo", "favicon", "phone", "email", "address", "working_hours",
+        "map_embed_url", "instagram", "telegram", "whatsapp", "linkedin",
+        "footer_text", "default_meta_description", "google_analytics_id",
+    ]
+    template_name = "dashboard/generic_form.html"
+    success_url = reverse_lazy("dashboard:site_settings")
+
+    def get_object(self, queryset=None):
+        obj, _ = SiteSetting.objects.get_or_create(pk=1)
+        return obj
+
+    def form_valid(self, form):
+        django_messages.success(self.request, "تنظیمات سایت با موفقیت ذخیره شد.")
+        return super().form_valid(form)
+
+
+class DashboardHomeSlideListView(StaffRequiredMixin, ListView):
+    model = HomeSlide
+    template_name = "dashboard/core/home_slide_list.html"
+    context_object_name = "slides"
+
+
+class DashboardHomeSlideCreateView(StaffRequiredMixin, CreateView):
+    model = HomeSlide
+    fields = ["title", "subtitle", "image", "button_text", "button_url", "order", "is_active"]
+    template_name = "dashboard/generic_form.html"
+    success_url = reverse_lazy("dashboard:home_slide_list")
+
+
+class DashboardHomeSlideUpdateView(StaffRequiredMixin, UpdateView):
+    model = HomeSlide
+    fields = DashboardHomeSlideCreateView.fields
+    template_name = "dashboard/generic_form.html"
+    success_url = reverse_lazy("dashboard:home_slide_list")
+
+
+class DashboardHomeSlideDeleteView(StaffRequiredMixin, DeleteView):
+    model = HomeSlide
+    template_name = "dashboard/confirm_delete.html"
+    success_url = reverse_lazy("dashboard:home_slide_list")
+
+
+class DashboardPromoBannerListView(StaffRequiredMixin, ListView):
+    model = PromoBanner
+    template_name = "dashboard/core/promo_banner_list.html"
+    context_object_name = "banners"
+
+
+class DashboardPromoBannerCreateView(StaffRequiredMixin, CreateView):
+    model = PromoBanner
+    fields = ["image", "title", "link_url", "order", "is_active"]
+    template_name = "dashboard/generic_form.html"
+    success_url = reverse_lazy("dashboard:promo_banner_list")
+
+
+class DashboardPromoBannerUpdateView(StaffRequiredMixin, UpdateView):
+    model = PromoBanner
+    fields = DashboardPromoBannerCreateView.fields
+    template_name = "dashboard/generic_form.html"
+    success_url = reverse_lazy("dashboard:promo_banner_list")
+
+
+class DashboardPromoBannerDeleteView(StaffRequiredMixin, DeleteView):
+    model = PromoBanner
+    template_name = "dashboard/confirm_delete.html"
+    success_url = reverse_lazy("dashboard:promo_banner_list")
+
+
+class DashboardStatisticListView(StaffRequiredMixin, ListView):
+    model = Statistic
+    template_name = "dashboard/core/statistic_list.html"
+    context_object_name = "statistics"
+
+
+class DashboardStatisticCreateView(StaffRequiredMixin, CreateView):
+    model = Statistic
+    fields = ["title", "value", "icon", "order"]
+    template_name = "dashboard/generic_form.html"
+    success_url = reverse_lazy("dashboard:statistic_list")
+
+
+class DashboardStatisticUpdateView(StaffRequiredMixin, UpdateView):
+    model = Statistic
+    fields = DashboardStatisticCreateView.fields
+    template_name = "dashboard/generic_form.html"
+    success_url = reverse_lazy("dashboard:statistic_list")
+
+
+class DashboardStatisticDeleteView(StaffRequiredMixin, DeleteView):
+    model = Statistic
+    template_name = "dashboard/confirm_delete.html"
+    success_url = reverse_lazy("dashboard:statistic_list")
+
+
+class DashboardCertificateListView(StaffRequiredMixin, ListView):
+    model = Certificate
+    template_name = "dashboard/core/certificate_list.html"
+    context_object_name = "certificates"
+
+
+class DashboardCertificateCreateView(StaffRequiredMixin, CreateView):
+    model = Certificate
+    fields = ["title", "description", "image", "icon", "order"]
+    template_name = "dashboard/generic_form.html"
+    success_url = reverse_lazy("dashboard:certificate_list")
+
+
+class DashboardCertificateUpdateView(StaffRequiredMixin, UpdateView):
+    model = Certificate
+    fields = DashboardCertificateCreateView.fields
+    template_name = "dashboard/generic_form.html"
+    success_url = reverse_lazy("dashboard:certificate_list")
+
+
+class DashboardCertificateDeleteView(StaffRequiredMixin, DeleteView):
+    model = Certificate
+    template_name = "dashboard/confirm_delete.html"
+    success_url = reverse_lazy("dashboard:certificate_list")
+
+
+class DashboardPartnerListView(StaffRequiredMixin, ListView):
+    model = Partner
+    template_name = "dashboard/core/partner_list.html"
+    context_object_name = "partners"
+
+
+class DashboardPartnerCreateView(StaffRequiredMixin, CreateView):
+    model = Partner
+    fields = ["name", "tagline", "logo", "website", "order"]
+    template_name = "dashboard/generic_form.html"
+    success_url = reverse_lazy("dashboard:partner_list")
+
+
+class DashboardPartnerUpdateView(StaffRequiredMixin, UpdateView):
+    model = Partner
+    fields = DashboardPartnerCreateView.fields
+    template_name = "dashboard/generic_form.html"
+    success_url = reverse_lazy("dashboard:partner_list")
+
+
+class DashboardPartnerDeleteView(StaffRequiredMixin, DeleteView):
+    model = Partner
+    template_name = "dashboard/confirm_delete.html"
+    success_url = reverse_lazy("dashboard:partner_list")
+
+
+class DashboardTestimonialListView(StaffRequiredMixin, ListView):
+    model = Testimonial
+    template_name = "dashboard/core/testimonial_list.html"
+    context_object_name = "testimonials"
+
+
+class DashboardTestimonialCreateView(StaffRequiredMixin, CreateView):
+    model = Testimonial
+    fields = ["client_name", "company_name", "photo", "text", "rating", "order"]
+    template_name = "dashboard/generic_form.html"
+    success_url = reverse_lazy("dashboard:testimonial_list")
+
+
+class DashboardTestimonialUpdateView(StaffRequiredMixin, UpdateView):
+    model = Testimonial
+    fields = DashboardTestimonialCreateView.fields
+    template_name = "dashboard/generic_form.html"
+    success_url = reverse_lazy("dashboard:testimonial_list")
+
+
+class DashboardTestimonialDeleteView(StaffRequiredMixin, DeleteView):
+    model = Testimonial
+    template_name = "dashboard/confirm_delete.html"
+    success_url = reverse_lazy("dashboard:testimonial_list")
+
+
+class DashboardFAQListView(StaffRequiredMixin, ListView):
+    model = FAQ
+    template_name = "dashboard/core/faq_list.html"
+    context_object_name = "faqs"
+
+
+class DashboardFAQCreateView(StaffRequiredMixin, CreateView):
+    model = FAQ
+    fields = ["question", "answer", "order"]
+    template_name = "dashboard/generic_form.html"
+    success_url = reverse_lazy("dashboard:faq_list")
+
+
+class DashboardFAQUpdateView(StaffRequiredMixin, UpdateView):
+    model = FAQ
+    fields = DashboardFAQCreateView.fields
+    template_name = "dashboard/generic_form.html"
+    success_url = reverse_lazy("dashboard:faq_list")
+
+
+class DashboardFAQDeleteView(StaffRequiredMixin, DeleteView):
+    model = FAQ
+    template_name = "dashboard/confirm_delete.html"
+    success_url = reverse_lazy("dashboard:faq_list")
+
+
+class DashboardMenuListView(StaffRequiredMixin, ListView):
+    model = Menu
+    template_name = "dashboard/core/menu_list.html"
+    context_object_name = "menu_items"
+
+
+class DashboardMenuCreateView(StaffRequiredMixin, CreateView):
+    model = Menu
+    fields = ["title", "url", "parent", "location", "order", "is_active"]
+    template_name = "dashboard/generic_form.html"
+    success_url = reverse_lazy("dashboard:menu_list")
+
+
+class DashboardMenuUpdateView(StaffRequiredMixin, UpdateView):
+    model = Menu
+    fields = DashboardMenuCreateView.fields
+    template_name = "dashboard/generic_form.html"
+    success_url = reverse_lazy("dashboard:menu_list")
+
+
+class DashboardMenuDeleteView(StaffRequiredMixin, DeleteView):
+    model = Menu
+    template_name = "dashboard/confirm_delete.html"
+    success_url = reverse_lazy("dashboard:menu_list")

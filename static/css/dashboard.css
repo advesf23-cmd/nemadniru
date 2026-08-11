@@ -18,6 +18,7 @@
 }
 .dash-nav a i { width: 18px; text-align: center; }
 .dash-nav a:hover, .dash-nav a.active { background: rgba(249,115,22,.12); color: #F97316; }
+.dash-logout-btn:hover span { background: rgba(220,38,38,.15); color: #F87171 !important; }
 .dash-nav-title { color: #64748B; font-size: 0.72rem; text-transform: uppercase; padding: 1rem 1.5rem 0.4rem; letter-spacing: 1px; }
 
 .dash-main { flex: 1; min-width: 0; }
@@ -42,12 +43,7 @@
 .dash-table-card table { margin: 0; }
 .dash-table-card th { color: #64748B; font-weight: 600; font-size: 0.85rem; border-top: none; }
 
-/* جلوگیری از بیرون‌زدن جداول داشبورد از عرض صفحه در موبایل/تبلت.
-   قبلاً بعضی از قالب‌های داشبورد (سفارشات، نظرات، صندوق ورودی و...) جدول را
-   بدون هیچ راهی برای اسکرول افقی رندر می‌کردند و در گوشی از عرض صفحه بیرون
-   می‌زد. چون همه‌ی آن جداول داخل همین کلاس .dash-table-card قرار دارند،
-   یک قانون CSS این‌جا کل داشبورد را اصلاح می‌کند -- نیازی به تغییر تک‌تک
-   قالب‌ها نیست. */
+/* جلوگیری از بیرون‌زدن جداول داشبورد از عرض صفحه در موبایل/تبلت */
 @media (max-width: 768px) {
   .dash-table-card table {
     display: block;

@@ -1,0 +1,33 @@
+{% extends "dashboard/base_dashboard.html" %}
+{% block title %}اسلایدر صفحه اصلی{% endblock %}
+{% block dash_content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h5 class="mb-0">اسلایدر صفحه اصلی</h5>
+  <a href="{% url 'dashboard:home_slide_add' %}" class="btn btn-orange"><i class="fa-solid fa-plus me-1"></i> افزودن اسلاید</a>
+</div>
+<div class="alert alert-info small">
+  <i class="fa-solid fa-circle-info me-1"></i>
+  ابعاد پیشنهادی تصویر: ۱۶۰۰×۴۰۰ پیکسل. اسلایدهای «فعال» به‌ترتیب «ترتیب نمایش»، هر چند ثانیه در بنر بالای صفحه اصلی به‌صورت خودکار عوض می‌شوند.
+</div>
+<div class="row g-3">
+  {% for slide in slides %}
+  <div class="col-md-4">
+    <div class="dash-table-card p-2">
+      {% if slide.image %}<img src="{{ slide.image.url }}" class="w-100 rounded-2 mb-2" style="height:110px;object-fit:cover;">{% endif %}
+      <p class="small mb-1 fw-bold">{{ slide.title }}</p>
+      {% if slide.subtitle %}<p class="small text-muted mb-2">{{ slide.subtitle }}</p>{% endif %}
+      <p class="mb-2">
+        {% if slide.is_active %}<span class="badge bg-success">فعال</span>{% else %}<span class="badge bg-secondary">غیرفعال</span>{% endif %}
+        <span class="badge bg-light text-dark border">ترتیب: {{ slide.order }}</span>
+      </p>
+      <div class="d-flex gap-1">
+        <a href="{% url 'dashboard:home_slide_edit' slide.pk %}" class="btn btn-sm btn-outline-navy flex-grow-1"><i class="fa-solid fa-pen"></i> ویرایش</a>
+        <a href="{% url 'dashboard:home_slide_delete' slide.pk %}" class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-trash"></i></a>
+      </div>
+    </div>
+  </div>
+  {% empty %}
+  <div class="col-12 text-center text-muted py-4">هنوز اسلایدی ثبت نشده است.</div>
+  {% endfor %}
+</div>
+{% endblock %}

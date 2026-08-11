@@ -1,0 +1,27 @@
+{% extends "dashboard/base_dashboard.html" %}
+{% block title %}بنرهای تبلیغاتی{% endblock %}
+{% block dash_content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h5 class="mb-0">بنرهای تبلیغاتی (۴ کادر زیر اسلایدر صفحه اصلی)</h5>
+  <a href="{% url 'dashboard:promo_banner_add' %}" class="btn btn-orange"><i class="fa-solid fa-plus me-1"></i> افزودن بنر</a>
+</div>
+<div class="row g-3">
+  {% for banner in banners %}
+  <div class="col-md-3 col-6">
+    <div class="dash-table-card p-2">
+      {% if banner.image %}<img src="{{ banner.image.url }}" class="w-100 rounded-2 mb-2" style="height:110px;object-fit:cover;">{% endif %}
+      <p class="small mb-1">{{ banner.title|default:"بدون عنوان" }}</p>
+      <p class="mb-2">
+        {% if banner.is_active %}<span class="badge bg-success">فعال</span>{% else %}<span class="badge bg-secondary">غیرفعال</span>{% endif %}
+      </p>
+      <div class="d-flex gap-1">
+        <a href="{% url 'dashboard:promo_banner_edit' banner.pk %}" class="btn btn-sm btn-outline-navy flex-grow-1"><i class="fa-solid fa-pen"></i></a>
+        <a href="{% url 'dashboard:promo_banner_delete' banner.pk %}" class="btn btn-sm btn-outline-danger flex-grow-1"><i class="fa-solid fa-trash"></i></a>
+      </div>
+    </div>
+  </div>
+  {% empty %}
+  <div class="col-12 text-center text-muted py-4">هنوز بنر تبلیغاتی ثبت نشده است.</div>
+  {% endfor %}
+</div>
+{% endblock %}

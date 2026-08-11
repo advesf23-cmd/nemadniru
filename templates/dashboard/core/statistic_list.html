@@ -1,0 +1,26 @@
+{% extends "dashboard/base_dashboard.html" %}
+{% block title %}آمار صفحه اصلی{% endblock %}
+{% block dash_content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h5 class="mb-0">آمار صفحه اصلی (مثل «۳۰۰+ پروژه انجام‌شده»)</h5>
+  <a href="{% url 'dashboard:statistic_add' %}" class="btn btn-orange"><i class="fa-solid fa-plus me-1"></i> افزودن آمار</a>
+</div>
+<div class="dash-table-card">
+  <table class="table align-middle">
+    <thead><tr><th>عنوان</th><th>مقدار</th><th>ترتیب</th><th>عملیات</th></tr></thead>
+    <tbody>
+      {% for stat in statistics %}
+      <tr>
+        <td>{{ stat.title }}</td><td>{{ stat.value }}</td><td>{{ stat.order }}</td>
+        <td>
+          <a href="{% url 'dashboard:statistic_edit' stat.pk %}" class="btn btn-sm btn-outline-navy"><i class="fa-solid fa-pen"></i></a>
+          <a href="{% url 'dashboard:statistic_delete' stat.pk %}" class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-trash"></i></a>
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="4" class="text-center text-muted py-4">آماری ثبت نشده است.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

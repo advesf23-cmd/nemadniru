@@ -1,0 +1,36 @@
+{% extends "dashboard/base_dashboard.html" %}
+{% block title %}منوهای هدر/فوتر{% endblock %}
+{% block dash_content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h5 class="mb-0">منوهای هدر و فوتر</h5>
+  <a href="{% url 'dashboard:menu_add' %}" class="btn btn-orange"><i class="fa-solid fa-plus me-1"></i> افزودن آیتم منو</a>
+</div>
+<div class="alert alert-info small">
+  <i class="fa-solid fa-circle-info me-1"></i>
+  توجه: منوی اصلی هدر سایت (بالای صفحه) به‌صورت ثابت در قالب طراحی شده و از
+  این لیست خوانده نمی‌شود. این بخش فقط برای آیتم‌های اضافی منوی فوتر («همکاری
+  با ما») و منوهای سفارشی آینده است.
+</div>
+<div class="dash-table-card">
+  <table class="table align-middle">
+    <thead><tr><th>عنوان</th><th>آدرس</th><th>محل نمایش</th><th>والد</th><th>فعال</th><th>عملیات</th></tr></thead>
+    <tbody>
+      {% for item in menu_items %}
+      <tr>
+        <td>{{ item.title }}</td>
+        <td class="small text-muted">{{ item.url }}</td>
+        <td>{{ item.get_location_display }}</td>
+        <td>{{ item.parent|default:"—" }}</td>
+        <td>{% if item.is_active %}<span class="badge bg-success">فعال</span>{% else %}<span class="badge bg-secondary">غیرفعال</span>{% endif %}</td>
+        <td>
+          <a href="{% url 'dashboard:menu_edit' item.pk %}" class="btn btn-sm btn-outline-navy"><i class="fa-solid fa-pen"></i></a>
+          <a href="{% url 'dashboard:menu_delete' item.pk %}" class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-trash"></i></a>
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="6" class="text-center text-muted py-4">آیتم منویی ثبت نشده است.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

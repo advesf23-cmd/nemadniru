@@ -1,0 +1,24 @@
+{% extends "dashboard/base_dashboard.html" %}
+{% block title %}گواهینامه‌ها{% endblock %}
+{% block dash_content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h5 class="mb-0">گواهینامه‌ها و مجوزها</h5>
+  <a href="{% url 'dashboard:certificate_add' %}" class="btn btn-orange"><i class="fa-solid fa-plus me-1"></i> افزودن گواهینامه</a>
+</div>
+<div class="row g-3">
+  {% for cert in certificates %}
+  <div class="col-md-3 col-6">
+    <div class="dash-table-card p-2 text-center">
+      {% if cert.image %}<img src="{{ cert.image.url }}" class="mb-2" style="max-height:70px;">{% endif %}
+      <p class="small mb-2">{{ cert.title }}</p>
+      <div class="d-flex gap-1">
+        <a href="{% url 'dashboard:certificate_edit' cert.pk %}" class="btn btn-sm btn-outline-navy flex-grow-1"><i class="fa-solid fa-pen"></i></a>
+        <a href="{% url 'dashboard:certificate_delete' cert.pk %}" class="btn btn-sm btn-outline-danger flex-grow-1"><i class="fa-solid fa-trash"></i></a>
+      </div>
+    </div>
+  </div>
+  {% empty %}
+  <div class="col-12 text-center text-muted py-4">گواهینامه‌ای ثبت نشده است.</div>
+  {% endfor %}
+</div>
+{% endblock %}

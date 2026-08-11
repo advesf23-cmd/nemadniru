@@ -72,4 +72,50 @@ urlpatterns = [
     path("coupons/", views.DashboardCouponListView.as_view(), name="coupon_list"),
     path("coupons/add/", views.DashboardCouponCreateView.as_view(), name="coupon_add"),
     path("coupons/<int:pk>/edit/", views.DashboardCouponUpdateView.as_view(), name="coupon_edit"),
+
+    # ---------------------------------------------------------------------
+    # محتوای سایت (اپ core) -- تنظیمات سایت، اسلایدر، بنر تبلیغاتی،
+    # گواهینامه‌ها، برندهای همکار، نظرات مشتریان، سوالات متداول، منوها
+    # ---------------------------------------------------------------------
+    path("site-settings/", views.DashboardSiteSettingUpdateView.as_view(), name="site_settings"),
+
+    path("home-slides/", views.DashboardHomeSlideListView.as_view(), name="home_slide_list"),
+    path("home-slides/add/", views.DashboardHomeSlideCreateView.as_view(), name="home_slide_add"),
+    path("home-slides/<int:pk>/edit/", views.DashboardHomeSlideUpdateView.as_view(), name="home_slide_edit"),
+    path("home-slides/<int:pk>/delete/", views.DashboardHomeSlideDeleteView.as_view(), name="home_slide_delete"),
+
+    path("promo-banners/", views.DashboardPromoBannerListView.as_view(), name="promo_banner_list"),
+    path("promo-banners/add/", views.DashboardPromoBannerCreateView.as_view(), name="promo_banner_add"),
+    path("promo-banners/<int:pk>/edit/", views.DashboardPromoBannerUpdateView.as_view(), name="promo_banner_edit"),
+    path("promo-banners/<int:pk>/delete/", views.DashboardPromoBannerDeleteView.as_view(), name="promo_banner_delete"),
+
+    path("statistics/", views.DashboardStatisticListView.as_view(), name="statistic_list"),
+    path("statistics/add/", views.DashboardStatisticCreateView.as_view(), name="statistic_add"),
+    path("statistics/<int:pk>/edit/", views.DashboardStatisticUpdateView.as_view(), name="statistic_edit"),
+    path("statistics/<int:pk>/delete/", views.DashboardStatisticDeleteView.as_view(), name="statistic_delete"),
+
+    path("certificates/", views.DashboardCertificateListView.as_view(), name="certificate_list"),
+    path("certificates/add/", views.DashboardCertificateCreateView.as_view(), name="certificate_add"),
+    path("certificates/<int:pk>/edit/", views.DashboardCertificateUpdateView.as_view(), name="certificate_edit"),
+    path("certificates/<int:pk>/delete/", views.DashboardCertificateDeleteView.as_view(), name="certificate_delete"),
+
+    path("partners/", views.DashboardPartnerListView.as_view(), name="partner_list"),
+    path("partners/add/", views.DashboardPartnerCreateView.as_view(), name="partner_add"),
+    path("partners/<int:pk>/edit/", views.DashboardPartnerUpdateView.as_view(), name="partner_edit"),
+    path("partners/<int:pk>/delete/", views.DashboardPartnerDeleteView.as_view(), name="partner_delete"),
+
+    path("testimonials/", views.DashboardTestimonialListView.as_view(), name="testimonial_list"),
+    path("testimonials/add/", views.DashboardTestimonialCreateView.as_view(), name="testimonial_add"),
+    path("testimonials/<int:pk>/edit/", views.DashboardTestimonialUpdateView.as_view(), name="testimonial_edit"),
+    path("testimonials/<int:pk>/delete/", views.DashboardTestimonialDeleteView.as_view(), name="testimonial_delete"),
+
+    path("faqs/", views.DashboardFAQListView.as_view(), name="faq_list"),
+    path("faqs/add/", views.DashboardFAQCreateView.as_view(), name="faq_add"),
+    path("faqs/<int:pk>/edit/", views.DashboardFAQUpdateView.as_view(), name="faq_edit"),
+    path("faqs/<int:pk>/delete/", views.DashboardFAQDeleteView.as_view(), name="faq_delete"),
+
+    path("menus/", views.DashboardMenuListView.as_view(), name="menu_list"),
+    path("menus/add/", views.DashboardMenuCreateView.as_view(), name="menu_add"),
+    path("menus/<int:pk>/edit/", views.DashboardMenuUpdateView.as_view(), name="menu_edit"),
+    path("menus/<int:pk>/delete/", views.DashboardMenuDeleteView.as_view(), name="menu_delete"),
 ]

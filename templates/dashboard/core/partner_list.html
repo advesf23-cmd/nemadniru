@@ -1,0 +1,25 @@
+{% extends "dashboard/base_dashboard.html" %}
+{% block title %}برندهای همکار{% endblock %}
+{% block dash_content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h5 class="mb-0">برندهای همکار / تأمین‌کننده</h5>
+  <a href="{% url 'dashboard:partner_add' %}" class="btn btn-orange"><i class="fa-solid fa-plus me-1"></i> افزودن برند</a>
+</div>
+<div class="row g-3">
+  {% for partner in partners %}
+  <div class="col-md-3 col-6">
+    <div class="dash-table-card p-2 text-center">
+      {% if partner.logo %}<img src="{{ partner.logo.url }}" class="mb-2" style="max-height:60px;">{% endif %}
+      <p class="small mb-0 fw-bold">{{ partner.name }}</p>
+      {% if partner.tagline %}<p class="small text-muted mb-2">{{ partner.tagline }}</p>{% endif %}
+      <div class="d-flex gap-1 mt-2">
+        <a href="{% url 'dashboard:partner_edit' partner.pk %}" class="btn btn-sm btn-outline-navy flex-grow-1"><i class="fa-solid fa-pen"></i></a>
+        <a href="{% url 'dashboard:partner_delete' partner.pk %}" class="btn btn-sm btn-outline-danger flex-grow-1"><i class="fa-solid fa-trash"></i></a>
+      </div>
+    </div>
+  </div>
+  {% empty %}
+  <div class="col-12 text-center text-muted py-4">برند همکاری ثبت نشده است.</div>
+  {% endfor %}
+</div>
+{% endblock %}
