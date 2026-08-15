@@ -3,471 +3,490 @@
    نسخه اصلاح‌شده (دور هفتم) -- پالت رنگی جدید + دکمه‌های کوچک‌تر
    ========================================================= */
 
-:root {
-  /* پالت رنگی درخواستی */
-  --smart-blue: #0466c8;
-  --sapphire: #0353a4;
-  --regal-navy: #023e7d;
-  --prussian-blue: #002855;
-  --prussian-blue-2: #001845;
-  --prussian-blue-3: #001233;
-  --twilight-indigo: #33415c;
-  --blue-slate: #5c677d;
-  --slate-grey: #7d8597;
-  --lavender-grey: #979dac;
+   :root {
+    /* پالت رنگی درخواستی */
+    --smart-blue: #0466c8;
+    --sapphire: #0353a4;
+    --regal-navy: #023e7d;
+    --prussian-blue: #002855;
+    --prussian-blue-2: #001845;
+    --prussian-blue-3: #001233;
+    --twilight-indigo: #33415c;
+    --blue-slate: #5c677d;
+    --slate-grey: #7d8597;
+    --lavender-grey: #979dac;
+  
+    /* بازتعریف متغیرهای اصلی سایت (تعریف‌شده در style.css) بر اساس پالت جدید.
+       چون این فایل بعد از style.css لود می‌شود، همین مقادیر در کل سایت
+       (دکمه‌ها، هدر، فوتر، بخش‌های navy، هاور کارت‌ها و ...) جایگزین می‌شوند،
+       بدون نیاز به دست‌کاری خود style.css. */
+    --color-navy: var(--prussian-blue);
+    --color-navy-light: var(--regal-navy);
+    --color-navy-lighter: var(--sapphire);
+  }
+  
+  /* ---------------- هدر: ردیف بالا ---------------- */
+  .site-header-v2 {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 2px 16px rgba(0, 40, 85, 0.08);
+  }
+  
+  .header-top {
+    background: #fff;
+    border-top: 3px solid var(--color-orange);
+  }
+  
+  .header-top-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    padding: 0.9rem 0;
+  }
+  
+  .header-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    text-decoration: none;
+    flex-shrink: 0;
+  }
+  .header-brand img { height: 44px; width: auto; }
+  .header-brand i { font-size: 1.6rem; color: var(--color-orange); }
+  .header-brand span {
+    font-weight: 800;
+    font-size: 1.15rem;
+    color: var(--color-navy);
+    white-space: nowrap;
+  }
+  
+  .header-search-form {
+    flex: 1 1 auto;
+    max-width: 560px;
+    display: flex;
+    background: var(--color-light-gray);
+    border-radius: 50px;
+    overflow: hidden;
+  }
+  .header-search-input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    padding: 0.65rem 1.25rem;
+    outline: none;
+    font-family: inherit;
+  }
+  .header-search-btn {
+    border: none;
+    background: transparent;
+    color: var(--color-gray);
+    padding: 0 1.1rem;
+    cursor: pointer;
+  }
+  .header-search-btn:hover { color: var(--color-orange); }
+  
+  .header-top-icons {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    flex-shrink: 0;
+  }
+  .header-icon-link {
+    position: relative;
+    color: var(--color-navy);
+    font-size: 1.15rem;
+    text-decoration: none;
+  }
+  .header-icon-link:hover { color: var(--color-orange); }
+  .header-icon-badge {
+    position: absolute;
+    top: -8px;
+    left: -10px;
+    background: var(--color-orange);
+    color: #fff;
+    font-size: 0.65rem;
+    font-weight: 700;
+    min-width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 3px;
+  }
+  
+  /* -----------------------------------------------------------------------
+     دکمه‌های ورود/ثبت‌نام، حساب‌کاربری و خروج -- نسخه‌ی کوچک‌تر و مدرن‌تر
+     (بدون border ضخیم، فقط یک پس‌زمینه‌ی ملایم + رنگ متن از پالت جدید)
+     ----------------------------------------------------------------------- */
+  .header-login-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    border: none;
+    background: rgba(4, 102, 200, 0.08);
+    color: var(--sapphire);
+    text-decoration: none;
+    padding: 0.4rem 0.85rem;
+    border-radius: 50px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    white-space: nowrap;
+    transition: var(--transition);
+  }
+  .header-login-btn i { font-size: 0.78rem; }
+  .header-login-btn:hover { background: var(--sapphire); color: #fff; }
+  
+  .header-user-menu {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+  .header-logout-form { margin: 0; }
+  .header-logout-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    border: none;
+    background: rgba(220, 38, 38, 0.08);
+    color: #DC2626;
+    padding: 0.4rem 0.75rem;
+    border-radius: 50px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    font-family: inherit;
+    transition: var(--transition);
+  }
+  .header-logout-btn i { font-size: 0.75rem; }
+  .header-logout-btn:hover { background: #DC2626; color: #fff; }
+  
+  /* ---------------- هدر: ردیف منو ---------------- */
+  .header-nav {
+    background: var(--color-light-gray);
+    border-bottom: 1px solid #E2E8F0;
+  }
+  .header-nav-inner {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 2rem;
+    min-height: 46px;
+  }
+  
+  .header-nav-categories { position: relative; flex-shrink: 0; }
+  .categories-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--color-navy);
+    color: #fff;
+    border: none;
+    padding: 0.55rem 1.2rem;
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .categories-toggle:hover { background: var(--color-navy-light); }
+  
+  .categories-dropdown {
+    display: none;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    min-width: 240px;
+    max-width: 92vw;
+    background: #fff;
+    box-shadow: var(--shadow-hover);
+    border-radius: 0 0 0.6rem 0.6rem;
+    z-index: 50;
+    padding: 0.5rem 0;
+  }
+  .categories-dropdown.open { display: block; }
+  .categories-dropdown > a {
+    display: block;
+    padding: 0.55rem 1.2rem;
+    color: var(--color-navy);
+    text-decoration: none;
+    font-size: 0.88rem;
+  }
+  .categories-dropdown > a:hover { background: var(--color-light-gray); color: var(--color-orange); }
+  
+  .categories-dropdown-item { position: relative; }
+  .categories-dropdown-item > a {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding: 0.55rem 1.2rem;
+    color: var(--color-navy);
+    text-decoration: none;
+    font-size: 0.88rem;
+  }
+  .categories-dropdown-item > a:hover { background: var(--color-light-gray); color: var(--color-orange); }
+  .submenu-caret { font-size: 0.7rem; color: var(--color-gray); }
+  
+  .categories-submenu {
+    display: none;
+    position: absolute;
+    top: 0;
+    right: 100%;
+    min-width: 200px;
+    background: #fff;
+    box-shadow: var(--shadow-hover);
+    border-radius: 0.6rem;
+    padding: 0.5rem 0;
+    margin-inline-end: 2px;
+  }
+  .categories-dropdown-item.has-children:hover > .categories-submenu,
+  .categories-dropdown-item.has-children.open > .categories-submenu {
+    display: block;
+  }
+  .categories-submenu a {
+    display: block;
+    padding: 0.55rem 1.2rem;
+    color: var(--color-navy);
+    text-decoration: none;
+    font-size: 0.85rem;
+    white-space: nowrap;
+  }
+  .categories-submenu a:hover { background: var(--color-light-gray); color: var(--color-orange); }
+  
+  .header-nav-links {
+    display: flex;
+    align-items: center;
+    gap: 1.75rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    flex-wrap: wrap;
+  }
+  .header-nav-links a {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: var(--color-navy);
+    text-decoration: none;
+    font-size: 0.88rem;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+  .header-nav-links a:hover { color: var(--color-orange); }
+  
+  /* ---------------- اسلایدر بنر اصلی (1600×400 در دسکتاپ) ---------------- */
+  .hero-slider-section {
+    background: var(--color-light-gray);
+    padding-top: 1.25rem;
+  }
+  .hero-slider {
+    position: relative;
+    max-width: 1600px;
+    margin: 0 auto;
+    aspect-ratio: 1600 / 400;
+    overflow: hidden;
+    border-radius: 0;
+  }
+  .hero-slider-track { position: relative; width: 100%; height: 100%; overflow: hidden; }
 
-  /* بازتعریف متغیرهای اصلی سایت (تعریف‌شده در style.css) بر اساس پالت جدید.
-     چون این فایل بعد از style.css لود می‌شود، همین مقادیر در کل سایت
-     (دکمه‌ها، هدر، فوتر، بخش‌های navy، هاور کارت‌ها و ...) جایگزین می‌شوند،
-     بدون نیاز به دست‌کاری خود style.css. */
-  --color-navy: var(--prussian-blue);
-  --color-navy-light: var(--regal-navy);
-  --color-navy-lighter: var(--sapphire);
-}
-
-/* ---------------- هدر: ردیف بالا ---------------- */
-.site-header-v2 {
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-  box-shadow: 0 2px 16px rgba(0, 40, 85, 0.08);
-}
-
-.header-top {
-  background: #fff;
-  border-top: 3px solid var(--color-orange);
-}
-
-.header-top-inner {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1.5rem;
-  padding: 0.9rem 0;
-}
-
-.header-brand {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  text-decoration: none;
-  flex-shrink: 0;
-}
-.header-brand img { height: 44px; width: auto; }
-.header-brand i { font-size: 1.6rem; color: var(--color-orange); }
-.header-brand span {
-  font-weight: 800;
-  font-size: 1.15rem;
-  color: var(--color-navy);
-  white-space: nowrap;
-}
-
-.header-search-form {
-  flex: 1 1 auto;
-  max-width: 560px;
-  display: flex;
-  background: var(--color-light-gray);
-  border-radius: 50px;
-  overflow: hidden;
-}
-.header-search-input {
-  flex: 1;
-  border: none;
-  background: transparent;
-  padding: 0.65rem 1.25rem;
-  outline: none;
-  font-family: inherit;
-}
-.header-search-btn {
-  border: none;
-  background: transparent;
-  color: var(--color-gray);
-  padding: 0 1.1rem;
-  cursor: pointer;
-}
-.header-search-btn:hover { color: var(--color-orange); }
-
-.header-top-icons {
-  display: flex;
-  align-items: center;
-  gap: 0.7rem;
-  flex-shrink: 0;
-}
-.header-icon-link {
-  position: relative;
-  color: var(--color-navy);
-  font-size: 1.15rem;
-  text-decoration: none;
-}
-.header-icon-link:hover { color: var(--color-orange); }
-.header-icon-badge {
-  position: absolute;
-  top: -8px;
-  left: -10px;
-  background: var(--color-orange);
-  color: #fff;
-  font-size: 0.65rem;
-  font-weight: 700;
-  min-width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 3px;
-}
-
-/* -----------------------------------------------------------------------
-   دکمه‌های ورود/ثبت‌نام، حساب‌کاربری و خروج -- نسخه‌ی کوچک‌تر و مدرن‌تر
-   (بدون border ضخیم، فقط یک پس‌زمینه‌ی ملایم + رنگ متن از پالت جدید)
-   ----------------------------------------------------------------------- */
-.header-login-btn {
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
-  border: none;
-  background: rgba(4, 102, 200, 0.08);
-  color: var(--sapphire);
-  text-decoration: none;
-  padding: 0.4rem 0.85rem;
-  border-radius: 50px;
-  font-size: 0.78rem;
-  font-weight: 600;
-  white-space: nowrap;
-  transition: var(--transition);
-}
-.header-login-btn i { font-size: 0.78rem; }
-.header-login-btn:hover { background: var(--sapphire); color: #fff; }
-
-.header-user-menu {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-}
-.header-logout-form { margin: 0; }
-.header-logout-btn {
-  display: flex;
-  align-items: center;
-  gap: 0.3rem;
-  border: none;
-  background: rgba(220, 38, 38, 0.08);
-  color: #DC2626;
-  padding: 0.4rem 0.75rem;
-  border-radius: 50px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  cursor: pointer;
-  white-space: nowrap;
-  font-family: inherit;
-  transition: var(--transition);
-}
-.header-logout-btn i { font-size: 0.75rem; }
-.header-logout-btn:hover { background: #DC2626; color: #fff; }
-
-/* ---------------- هدر: ردیف منو ---------------- */
-.header-nav {
-  background: var(--color-light-gray);
-  border-bottom: 1px solid #E2E8F0;
-}
-.header-nav-inner {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 2rem;
-  min-height: 46px;
-}
-
-.header-nav-categories { position: relative; flex-shrink: 0; }
-.categories-toggle {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  background: var(--color-navy);
-  color: #fff;
-  border: none;
-  padding: 0.55rem 1.2rem;
-  font-size: 0.88rem;
-  font-weight: 600;
-  cursor: pointer;
-}
-.categories-toggle:hover { background: var(--color-navy-light); }
-
-.categories-dropdown {
-  display: none;
-  position: absolute;
-  top: 100%;
-  right: 0;
-  min-width: 240px;
-  max-width: 92vw;
-  background: #fff;
-  box-shadow: var(--shadow-hover);
-  border-radius: 0 0 0.6rem 0.6rem;
-  z-index: 50;
-  padding: 0.5rem 0;
-}
-.categories-dropdown.open { display: block; }
-.categories-dropdown > a {
-  display: block;
-  padding: 0.55rem 1.2rem;
-  color: var(--color-navy);
-  text-decoration: none;
-  font-size: 0.88rem;
-}
-.categories-dropdown > a:hover { background: var(--color-light-gray); color: var(--color-orange); }
-
-.categories-dropdown-item { position: relative; }
-.categories-dropdown-item > a {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.5rem;
-  padding: 0.55rem 1.2rem;
-  color: var(--color-navy);
-  text-decoration: none;
-  font-size: 0.88rem;
-}
-.categories-dropdown-item > a:hover { background: var(--color-light-gray); color: var(--color-orange); }
-.submenu-caret { font-size: 0.7rem; color: var(--color-gray); }
-
-.categories-submenu {
-  display: none;
-  position: absolute;
-  top: 0;
-  right: 100%;
-  min-width: 200px;
-  background: #fff;
-  box-shadow: var(--shadow-hover);
-  border-radius: 0.6rem;
-  padding: 0.5rem 0;
-  margin-inline-end: 2px;
-}
-.categories-dropdown-item.has-children:hover > .categories-submenu,
-.categories-dropdown-item.has-children.open > .categories-submenu {
-  display: block;
-}
-.categories-submenu a {
-  display: block;
-  padding: 0.55rem 1.2rem;
-  color: var(--color-navy);
-  text-decoration: none;
-  font-size: 0.85rem;
-  white-space: nowrap;
-}
-.categories-submenu a:hover { background: var(--color-light-gray); color: var(--color-orange); }
-
-.header-nav-links {
-  display: flex;
-  align-items: center;
-  gap: 1.75rem;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  flex-wrap: wrap;
-}
-.header-nav-links a {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  color: var(--color-navy);
-  text-decoration: none;
-  font-size: 0.88rem;
-  font-weight: 500;
-  white-space: nowrap;
-}
-.header-nav-links a:hover { color: var(--color-orange); }
-
-/* ---------------- اسلایدر بنر اصلی (1600×400 در دسکتاپ) ---------------- */
-.hero-slider-section {
-  background: var(--color-light-gray);
-  padding-top: 1.25rem;
-}
-.hero-slider {
-  position: relative;
-  max-width: 1600px;
-  margin: 0 auto;
-  aspect-ratio: 1600 / 400;
-  overflow: hidden;
-  border-radius: 0;
-}
-.hero-slider-track { position: relative; width: 100%; height: 100%; }
+/*
+  افکت جدید اسلایدر: به‌جای محو شدن ساده (Fade)، اسلاید قبلی هم‌زمان به سمت
+  راست خارج می‌شود و اسلاید بعدی از سمت چپ وارد می‌شود (Push Transition).
+  حالت پیش‌فرض هر اسلاید (نه فعال، نه در حال خروج) همیشه «آماده‌ی ورود از چپ»
+  است (translateX(-100%))؛ چون طبق خواسته‌ی شما، ورود همیشه از چپ اتفاق
+  می‌افتد، فارغ از اینکه کدام اسلاید بعدی انتخاب شود.
+*/
 .hero-slide {
   position: absolute;
   inset: 0;
-  opacity: 0;
+  transform: translateX(-100%);
   visibility: hidden;
-  transition: opacity 0.6s ease;
+  transition: transform 0.6s ease;
+  z-index: 1;
 }
-.hero-slide.active { opacity: 1; visibility: visible; }
-.hero-slide-link { display: block; width: 100%; height: 100%; }
-.hero-slide img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
+.hero-slide.active {
+  transform: translateX(0);
+  visibility: visible;
+  z-index: 3;
 }
-.hero-slide-placeholder {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg, var(--color-navy-light), var(--color-navy));
-  color: rgba(255,255,255,.7);
-  text-align: center;
-  padding: 1rem;
+.hero-slide.leaving {
+  transform: translateX(100%);
+  visibility: visible;
+  z-index: 2;
 }
-.hero-slide-caption {
-  position: absolute;
-  bottom: 0; right: 0; left: 0;
-  padding: 2rem 3rem;
-  background: linear-gradient(0deg, rgba(0,40,85,.85), transparent);
-  color: #fff;
-  text-align: right;
-}
-.hero-slide-caption h3 { color: #fff; margin-bottom: .3rem; }
-.hero-slide-caption p { margin-bottom: .6rem; opacity: .85; }
-
-.hero-slider-dots {
-  position: absolute;
-  bottom: 14px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  gap: 8px;
-  z-index: 5;
-}
-.hero-dot {
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  border: none;
-  background: rgba(0,40,85,.35);
-  cursor: pointer;
-  padding: 0;
-  transition: var(--transition);
-}
-.hero-dot.active { background: var(--color-navy); width: 22px; border-radius: 6px; }
-
-/* ---------------- ۴ کادر تبلیغاتی ---------------- */
-.promo-banners-section {
-  background: var(--color-light-gray);
-  padding: 1.5rem 0 2.5rem;
-}
-.promo-banners-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 1.25rem;
-}
-.promo-banner-box {
-  display: block;
-  aspect-ratio: 1 / 1;
-  border-radius: var(--radius-md);
-  overflow: hidden;
-  background: #fff;
-  box-shadow: var(--shadow-soft);
-}
-.promo-banner-box img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.promo-banner-placeholder {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  color: var(--color-gray);
-  background: repeating-linear-gradient(45deg, #EDF1F5, #EDF1F5 10px, #F4F6F8 10px, #F4F6F8 20px);
-  font-size: 0.85rem;
-}
-
-/* =========================================================
-   رفع به‌هم‌ریختگی فرم‌ها در صفحاتی که فیلدها بدون کلاس form-control رندر می‌شوند
-   ========================================================= */
-.form-card form input[type="text"],
-.form-card form input[type="email"],
-.form-card form input[type="tel"],
-.form-card form input[type="number"],
-.form-card form input[type="password"],
-.form-card form input[type="url"],
-.form-card form input[type="file"],
-.form-card form select,
-.form-card form textarea,
-form.header-search-form ~ form input[type="text"] {
-  display: block;
-  width: 100%;
-  border-radius: 0.6rem;
-  padding: 0.7rem 1rem;
-  border: 1px solid #E2E8F0;
-  font-family: inherit;
-  font-size: 0.95rem;
-  background: #fff;
-  margin-bottom: 0;
-}
-.form-card form input:focus,
-.form-card form select:focus,
-.form-card form textarea:focus {
-  outline: none;
-  border-color: var(--color-orange);
-  box-shadow: 0 0 0 0.2rem rgba(249,115,22,.15);
-}
-.form-card form textarea { min-height: 110px; resize: vertical; }
-.form-card form ul { list-style: none; padding: 0; margin: 0; }
-.form-card form > div,
-.form-card form .row > div { margin-bottom: 1rem; }
-
-/* =========================================================
-   بنر برجسته‌ی خطای فرم در بالای صفحه (مثلاً تسویه‌حساب ناقص)
-   ========================================================= */
-.top-form-errors {
-  background: #FEF2F2;
-  border: 1px solid #FCA5A5;
-  border-radius: var(--radius-md);
-  padding: 1rem 1.25rem;
-  margin-bottom: 1.5rem;
-}
-.top-form-errors h6 {
-  color: #B91C1C;
-  margin-bottom: 0.5rem;
-  font-size: 0.95rem;
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-}
-.top-form-errors ul { margin: 0; padding-inline-start: 1.2rem; }
-.top-form-errors li { color: #B91C1C; font-size: 0.88rem; margin-bottom: 0.2rem; }
-
-/* =========================================================
-   رفع بیرون‌زدن جداول از عرض صفحه در موبایل
-   ========================================================= */
-@media (max-width: 768px) {
-  .form-card table {
+  .hero-slide-link { display: block; width: 100%; height: 100%; }
+  .hero-slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .hero-slide-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--color-navy-light), var(--color-navy));
+    color: rgba(255,255,255,.7);
+    text-align: center;
+    padding: 1rem;
+  }
+  .hero-slide-caption {
+    position: absolute;
+    bottom: 0; right: 0; left: 0;
+    padding: 2rem 3rem;
+    background: linear-gradient(0deg, rgba(0,40,85,.85), transparent);
+    color: #fff;
+    text-align: right;
+  }
+  .hero-slide-caption h3 { color: #fff; margin-bottom: .3rem; }
+  .hero-slide-caption p { margin-bottom: .6rem; opacity: .85; }
+  
+  .hero-slider-dots {
+    position: absolute;
+    bottom: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 8px;
+    z-index: 5;
+  }
+  .hero-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(0,40,85,.35);
+    cursor: pointer;
+    padding: 0;
+    transition: var(--transition);
+  }
+  .hero-dot.active { background: var(--color-navy); width: 22px; border-radius: 6px; }
+  
+  /* ---------------- ۴ کادر تبلیغاتی ---------------- */
+  .promo-banners-section {
+    background: var(--color-light-gray);
+    padding: 1.5rem 0 2.5rem;
+  }
+  .promo-banners-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.25rem;
+  }
+  .promo-banner-box {
+    display: block;
+    aspect-ratio: 1 / 1;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    background: #fff;
+    box-shadow: var(--shadow-soft);
+  }
+  .promo-banner-box img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .promo-banner-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    color: var(--color-gray);
+    background: repeating-linear-gradient(45deg, #EDF1F5, #EDF1F5 10px, #F4F6F8 10px, #F4F6F8 20px);
+    font-size: 0.85rem;
+  }
+  
+  /* =========================================================
+     رفع به‌هم‌ریختگی فرم‌ها در صفحاتی که فیلدها بدون کلاس form-control رندر می‌شوند
+     ========================================================= */
+  .form-card form input[type="text"],
+  .form-card form input[type="email"],
+  .form-card form input[type="tel"],
+  .form-card form input[type="number"],
+  .form-card form input[type="password"],
+  .form-card form input[type="url"],
+  .form-card form input[type="file"],
+  .form-card form select,
+  .form-card form textarea,
+  form.header-search-form ~ form input[type="text"] {
     display: block;
     width: 100%;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    white-space: nowrap;
+    border-radius: 0.6rem;
+    padding: 0.7rem 1rem;
+    border: 1px solid #E2E8F0;
+    font-family: inherit;
+    font-size: 0.95rem;
+    background: #fff;
+    margin-bottom: 0;
   }
-}
-
-/* ---------------- Responsive ---------------- */
-@media (max-width: 992px) {
-  .header-top-inner { flex-wrap: wrap; }
-  .header-search-form { order: 3; max-width: 100%; flex: 1 1 100%; }
-  .promo-banners-grid { grid-template-columns: repeat(2, 1fr); }
-  .header-nav-inner { flex-wrap: wrap; gap: 0.75rem; padding: 0.5rem 0; }
-  .hero-slider { aspect-ratio: 3 / 1; }
-}
-
-@media (max-width: 768px) {
-  .header-nav-links { gap: 1rem; flex-wrap: wrap; }
-  .header-brand span { display: none; }
-  .hero-slide-caption { padding: 1.25rem 1.5rem; }
-  .categories-submenu { position: static; box-shadow: none; border-radius: 0; padding-right: 1rem; margin: 0; }
-}
-
-@media (max-width: 576px) {
-  .hero-slider { aspect-ratio: 2 / 1; }
-  .hero-slide-caption h3 { font-size: 1.05rem; margin-bottom: .2rem; }
-  .hero-slide-caption p { font-size: .8rem; margin-bottom: .4rem; }
-  .hero-slide-caption .btn { padding: .4rem 1rem; font-size: .8rem; }
-  .categories-dropdown { min-width: 0; width: 92vw; }
-}
+  .form-card form input:focus,
+  .form-card form select:focus,
+  .form-card form textarea:focus {
+    outline: none;
+    border-color: var(--color-orange);
+    box-shadow: 0 0 0 0.2rem rgba(249,115,22,.15);
+  }
+  .form-card form textarea { min-height: 110px; resize: vertical; }
+  .form-card form ul { list-style: none; padding: 0; margin: 0; }
+  .form-card form > div,
+  .form-card form .row > div { margin-bottom: 1rem; }
+  
+  /* =========================================================
+     بنر برجسته‌ی خطای فرم در بالای صفحه (مثلاً تسویه‌حساب ناقص)
+     ========================================================= */
+  .top-form-errors {
+    background: #FEF2F2;
+    border: 1px solid #FCA5A5;
+    border-radius: var(--radius-md);
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.5rem;
+  }
+  .top-form-errors h6 {
+    color: #B91C1C;
+    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+  .top-form-errors ul { margin: 0; padding-inline-start: 1.2rem; }
+  .top-form-errors li { color: #B91C1C; font-size: 0.88rem; margin-bottom: 0.2rem; }
+  
+  /* =========================================================
+     رفع بیرون‌زدن جداول از عرض صفحه در موبایل
+     ========================================================= */
+  @media (max-width: 768px) {
+    .form-card table {
+      display: block;
+      width: 100%;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      white-space: nowrap;
+    }
+  }
+  
+  /* ---------------- Responsive ---------------- */
+  @media (max-width: 992px) {
+    .header-top-inner { flex-wrap: wrap; }
+    .header-search-form { order: 3; max-width: 100%; flex: 1 1 100%; }
+    .promo-banners-grid { grid-template-columns: repeat(2, 1fr); }
+    .header-nav-inner { flex-wrap: wrap; gap: 0.75rem; padding: 0.5rem 0; }
+    .hero-slider { aspect-ratio: 3 / 1; }
+  }
+  
+  @media (max-width: 768px) {
+    .header-nav-links { gap: 1rem; flex-wrap: wrap; }
+    .header-brand span { display: none; }
+    .hero-slide-caption { padding: 1.25rem 1.5rem; }
+    .categories-submenu { position: static; box-shadow: none; border-radius: 0; padding-right: 1rem; margin: 0; }
+  }
+  
+  @media (max-width: 576px) {
+    .hero-slider { aspect-ratio: 2 / 1; }
+    .hero-slide-caption h3 { font-size: 1.05rem; margin-bottom: .2rem; }
+    .hero-slide-caption p { font-size: .8rem; margin-bottom: .4rem; }
+    .hero-slide-caption .btn { padding: .4rem 1rem; font-size: .8rem; }
+    .categories-dropdown { min-width: 0; width: 92vw; }
+  }
+  
