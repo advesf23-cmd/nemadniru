@@ -1,0 +1,35 @@
+{% extends "dashboard/base_dashboard.html" %}
+{% block title %}دایره‌های سریع{% endblock %}
+{% block dash_content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h5 class="mb-0">دایره‌های سریع (زیر اسلایدر صفحه اصلی)</h5>
+  <a href="{% url 'dashboard:quick_circle_add' %}" class="btn btn-orange"><i class="fa-solid fa-plus me-1"></i> افزودن دایره</a>
+</div>
+<div class="alert alert-info small">
+  <i class="fa-solid fa-circle-info me-1"></i>
+  تصویر پیشنهادی: مربعی (مثلاً ۲۰۰×۲۰۰ پیکسل) -- به‌صورت خودکار به شکل دایره
+  با قطر ۸۰ پیکسل نمایش داده می‌شود. عنوان بالای این ردیف را از
+  «تنظیمات سایت» می‌توانید تغییر دهید.
+</div>
+<div class="row g-3">
+  {% for circle in circles %}
+  <div class="col-md-2 col-4">
+    <div class="dash-table-card p-2 text-center">
+      {% if circle.image %}
+      <img src="{{ circle.image.url }}" class="rounded-circle mb-2" style="width:64px;height:64px;object-fit:cover;">
+      {% endif %}
+      <p class="small mb-2">{{ circle.title }}</p>
+      <p class="mb-2">
+        {% if circle.is_active %}<span class="badge bg-success">فعال</span>{% else %}<span class="badge bg-secondary">غیرفعال</span>{% endif %}
+      </p>
+      <div class="d-flex gap-1">
+        <a href="{% url 'dashboard:quick_circle_edit' circle.pk %}" class="btn btn-sm btn-outline-navy flex-grow-1"><i class="fa-solid fa-pen"></i></a>
+        <a href="{% url 'dashboard:quick_circle_delete' circle.pk %}" class="btn btn-sm btn-outline-danger flex-grow-1"><i class="fa-solid fa-trash"></i></a>
+      </div>
+    </div>
+  </div>
+  {% empty %}
+  <div class="col-12 text-center text-muted py-4">هنوز دایره‌ای ثبت نشده است.</div>
+  {% endfor %}
+</div>
+{% endblock %}

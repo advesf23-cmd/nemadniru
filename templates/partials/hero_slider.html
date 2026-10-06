@@ -1,38 +1,64 @@
 {% load static %}
 <!--
   اسلایدر بنر اصلی -- ابعاد استاندارد تصاویر: 1600×400 پیکسل
-  تصاویر از پنل مدیریت → داشبورد → (بخش اسلایدرهای صفحه اصلی) یا از Django Admin
-  مدل HomeSlide (apps/core/models.py) قابل مدیریت است.
+  مدیریت از داشبورد → محتوای سایت → اسلایدر صفحه اصلی
+
+  طبق درخواست: اسلایدر از هر طرف حدود ۵۰ پیکسل کوچک‌تر از عرض کامل است تا
+  گوشه‌ای از تصویر اسلاید قبلی/بعدی دیده شود، و با دکمه‌ی فلش از اسلاید
+  اصلی جدا می‌شود.
 -->
 <section class="hero-slider-section">
   <div class="hero-slider" id="heroSlider" data-interval="5000">
-    <div class="hero-slider-track">
-      {% for slide in slides %}
-      <div class="hero-slide {% if forloop.first %}active{% endif %}">
-        <a href="{{ slide.button_url|default:'#' }}" class="hero-slide-link">
-          <img src="{{ slide.image.url }}" alt="{{ slide.title }}">
-        </a>
-        {% if slide.title or slide.subtitle or slide.button_text %}
-        <div class="hero-slide-caption">
-          {% if slide.title %}<h3>{{ slide.title }}</h3>{% endif %}
-          {% if slide.subtitle %}<p>{{ slide.subtitle }}</p>{% endif %}
-          {% if slide.button_text and slide.button_url %}
-          <a href="{{ slide.button_url }}" class="btn btn-orange btn-sm">{{ slide.button_text }}</a>
+
+    <!-- گوشه‌ی نمایان اسلاید قبلی (سمت چپ تصویر) -->
+    <button type="button"
+        class="hero-peek hero-peek-prev"
+        id="heroPeekPrev"
+        aria-label="اسلاید قبلی"></button>
+
+    <div class="hero-slider-viewport">
+      <div class="hero-slider-track">
+        {% for slide in slides %}
+        <div class="hero-slide {% if forloop.first %}active{% endif %}">
+          <a href="{{ slide.button_url|default:'#' }}" class="hero-slide-link">
+            <img src="{{ slide.image.url }}" alt="{{ slide.title }}">
+          </a>
+          {% if slide.title or slide.subtitle or slide.button_text %}
+          <div class="hero-slide-caption">
+            {% if slide.title %}<h3>{{ slide.title }}</h3>{% endif %}
+            {% if slide.subtitle %}<p>{{ slide.subtitle }}</p>{% endif %}
+            {% if slide.button_text and slide.button_url %}
+            <a href="{{ slide.button_url }}" class="btn btn-orange btn-sm">{{ slide.button_text }}</a>
+            {% endif %}
+          </div>
           {% endif %}
         </div>
-        {% endif %}
-      </div>
-      {% empty %}
-      <div class="hero-slide active">
-        <div class="hero-slide-placeholder">
-          <i class="fa-regular fa-image fa-2x mb-2"></i>
-          <p>برای نمایش بنر، از پنل مدیریت یک اسلاید با ابعاد ۱۶۰۰×۴۰۰ اضافه کنید.</p>
+        {% empty %}
+        <div class="hero-slide active">
+          <div class="hero-slide-placeholder">
+            <i class="fa-regular fa-image fa-2x mb-2"></i>
+            <p>برای نمایش بنر، از پنل مدیریت یک اسلاید با ابعاد ۱۶۰۰×۴۰۰ اضافه کنید.</p>
+          </div>
         </div>
+        {% endfor %}
       </div>
-      {% endfor %}
     </div>
 
+    <!-- گوشه‌ی نمایان اسلاید بعدی (سمت راست تصویر) -->
+    <button type="button"
+        class="hero-peek hero-peek-next"
+        id="heroPeekNext"
+        aria-label="اسلاید بعدی"></button>
+
+    <!-- دکمه‌های فلش ناوبری -- روی مرز اسلاید اصلی و گوشه‌ی نمایان قبلی/بعدی -->
     {% if slides|length > 1 %}
+    <button type="button" class="hero-nav-btn hero-nav-prev" id="heroPrevBtn" aria-label="اسلاید قبلی">
+      <i class="fa-solid fa-chevron-left"></i>
+    </button>
+    <button type="button" class="hero-nav-btn hero-nav-next" id="heroNextBtn" aria-label="اسلاید بعدی">
+      <i class="fa-solid fa-chevron-right"></i>
+    </button>
+
     <div class="hero-slider-dots">
       {% for slide in slides %}
       <button type="button" class="hero-dot {% if forloop.first %}active{% endif %}" data-index="{{ forloop.counter0 }}" aria-label="اسلاید {{ forloop.counter }}"></button>
@@ -43,8 +69,32 @@
 </section>
 
 <!--
-  چهار کادر تبلیغاتی -- مدل PromoBanner (apps/core/models.py)، از پنل مدیریت قابل مدیریت.
-  هر تصویری که در آینده بخواهید، از همان‌جا جایگزین می‌شود؛ فقط کافیست همان نسبت تصویر رعایت شود.
+  دایره‌های سریع (قطر ۸۰ پیکسل) -- برندها/دسته‌بندی‌های ویژه.
+  مدیریت: داشبورد → محتوای سایت → دایره‌های سریع
+-->
+{% if quick_circles %}
+<section class="quick-circles-section">
+  <div class="container">
+    {% if site_settings.quick_circles_heading %}
+    <p class="quick-circles-heading">{{ site_settings.quick_circles_heading }}</p>
+    {% endif %}
+    <div class="quick-circles-row">
+      {% for circle in quick_circles %}
+      <a href="{{ circle.link_url|default:'#' }}" class="quick-circle-item">
+        <span class="quick-circle-img">
+          <img src="{{ circle.image.url }}" alt="{{ circle.title }}">
+        </span>
+        <span class="quick-circle-label">{{ circle.title }}</span>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<!--
+  چهار کادر تبلیغاتی -- اکنون مستطیل افقی ۳۰۰×۲۰۰ (نسبت ۳:۲) به‌جای مربع ۳۰۰×۳۰۰.
+  مدیریت: داشبورد → محتوای سایت → بنرهای تبلیغاتی
 -->
 <section class="promo-banners-section">
   <div class="container">

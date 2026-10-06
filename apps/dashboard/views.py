@@ -16,7 +16,10 @@ from apps.shop.models import Order, Coupon
 from apps.core.models import (
     SiteSetting, Statistic, Certificate, Partner, Testimonial, FAQ, HomeSlide, Menu, PromoBanner
 )
-
+from apps.core.models import (
+    SiteSetting, Statistic, Certificate, Partner, Testimonial, FAQ,
+    HomeSlide, Menu, PromoBanner, QuickCircle
+    )
 
 class StaffRequiredMixin(UserPassesTestMixin):
     """فقط کاربران دارای نقش مدیریتی (Super Admin/Admin/Editor/Content Manager) اجازه دسترسی دارند"""
@@ -502,6 +505,7 @@ class DashboardSiteSettingUpdateView(StaffRequiredMixin, UpdateView):
         "site_name", "logo", "favicon", "phone", "email", "address", "working_hours",
         "map_embed_url", "instagram", "telegram", "whatsapp", "linkedin",
         "footer_text", "default_meta_description", "google_analytics_id",
+        "quick_circles_heading",
     ]
     template_name = "dashboard/generic_form.html"
     success_url = reverse_lazy("dashboard:site_settings")
@@ -513,6 +517,7 @@ class DashboardSiteSettingUpdateView(StaffRequiredMixin, UpdateView):
     def form_valid(self, form):
         django_messages.success(self.request, "تنظیمات سایت با موفقیت ذخیره شد.")
         return super().form_valid(form)
+
 
 
 class DashboardHomeSlideListView(StaffRequiredMixin, ListView):
@@ -721,3 +726,28 @@ class DashboardMenuDeleteView(StaffRequiredMixin, DeleteView):
     model = Menu
     template_name = "dashboard/confirm_delete.html"
     success_url = reverse_lazy("dashboard:menu_list")
+
+class DashboardQuickCircleListView(StaffRequiredMixin, ListView):
+    model = QuickCircle
+    template_name = "dashboard/core/quick_circle_list.html"
+    context_object_name = "circles"
+
+
+class DashboardQuickCircleCreateView(StaffRequiredMixin, CreateView):
+    model = QuickCircle
+    fields = ["title", "image", "link_url", "order", "is_active"]
+    template_name = "dashboard/generic_form.html"
+    success_url = reverse_lazy("dashboard:quick_circle_list")
+
+
+class DashboardQuickCircleUpdateView(StaffRequiredMixin, UpdateView):
+    model = QuickCircle
+    fields = DashboardQuickCircleCreateView.fields
+    template_name = "dashboard/generic_form.html"
+    success_url = reverse_lazy("dashboard:quick_circle_list")
+
+
+class DashboardQuickCircleDeleteView(StaffRequiredMixin, DeleteView):
+    model = QuickCircle
+    template_name = "dashboard/confirm_delete.html"
+    success_url = reverse_lazy("dashboard:quick_circle_list")

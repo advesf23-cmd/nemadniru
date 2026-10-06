@@ -5,14 +5,14 @@
   <div class="header-top">
     <div class="container header-top-inner">
 
-      <!-- لوگو + نام شرکت (سمت راست) -->
+      <!-- لوگو/نام شرکت -- وقتی لوگو آپلود شده فقط لوگو نمایش داده می‌شود، بدون متن اضافه -->
       <a href="{% url 'core:home' %}" class="header-brand">
         {% if site_settings.logo %}
           <img src="{{ site_settings.logo.url }}" alt="{{ site_settings.site_name }}">
         {% else %}
           <i class="fa-solid fa-bolt"></i>
+          <span>{{ site_settings.site_name }}</span>
         {% endif %}
-        <span>{{ site_settings.site_name }}</span>
       </a>
 
       <!-- کادر جستجو (وسط) -->
@@ -65,16 +65,14 @@
 
         <div class="categories-dropdown" id="categoriesDropdown">
           {% for cat in header_categories %}
-          <div class="categories-dropdown-item {% if cat.children.all %}has-children{% endif %}">
+          <div class="categories-dropdown-item {% if cat.sub_items %}has-children{% endif %}">
             <a href="{% url 'products:category_detail' cat.slug %}">
               {{ cat.name }}
-              {% if cat.children.all %}<i class="fa-solid fa-angle-left submenu-caret"></i>{% endif %}
+              {% if cat.sub_items %}<i class="fa-solid fa-angle-left submenu-caret"></i>{% endif %}
             </a>
-            {% if cat.children.all %}
+            {% if cat.sub_items %}
             <div class="categories-submenu">
-              {% for sub in cat.children.all %}
-              <a href="{% url 'products:category_detail' sub.slug %}">{{ sub.name }}</a>
-              {% endfor %}
+              {% include "partials/_category_tree_items.html" with nodes=cat.sub_items level=0 %}
             </div>
             {% endif %}
           </div>

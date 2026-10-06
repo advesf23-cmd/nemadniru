@@ -1,5 +1,3 @@
-from django.db.models import Prefetch
-
 from .models import SiteSetting, Menu
 
 
@@ -33,19 +31,37 @@ def menus(request):
 
 def header_categories(request):
     """
-    دسته‌بندی‌های سطح‌بالای محصولات را به‌همراه زیرمجموعه‌های فعال‌شان (برای منوی
-    کشویی «دسته‌بندی کالاها» در هدر) در دسترس قرار می‌دهد.
-    در قالب با {{ cat.children.all }} به زیرمجموعه‌ی هر دسته دسترسی دارید،
-    چون در مدل ProductCategory، related_name فیلد parent برابر "children" است.
+    دسته‌بندی‌های سطح‌بالای محصولات را به‌همراه **کل زیردرخت‌شان** (هر چند سطح
+    که والد/فرزند تعریف شده باشد) برای منوی کشویی «دسته‌بندی کالاها» در
+    دسترس قرار می‌دهد.
+
+    رفع باگ قبلی: نسخه‌ی قبل فقط یک سطح زیرمجموعه (children) را Prefetch
+    می‌کرد، پس اگر محصولات با چند سطح دسته/زیردسته/زیرِ‌زیردسته تعریف شده
+    بودند، فقط اولین سطح در منو نشان داده می‌شد. این نسخه تمام دسته‌های
+    فعال را یک‌بار می‌خواند (یک کوئری) و کل درخت را در پایتون می‌سازد، پس
+    محدودیتی در تعداد سطوح ندارد.
     """
     try:
         from apps.products.models import ProductCategory
-        children_qs = ProductCategory.objects.filter(is_active=True).order_by("order", "name")
-        top_level = (
-            ProductCategory.objects.filter(is_active=True, parent__isnull=True)
-            .prefetch_related(Prefetch("children", queryset=children_qs))
-            .order_by("order", "name")[:12]
+
+        all_categories = list(
+            ProductCategory.objects.filter(is_active=True).order_by("order", "name")
         )
+        children_by_parent_id = {}
+        for category in all_categories:
+            children_by_parent_id.setdefault(category.parent_id, []).append(category)
+
+        def attach_sub_items(node):
+            # sub_items یک attribute معمولی پایتونی است (نه related manager)،
+            # پس در قالب با {{ node.sub_items }} بدون کوئری اضافه در دسترس است
+            node.sub_items = children_by_parent_id.get(node.id, [])
+            for child in node.sub_items:
+                attach_sub_items(child)
+
+        top_level = children_by_parent_id.get(None, [])[:12]
+        for node in top_level:
+            attach_sub_items(node)
+
         return {"header_categories": top_level}
     except Exception:
         return {"header_categories": []}

@@ -1,0 +1,17 @@
+{% comment %}
+  پارشال بازگشتی برای نمایش کل زیردرخت یک دسته‌بندی در مگامنو، با هر تعداد
+  سطح که در پنل مدیریت تعریف شده باشد (نه فقط یک سطح).
+  nodes: لیست دسته‌بندی‌های همین سطح (هرکدام با attribute پایتونی sub_items)
+  level: عمق فعلی (برای تورفتگی بصری) -- از ۰ شروع می‌شود
+{% endcomment %}
+{% for node in nodes %}
+<div class="mega-cat-node">
+  <a href="{% url 'products:category_detail' node.slug %}"
+     class="mega-cat-link mega-cat-indent-{{ level }} {% if node.sub_items %}mega-cat-parent-link{% endif %}">
+    {{ node.name }}
+  </a>
+  {% if node.sub_items %}
+    {% include "partials/_category_tree_items.html" with nodes=node.sub_items level=level|add:1 %}
+  {% endif %}
+</div>
+{% endfor %}

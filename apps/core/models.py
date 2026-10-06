@@ -75,6 +75,7 @@ class SiteSetting(TimeStampedModel):
     footer_text = models.TextField(_("متن فوتر"), blank=True)
     default_meta_description = models.CharField(max_length=160, blank=True)
     google_analytics_id = models.CharField(max_length=30, blank=True)
+    quick_circles_heading = models.CharField(_("عنوان بالای دایره‌های سریع (زیر اسلایدر)"), max_length=150, blank=True)
 
     class Meta:
         verbose_name = _("تنظیمات سایت")
@@ -86,6 +87,7 @@ class SiteSetting(TimeStampedModel):
     def save(self, *args, **kwargs):
         self.pk = 1  # الگوی Singleton
         super().save(*args, **kwargs)
+    
 
 
 class Statistic(TimeStampedModel):
@@ -231,3 +233,52 @@ class PromoBanner(TimeStampedModel):
 
     def __str__(self):
         return self.title or f"بنر تبلیغاتی #{self.pk}"
+    
+
+# =====================================================================
+# ۱) این فیلد را داخل کلاس SiteSetting موجود (در apps/core/models.py)،
+#    بعد از فیلد google_analytics_id اضافه کنید:
+# =====================================================================
+#
+#    quick_circles_heading = models.CharField(
+#        _("عنوان بالای دایره‌های سریع (زیر اسلایدر)"), max_length=150, blank=True
+#    )
+#
+# یعنی کلاس SiteSetting این‌طور می‌شود (فقط برای مرجع؛ بقیه‌ی فیلدهای قبلی
+# دست‌نخورده می‌مانند، فقط همین یک خط اضافه می‌شود):
+#
+# class SiteSetting(TimeStampedModel):
+#     ...
+#     google_analytics_id = models.CharField(max_length=30, blank=True)
+#     quick_circles_heading = models.CharField(
+#         _("عنوان بالای دایره‌های سریع (زیر اسلایدر)"), max_length=150, blank=True
+#     )
+#
+#     class Meta:
+#         ...
+
+
+# =====================================================================
+# ۲) این مدل جدید را به انتهای apps/core/models.py اضافه کنید
+#    (بعد از کلاس PromoBanner که در دور قبل اضافه شده بود)
+# =====================================================================
+
+class QuickCircle(TimeStampedModel):
+    """
+    دایره‌های کوچک (قطر ۸۰ پیکسل) زیر اسلایدر صفحه اصلی -- برای نمایش
+    برندها یا دسته‌بندی‌های ویژه. هر تصویری که در آینده بخواهید، از پنل
+    مدیریت جایگزین همین رکوردها می‌شود.
+    """
+    title = models.CharField(_("عنوان (زیر تصویر دایره)"), max_length=50)
+    image = models.ImageField(_("تصویر (ترجیحاً مربعی)"), upload_to="quick_circles/")
+    link_url = models.CharField(_("لینک مقصد (اختیاری)"), max_length=255, blank=True)
+    order = models.PositiveIntegerField(_("ترتیب نمایش"), default=0)
+    is_active = models.BooleanField(_("فعال"), default=True)
+
+    class Meta:
+        ordering = ["order"]
+        verbose_name = _("دایره سریع (زیر اسلایدر)")
+        verbose_name_plural = _("دایره‌های سریع (زیر اسلایدر)")
+
+    def __str__(self):
+        return self.title

@@ -118,4 +118,9 @@ urlpatterns = [
     path("menus/add/", views.DashboardMenuCreateView.as_view(), name="menu_add"),
     path("menus/<int:pk>/edit/", views.DashboardMenuUpdateView.as_view(), name="menu_edit"),
     path("menus/<int:pk>/delete/", views.DashboardMenuDeleteView.as_view(), name="menu_delete"),
+
+    path("quick-circles/", views.DashboardQuickCircleListView.as_view(), name="quick_circle_list"),
+    path("quick-circles/add/", views.DashboardQuickCircleCreateView.as_view(), name="quick_circle_add"),
+    path("quick-circles/<int:pk>/edit/", views.DashboardQuickCircleUpdateView.as_view(), name="quick_circle_edit"),
+    path("quick-circles/<int:pk>/delete/", views.DashboardQuickCircleDeleteView.as_view(), name="quick_circle_delete"),
 ]

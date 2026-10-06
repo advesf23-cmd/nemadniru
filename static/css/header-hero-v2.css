@@ -1,10 +1,9 @@
 /* =========================================================
-   هدر جدید (دو ردیفه) + اسلایدر بنر اصلی + کادرهای تبلیغاتی
-   نسخه اصلاح‌شده (دور هفتم) -- پالت رنگی جدید + دکمه‌های کوچک‌تر
+   هدر جدید (دو ردیفه) + اسلایدر بنر اصلی + دایره‌های سریع
+   + کادرهای تبلیغاتی
    ========================================================= */
 
    :root {
-    /* پالت رنگی درخواستی */
     --smart-blue: #0466c8;
     --sapphire: #0353a4;
     --regal-navy: #023e7d;
@@ -16,16 +15,16 @@
     --slate-grey: #7d8597;
     --lavender-grey: #979dac;
   
-    /* بازتعریف متغیرهای اصلی سایت (تعریف‌شده در style.css) بر اساس پالت جدید.
-       چون این فایل بعد از style.css لود می‌شود، همین مقادیر در کل سایت
-       (دکمه‌ها، هدر، فوتر، بخش‌های navy، هاور کارت‌ها و ...) جایگزین می‌شوند،
-       بدون نیاز به دست‌کاری خود style.css. */
     --color-navy: var(--prussian-blue);
     --color-navy-light: var(--regal-navy);
     --color-navy-lighter: var(--sapphire);
   }
   
-  /* ---------------- هدر: ردیف بالا ---------------- */
+  
+  /* =========================================================
+     هدر: ردیف بالا
+     ========================================================= */
+  
   .site-header-v2 {
     position: sticky;
     top: 0;
@@ -53,8 +52,17 @@
     text-decoration: none;
     flex-shrink: 0;
   }
-  .header-brand img { height: 44px; width: auto; }
-  .header-brand i { font-size: 1.6rem; color: var(--color-orange); }
+  
+  .header-brand img {
+    height: 44px;
+    width: auto;
+  }
+  
+  .header-brand i {
+    font-size: 1.6rem;
+    color: var(--color-orange);
+  }
+  
   .header-brand span {
     font-weight: 800;
     font-size: 1.15rem;
@@ -70,6 +78,7 @@
     border-radius: 50px;
     overflow: hidden;
   }
+  
   .header-search-input {
     flex: 1;
     border: none;
@@ -78,6 +87,7 @@
     outline: none;
     font-family: inherit;
   }
+  
   .header-search-btn {
     border: none;
     background: transparent;
@@ -85,7 +95,10 @@
     padding: 0 1.1rem;
     cursor: pointer;
   }
-  .header-search-btn:hover { color: var(--color-orange); }
+  
+  .header-search-btn:hover {
+    color: var(--color-orange);
+  }
   
   .header-top-icons {
     display: flex;
@@ -93,13 +106,18 @@
     gap: 0.7rem;
     flex-shrink: 0;
   }
+  
   .header-icon-link {
     position: relative;
     color: var(--color-navy);
     font-size: 1.15rem;
     text-decoration: none;
   }
-  .header-icon-link:hover { color: var(--color-orange); }
+  
+  .header-icon-link:hover {
+    color: var(--color-orange);
+  }
+  
   .header-icon-badge {
     position: absolute;
     top: -8px;
@@ -117,10 +135,6 @@
     padding: 0 3px;
   }
   
-  /* -----------------------------------------------------------------------
-     دکمه‌های ورود/ثبت‌نام، حساب‌کاربری و خروج -- نسخه‌ی کوچک‌تر و مدرن‌تر
-     (بدون border ضخیم، فقط یک پس‌زمینه‌ی ملایم + رنگ متن از پالت جدید)
-     ----------------------------------------------------------------------- */
   .header-login-btn {
     display: flex;
     align-items: center;
@@ -136,15 +150,26 @@
     white-space: nowrap;
     transition: var(--transition);
   }
-  .header-login-btn i { font-size: 0.78rem; }
-  .header-login-btn:hover { background: var(--sapphire); color: #fff; }
+  
+  .header-login-btn i {
+    font-size: 0.78rem;
+  }
+  
+  .header-login-btn:hover {
+    background: var(--sapphire);
+    color: #fff;
+  }
   
   .header-user-menu {
     display: flex;
     align-items: center;
     gap: 0.4rem;
   }
-  .header-logout-form { margin: 0; }
+  
+  .header-logout-form {
+    margin: 0;
+  }
+  
   .header-logout-btn {
     display: flex;
     align-items: center;
@@ -161,14 +186,26 @@
     font-family: inherit;
     transition: var(--transition);
   }
-  .header-logout-btn i { font-size: 0.75rem; }
-  .header-logout-btn:hover { background: #DC2626; color: #fff; }
   
-  /* ---------------- هدر: ردیف منو ---------------- */
+  .header-logout-btn i {
+    font-size: 0.75rem;
+  }
+  
+  .header-logout-btn:hover {
+    background: #DC2626;
+    color: #fff;
+  }
+  
+  
+  /* =========================================================
+     هدر: ردیف منو
+     ========================================================= */
+  
   .header-nav {
     background: var(--color-light-gray);
     border-bottom: 1px solid #E2E8F0;
   }
+  
   .header-nav-inner {
     display: flex;
     align-items: center;
@@ -177,7 +214,11 @@
     min-height: 46px;
   }
   
-  .header-nav-categories { position: relative; flex-shrink: 0; }
+  .header-nav-categories {
+    position: relative;
+    flex-shrink: 0;
+  }
+  
   .categories-toggle {
     display: flex;
     align-items: center;
@@ -190,7 +231,10 @@
     font-weight: 600;
     cursor: pointer;
   }
-  .categories-toggle:hover { background: var(--color-navy-light); }
+  
+  .categories-toggle:hover {
+    background: var(--color-navy-light);
+  }
   
   .categories-dropdown {
     display: none;
@@ -205,7 +249,11 @@
     z-index: 50;
     padding: 0.5rem 0;
   }
-  .categories-dropdown.open { display: block; }
+  
+  .categories-dropdown.open {
+    display: block;
+  }
+  
   .categories-dropdown > a {
     display: block;
     padding: 0.55rem 1.2rem;
@@ -213,47 +261,116 @@
     text-decoration: none;
     font-size: 0.88rem;
   }
-  .categories-dropdown > a:hover { background: var(--color-light-gray); color: var(--color-orange); }
   
-  .categories-dropdown-item { position: relative; }
+  .categories-dropdown > a:hover {
+    background: var(--color-light-gray);
+    color: var(--color-orange);
+  }
+  
+  .categories-dropdown-item {
+    position: relative;
+  }
+  
   .categories-dropdown-item > a {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 0.5rem;
-    padding: 0.55rem 1.2rem;
+    padding: 0.6rem 1.3rem;
     color: var(--color-navy);
     text-decoration: none;
     font-size: 0.88rem;
   }
-  .categories-dropdown-item > a:hover { background: var(--color-light-gray); color: var(--color-orange); }
-  .submenu-caret { font-size: 0.7rem; color: var(--color-gray); }
+  
+  .categories-dropdown-item > a:hover,
+  .categories-dropdown-item.open > a {
+    background: var(--color-light-gray);
+    color: var(--color-orange);
+  }
+  
+  .submenu-caret {
+    font-size: 0.7rem;
+    color: var(--color-gray);
+  }
+  
+  
+  /* =========================================================
+     مگامنوی چندستونه و چندسطحی
+     ========================================================= */
   
   .categories-submenu {
     display: none;
     position: absolute;
     top: 0;
     right: 100%;
-    min-width: 200px;
+    min-width: 520px;
+    max-width: 70vw;
+    max-height: 75vh;
+    overflow-y: auto;
     background: #fff;
     box-shadow: var(--shadow-hover);
     border-radius: 0.6rem;
-    padding: 0.5rem 0;
+    padding: 1rem 1.5rem;
     margin-inline-end: 2px;
+    column-count: 3;
+    column-gap: 1.75rem;
   }
+  
   .categories-dropdown-item.has-children:hover > .categories-submenu,
   .categories-dropdown-item.has-children.open > .categories-submenu {
     display: block;
   }
-  .categories-submenu a {
+  
+  .mega-cat-node {
+    break-inside: avoid;
+    margin-bottom: 0.15rem;
+  }
+  
+  .mega-cat-link {
     display: block;
-    padding: 0.55rem 1.2rem;
+    padding: 0.35rem 0;
     color: var(--color-navy);
     text-decoration: none;
     font-size: 0.85rem;
     white-space: nowrap;
   }
-  .categories-submenu a:hover { background: var(--color-light-gray); color: var(--color-orange); }
+  
+  .mega-cat-link:hover {
+    color: var(--color-orange);
+  }
+  
+  .mega-cat-parent-link {
+    font-weight: 700;
+    color: var(--color-navy);
+  }
+  
+  .mega-cat-indent-0 {
+    padding-right: 0;
+    font-size: 0.9rem;
+  }
+  
+  .mega-cat-indent-1 {
+    padding-right: 0.9rem;
+    font-size: 0.85rem;
+  }
+  
+  .mega-cat-indent-2 {
+    padding-right: 1.8rem;
+    font-size: 0.82rem;
+    color: var(--color-gray);
+  }
+  
+  .mega-cat-indent-3 {
+    padding-right: 2.7rem;
+    font-size: 0.8rem;
+    color: var(--color-gray);
+  }
+  
+  .mega-cat-indent-4 {
+    padding-right: 3.6rem;
+    font-size: 0.78rem;
+    color: var(--color-gray);
+  }
   
   .header-nav-links {
     display: flex;
@@ -264,6 +381,7 @@
     padding: 0;
     flex-wrap: wrap;
   }
+  
   .header-nav-links a {
     display: flex;
     align-items: center;
@@ -274,132 +392,688 @@
     font-weight: 500;
     white-space: nowrap;
   }
-  .header-nav-links a:hover { color: var(--color-orange); }
   
-  /* ---------------- اسلایدر بنر اصلی (1600×400 در دسکتاپ) ---------------- */
+  .header-nav-links a:hover {
+    color: var(--color-orange);
+  }
+  
+  
+  /* =========================================================
+     اسلایدر بنر اصلی
+     =========================================================
+  
+     ساختار:
+     
+     PREV | 10px | CURRENT | 10px | NEXT
+  
+     توجه:
+     در HTML فعلی شما:
+     heroPeekPrev = سمت راست = PREV
+     heroPeekNext = سمت چپ = NEXT
+  
+     بنابراین نام IDها را تغییر نداده‌ایم تا رفتار فعلی خراب نشود.
+     ========================================================= */
+  
   .hero-slider-section {
     background: var(--color-light-gray);
-    padding-top: 1.25rem;
+    padding-top: 0;
   }
+  
   .hero-slider {
+    --hero-peek-width: 50px;
+    --hero-peek-gap: 10px;
+    --hero-transition: 700ms;
+  
     position: relative;
     max-width: 1600px;
     margin: 0 auto;
     aspect-ratio: 1600 / 400;
+  
+    display: grid;
+  
+    /*
+     * سمت چپ:
+     * NEXT
+     *
+     * وسط:
+     * CURRENT
+     *
+     * سمت راست:
+     * PREV
+     */
+    grid-template-columns:
+      var(--hero-peek-width)
+      minmax(0, 1fr)
+      var(--hero-peek-width);
+  
+    column-gap: var(--hero-peek-gap);
+  
     overflow: hidden;
-    border-radius: 0;
+    background: #fff;
+  
+    direction: ltr;
   }
-  .hero-slider-track { position: relative; width: 100%; height: 100%; overflow: hidden; }
-
-/*
-  افکت جدید اسلایدر: به‌جای محو شدن ساده (Fade)، اسلاید قبلی هم‌زمان به سمت
-  راست خارج می‌شود و اسلاید بعدی از سمت چپ وارد می‌شود (Push Transition).
-  حالت پیش‌فرض هر اسلاید (نه فعال، نه در حال خروج) همیشه «آماده‌ی ورود از چپ»
-  است (translateX(-100%))؛ چون طبق خواسته‌ی شما، ورود همیشه از چپ اتفاق
-  می‌افتد، فارغ از اینکه کدام اسلاید بعدی انتخاب شود.
-*/
-.hero-slide {
-  position: absolute;
-  inset: 0;
-  transform: translateX(-100%);
-  visibility: hidden;
-  transition: transform 0.6s ease;
-  z-index: 1;
-}
-.hero-slide.active {
-  transform: translateX(0);
-  visibility: visible;
-  z-index: 3;
-}
-.hero-slide.leaving {
-  transform: translateX(100%);
-  visibility: visible;
-  z-index: 2;
-}
-  .hero-slide-link { display: block; width: 100%; height: 100%; }
+  
+  
+  /* =========================================================
+     Peek
+     ========================================================= */
+  
+  .hero-peek {
+    position: relative;
+  
+    width: var(--hero-peek-width);
+    height: 100%;
+  
+    border: none;
+    padding: 0;
+    margin: 0;
+  
+    cursor: pointer;
+  
+    background: transparent;
+  
+    overflow: hidden;
+  
+    opacity: 0.55;
+  
+    z-index: 4;
+  
+    transition: opacity 0.25s ease;
+  }
+  
+  .hero-peek:hover {
+    opacity: 0.85;
+  }
+  
+  
+  /*
+   * دو لایه داخل Peek:
+   *
+   * ::before = تصویر قدیمی
+   * ::after  = تصویر جدید
+   *
+   * هر دو از همان لحظه شروع transition حاضر هستند.
+   * بنابراین دیگر در پایان حرکت، تصویر ناگهان عوض نمی‌شود.
+   */
+  
+  .hero-peek::before,
+  .hero-peek::after {
+    content: "";
+  
+    position: absolute;
+    inset: 0;
+  
+    background-repeat: no-repeat;
+    background-size: cover;
+  
+    pointer-events: none;
+  
+    will-change: transform;
+  }
+  
+  
+  /*
+   * تصویر فعلی
+   */
+  
+  .hero-peek::before {
+    background-image: var(--peek-current);
+    z-index: 1;
+  
+    transform: translateX(0);
+  }
+  
+  
+  /*
+   * تصویر بعدی
+   */
+  
+  .hero-peek::after {
+    background-image: var(--peek-next);
+    z-index: 2;
+  
+    opacity: 1;
+  
+    transform: translateX(-100%);
+  }
+  
+  
+  /* =========================================================
+     محل برش تصویر در Peekها
+     ========================================================= */
+  
+  /*
+   * سمت چپ صفحه = NEXT
+   *
+   * چون قسمت قابل مشاهده‌ی تصویر از سمت چپ تصویر اصلی گرفته می‌شود.
+   */
+  
+  .hero-peek-next::before,
+  .hero-peek-next::after {
+    background-position: left center;
+  }
+  
+  
+  /*
+   * سمت راست صفحه = PREV
+   *
+   * چون قسمت قابل مشاهده‌ی تصویر از سمت راست تصویر اصلی گرفته می‌شود.
+   */
+  
+  .hero-peek-prev::before,
+  .hero-peek-prev::after {
+    background-position: right center;
+  }
+  
+  
+  /* =========================================================
+     انیمیشن Peek
+     =========================================================
+  
+     حرکت اصلی:
+     
+     left -> right
+     
+     یعنی:
+     تصویر قدیمی از 0 به +100%
+     تصویر جدید از -100% به 0
+  
+     این دقیقاً با حرکت اسلاید اصلی در nextSlide هماهنگ است.
+     ========================================================= */
+  
+  .hero-peek.peek-motion-next::before {
+    animation: heroPeekOldToRight var(--hero-transition) ease forwards;
+  }
+  
+  .hero-peek.peek-motion-next::after {
+    animation: heroPeekNewFromLeft var(--hero-transition) ease forwards;
+  }
+  
+  
+  /*
+   * حرکت:
+   *
+   * right -> left
+   */
+  
+  .hero-peek.peek-motion-prev::before {
+    animation: heroPeekOldToLeft var(--hero-transition) ease forwards;
+  }
+  
+  .hero-peek.peek-motion-prev::after {
+    animation: heroPeekNewFromRight var(--hero-transition) ease forwards;
+  }
+  
+  
+  /* تصویر قدیمی: خروج به راست */
+  
+  @keyframes heroPeekOldToRight {
+    from {
+      transform: translateX(0);
+    }
+  
+    to {
+      transform: translateX(100%);
+    }
+  }
+  
+  
+  /* تصویر جدید: ورود از چپ */
+  
+  @keyframes heroPeekNewFromLeft {
+    from {
+      transform: translateX(-100%);
+    }
+  
+    to {
+      transform: translateX(0);
+    }
+  }
+  
+  
+  /* تصویر قدیمی: خروج به چپ */
+  
+  @keyframes heroPeekOldToLeft {
+    from {
+      transform: translateX(0);
+    }
+  
+    to {
+      transform: translateX(-100%);
+    }
+  }
+  
+  
+  /* تصویر جدید: ورود از راست */
+  
+  @keyframes heroPeekNewFromRight {
+    from {
+      transform: translateX(100%);
+    }
+  
+    to {
+      transform: translateX(0);
+    }
+  }
+  
+  
+  /* =========================================================
+     Viewport اصلی
+     ========================================================= */
+  
+  .hero-slider-viewport {
+    position: relative;
+  
+    width: 100%;
+    min-width: 0;
+    height: 100%;
+  
+    overflow: hidden;
+  }
+  
+  .hero-slider-track {
+    position: relative;
+  
+    width: 100%;
+    height: 100%;
+  
+    overflow: hidden;
+  }
+  
+  
+  /* =========================================================
+     اسلاید اصلی
+     ========================================================= */
+  
+  .hero-slide {
+    position: absolute;
+    inset: 0;
+  
+    transform: translateX(100%);
+  
+    visibility: hidden;
+  
+    transition:
+      transform var(--hero-transition) ease;
+  
+    z-index: 1;
+  }
+  
+  .hero-slide.active {
+    transform: translateX(0);
+  
+    visibility: visible;
+  
+    z-index: 3;
+  }
+  
+  .hero-slide.leaving {
+    visibility: visible;
+  
+    z-index: 2;
+  }
+  
+  
+  /* لینک و تصویر */
+  
+  .hero-slide-link {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+  
   .hero-slide img {
     width: 100%;
     height: 100%;
+  
     object-fit: cover;
+  
     display: block;
   }
+  
+  
+  /* Placeholder */
+  
   .hero-slide-placeholder {
     width: 100%;
     height: 100%;
+  
     display: flex;
     flex-direction: column;
+  
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, var(--color-navy-light), var(--color-navy));
+  
+    background:
+      linear-gradient(
+        135deg,
+        var(--color-navy-light),
+        var(--color-navy)
+      );
+  
     color: rgba(255,255,255,.7);
+  
     text-align: center;
+  
     padding: 1rem;
   }
+  
+  
+  /* =========================================================
+     کپشن اسلاید
+     ========================================================= */
+  
   .hero-slide-caption {
     position: absolute;
-    bottom: 0; right: 0; left: 0;
+  
+    bottom: 0;
+    right: 0;
+    left: 0;
+  
     padding: 2rem 3rem;
-    background: linear-gradient(0deg, rgba(0,40,85,.85), transparent);
+  
+    background:
+      linear-gradient(
+        0deg,
+        rgba(0,40,85,.85),
+        transparent
+      );
+  
     color: #fff;
+  
     text-align: right;
   }
-  .hero-slide-caption h3 { color: #fff; margin-bottom: .3rem; }
-  .hero-slide-caption p { margin-bottom: .6rem; opacity: .85; }
+  
+  .hero-slide-caption h3 {
+    color: #fff;
+    margin-bottom: .3rem;
+  }
+  
+  .hero-slide-caption p {
+    margin-bottom: .6rem;
+    opacity: .85;
+  }
+  
+  
+  /* =========================================================
+     دکمه‌های فلش
+     =========================================================
+  
+     فلش‌ها دقیقاً روی شکاف 10px قرار می‌گیرند.
+     ========================================================= */
+  
+  .hero-nav-btn {
+    position: absolute;
+  
+    top: 50%;
+  
+    width: 34px;
+    height: 34px;
+  
+    border-radius: 50%;
+  
+    background: rgba(255, 255, 255, 0.9);
+  
+    border: none;
+  
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  
+    color: var(--color-navy);
+  
+    font-size: 0.85rem;
+  
+    cursor: pointer;
+  
+    z-index: 6;
+  
+    box-shadow: var(--shadow-soft);
+  
+    transition: var(--transition);
+  }
+  
+  
+  /*
+   * فلش چپ:
+   * بین Peek چپ و تصویر اصلی
+   */
+  
+  .hero-nav-prev {
+    left:
+      calc(
+        var(--hero-peek-width) +
+        (var(--hero-peek-gap) / 2)
+      );
+  
+    transform: translate(-50%, -50%);
+  }
+  
+  
+  /*
+   * فلش راست:
+   * بین تصویر اصلی و Peek راست
+   */
+  
+  .hero-nav-next {
+    right:
+      calc(
+        var(--hero-peek-width) +
+        (var(--hero-peek-gap) / 2)
+      );
+  
+    transform: translate(50%, -50%);
+  }
+  
+  .hero-nav-btn:hover {
+    background: var(--color-orange);
+    color: #fff;
+  }
+  
+  
+  /* =========================================================
+     نقاط پایین اسلایدر
+     ========================================================= */
   
   .hero-slider-dots {
     position: absolute;
+  
     bottom: 14px;
     left: 50%;
+  
     transform: translateX(-50%);
+  
     display: flex;
+  
     gap: 8px;
-    z-index: 5;
+  
+    z-index: 6;
   }
+  
   .hero-dot {
     width: 9px;
     height: 9px;
+  
     border-radius: 50%;
+  
     border: none;
-    background: rgba(0,40,85,.35);
+  
+    background: rgba(255,255,255,.5);
+  
     cursor: pointer;
+  
     padding: 0;
+  
     transition: var(--transition);
   }
-  .hero-dot.active { background: var(--color-navy); width: 22px; border-radius: 6px; }
   
-  /* ---------------- ۴ کادر تبلیغاتی ---------------- */
+  .hero-dot.active {
+    background: #fff;
+  
+    width: 22px;
+  
+    border-radius: 6px;
+  }
+  
+  
+  /* =========================================================
+     دایره‌های سریع
+     ========================================================= */
+  
+  .quick-circles-section {
+    background: #fff;
+    padding: 1.5rem 0 0.5rem;
+  }
+  
+  .quick-circles-heading {
+    text-align: center;
+  
+    font-size: 0.95rem;
+    font-weight: 600;
+  
+    color: var(--color-navy);
+  
+    margin-bottom: 1rem;
+  }
+  
+  .quick-circles-row {
+    display: flex;
+  
+    flex-wrap: wrap;
+  
+    justify-content: center;
+  
+    gap: 1.5rem 1.25rem;
+  }
+  
+  .quick-circle-item {
+    display: flex;
+  
+    flex-direction: column;
+  
+    align-items: center;
+  
+    gap: 0.5rem;
+  
+    text-decoration: none;
+  
+    width: 92px;
+  }
+  
+  .quick-circle-img {
+    width: 80px;
+    height: 80px;
+  
+    border-radius: 50%;
+  
+    overflow: hidden;
+  
+    display: block;
+  
+    box-shadow: var(--shadow-soft);
+  
+    flex-shrink: 0;
+  }
+  
+  .quick-circle-img img {
+    width: 100%;
+    height: 100%;
+  
+    object-fit: cover;
+  
+    display: block;
+  }
+  
+  .quick-circle-label {
+    font-size: 0.78rem;
+  
+    color: var(--color-navy);
+  
+    text-align: center;
+  
+    line-height: 1.4;
+  }
+  
+  .quick-circle-item:hover .quick-circle-img {
+    box-shadow: var(--shadow-hover);
+  }
+  
+  .quick-circle-item:hover .quick-circle-label {
+    color: var(--color-orange);
+  }
+  
+  
+  /* =========================================================
+     کادرهای تبلیغاتی
+     ========================================================= */
+  
   .promo-banners-section {
     background: var(--color-light-gray);
+  
     padding: 1.5rem 0 2.5rem;
   }
+  
   .promo-banners-grid {
     display: grid;
+  
     grid-template-columns: repeat(4, 1fr);
+  
     gap: 1.25rem;
   }
+  
   .promo-banner-box {
     display: block;
-    aspect-ratio: 1 / 1;
+  
+    aspect-ratio: 3 / 2;
+  
     border-radius: var(--radius-md);
+  
     overflow: hidden;
+  
     background: #fff;
+  
     box-shadow: var(--shadow-soft);
   }
-  .promo-banner-box img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  
+  .promo-banner-box img {
+    width: 100%;
+    height: 100%;
+  
+    object-fit: cover;
+  
+    display: block;
+  }
+  
   .promo-banner-placeholder {
     display: flex;
+  
     flex-direction: column;
+  
     align-items: center;
     justify-content: center;
+  
     gap: 0.5rem;
+  
     color: var(--color-gray);
-    background: repeating-linear-gradient(45deg, #EDF1F5, #EDF1F5 10px, #F4F6F8 10px, #F4F6F8 20px);
+  
+    background:
+      repeating-linear-gradient(
+        45deg,
+        #EDF1F5,
+        #EDF1F5 10px,
+        #F4F6F8 10px,
+        #F4F6F8 20px
+      );
+  
     font-size: 0.85rem;
   }
   
+  
   /* =========================================================
-     رفع به‌هم‌ریختگی فرم‌ها در صفحاتی که فیلدها بدون کلاس form-control رندر می‌شوند
+     رفع به‌هم‌ریختگی فرم‌ها
      ========================================================= */
+  
   .form-card form input[type="text"],
   .form-card form input[type="email"],
   .form-card form input[type="tel"],
@@ -411,82 +1085,304 @@
   .form-card form textarea,
   form.header-search-form ~ form input[type="text"] {
     display: block;
+  
     width: 100%;
+  
     border-radius: 0.6rem;
+  
     padding: 0.7rem 1rem;
+  
     border: 1px solid #E2E8F0;
+  
     font-family: inherit;
+  
     font-size: 0.95rem;
+  
     background: #fff;
+  
     margin-bottom: 0;
   }
+  
   .form-card form input:focus,
   .form-card form select:focus,
   .form-card form textarea:focus {
     outline: none;
+  
     border-color: var(--color-orange);
-    box-shadow: 0 0 0 0.2rem rgba(249,115,22,.15);
+  
+    box-shadow:
+      0 0 0 0.2rem
+      rgba(249,115,22,.15);
   }
-  .form-card form textarea { min-height: 110px; resize: vertical; }
-  .form-card form ul { list-style: none; padding: 0; margin: 0; }
+  
+  .form-card form textarea {
+    min-height: 110px;
+    resize: vertical;
+  }
+  
+  .form-card form ul {
+    list-style: none;
+  
+    padding: 0;
+  
+    margin: 0;
+  }
+  
   .form-card form > div,
-  .form-card form .row > div { margin-bottom: 1rem; }
+  .form-card form .row > div {
+    margin-bottom: 1rem;
+  }
+  
   
   /* =========================================================
-     بنر برجسته‌ی خطای فرم در بالای صفحه (مثلاً تسویه‌حساب ناقص)
+     بنر خطای فرم
      ========================================================= */
+  
   .top-form-errors {
     background: #FEF2F2;
+  
     border: 1px solid #FCA5A5;
+  
     border-radius: var(--radius-md);
+  
     padding: 1rem 1.25rem;
+  
     margin-bottom: 1.5rem;
   }
+  
   .top-form-errors h6 {
     color: #B91C1C;
+  
     margin-bottom: 0.5rem;
+  
     font-size: 0.95rem;
+  
     display: flex;
+  
     align-items: center;
+  
     gap: 0.4rem;
   }
-  .top-form-errors ul { margin: 0; padding-inline-start: 1.2rem; }
-  .top-form-errors li { color: #B91C1C; font-size: 0.88rem; margin-bottom: 0.2rem; }
+  
+  .top-form-errors ul {
+    margin: 0;
+  
+    padding-inline-start: 1.2rem;
+  }
+  
+  .top-form-errors li {
+    color: #B91C1C;
+  
+    font-size: 0.88rem;
+  
+    margin-bottom: 0.2rem;
+  }
+  
   
   /* =========================================================
-     رفع بیرون‌زدن جداول از عرض صفحه در موبایل
+     جدول در موبایل
      ========================================================= */
+  
   @media (max-width: 768px) {
     .form-card table {
       display: block;
+  
       width: 100%;
+  
       overflow-x: auto;
+  
       -webkit-overflow-scrolling: touch;
+  
       white-space: nowrap;
     }
   }
   
-  /* ---------------- Responsive ---------------- */
+  
+  /* =========================================================
+     Responsive
+     ========================================================= */
+  
   @media (max-width: 992px) {
-    .header-top-inner { flex-wrap: wrap; }
-    .header-search-form { order: 3; max-width: 100%; flex: 1 1 100%; }
-    .promo-banners-grid { grid-template-columns: repeat(2, 1fr); }
-    .header-nav-inner { flex-wrap: wrap; gap: 0.75rem; padding: 0.5rem 0; }
-    .hero-slider { aspect-ratio: 3 / 1; }
+  
+    .header-top-inner {
+      flex-wrap: wrap;
+    }
+  
+    .header-search-form {
+      order: 3;
+  
+      max-width: 100%;
+  
+      flex: 1 1 100%;
+    }
+  
+    .promo-banners-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  
+    .header-nav-inner {
+      flex-wrap: wrap;
+  
+      gap: 0.75rem;
+  
+      padding: 0.5rem 0;
+    }
+  
+  
+    /* Peek */
+  
+    .hero-slider {
+      --hero-peek-width: 34px;
+  
+      aspect-ratio: 3 / 1;
+    }
+  
+    .hero-peek {
+      width: var(--hero-peek-width);
+    }
+  
+  
+    /* فلش‌ها */
+  
+    .hero-nav-prev {
+      left:
+        calc(
+          var(--hero-peek-width) +
+          (var(--hero-peek-gap) / 2)
+        );
+    }
+  
+    .hero-nav-next {
+      right:
+        calc(
+          var(--hero-peek-width) +
+          (var(--hero-peek-gap) / 2)
+        );
+    }
+  
+  
+    .categories-submenu {
+      column-count: 2;
+  
+      min-width: 380px;
+    }
   }
+  
   
   @media (max-width: 768px) {
-    .header-nav-links { gap: 1rem; flex-wrap: wrap; }
-    .header-brand span { display: none; }
-    .hero-slide-caption { padding: 1.25rem 1.5rem; }
-    .categories-submenu { position: static; box-shadow: none; border-radius: 0; padding-right: 1rem; margin: 0; }
+  
+    .header-nav-links {
+      gap: 1rem;
+  
+      flex-wrap: wrap;
+    }
+  
+    .header-brand span {
+      display: none;
+    }
+  
+  
+    .hero-slide-caption {
+      padding: 1.25rem 1.5rem;
+    }
+  
+  
+    .categories-submenu {
+      position: static;
+  
+      box-shadow: none;
+  
+      border-radius: 0;
+  
+      column-count: 1;
+  
+      max-width: 100%;
+  
+      margin: 0;
+  
+      padding:
+        0.5rem
+        1rem
+        0.5rem
+        1.5rem;
+    }
+  
+  
+    .quick-circle-img {
+      width: 64px;
+      height: 64px;
+    }
+  
+    .quick-circle-item {
+      width: 76px;
+    }
+  
+  
+    /* Peek کوچک‌تر */
+  
+    .hero-slider {
+      --hero-peek-width: 20px;
+    }
+  
+    .hero-peek {
+      width: var(--hero-peek-width);
+    }
+  
+  
+    /* فلش */
+  
+    .hero-nav-btn {
+      width: 28px;
+      height: 28px;
+  
+      font-size: 0.75rem;
+    }
+  
+    .hero-nav-prev {
+      left:
+        calc(
+          var(--hero-peek-width) +
+          (var(--hero-peek-gap) / 2)
+        );
+    }
+  
+    .hero-nav-next {
+      right:
+        calc(
+          var(--hero-peek-width) +
+          (var(--hero-peek-gap) / 2)
+        );
+    }
   }
+  
   
   @media (max-width: 576px) {
-    .hero-slider { aspect-ratio: 2 / 1; }
-    .hero-slide-caption h3 { font-size: 1.05rem; margin-bottom: .2rem; }
-    .hero-slide-caption p { font-size: .8rem; margin-bottom: .4rem; }
-    .hero-slide-caption .btn { padding: .4rem 1rem; font-size: .8rem; }
-    .categories-dropdown { min-width: 0; width: 92vw; }
-  }
   
+    .hero-slider {
+      aspect-ratio: 2 / 1;
+    }
+  
+    .hero-slide-caption h3 {
+      font-size: 1.05rem;
+  
+      margin-bottom: .2rem;
+    }
+  
+    .hero-slide-caption p {
+      font-size: .8rem;
+  
+      margin-bottom: .4rem;
+    }
+  
+    .hero-slide-caption .btn {
+      padding: .4rem 1rem;
+  
+      font-size: .8rem;
+    }
+  
+    .categories-dropdown {
+      min-width: 0;
+  
+      width: 92vw;
+    }
+  }
