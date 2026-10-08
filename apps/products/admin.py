@@ -99,8 +99,8 @@ class BrandAdmin(admin.ModelAdmin):
 
 @admin.register(CategoryAttributeTemplate)
 class CategoryAttributeTemplateAdmin(admin.ModelAdmin):
-    list_display = ("category", "name", "unit", "order")
-    list_filter = ("category",)
+    list_display = ("category", "name", "unit", "filter_type", "is_filterable", "order")
+    list_filter = ("category", "filter_type", "is_filterable")
     list_editable = ("order",)
 
 
