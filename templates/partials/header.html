@@ -10,8 +10,8 @@
           <img src="{{ site_settings.logo.url }}" alt="{{ site_settings.site_name }}">
         {% else %}
           <i class="fa-solid fa-bolt"></i>
-          <span>{{ site_settings.site_name }}</span>
         {% endif %}
+        <span class="header-brand-name">{{ site_settings.site_name }}</span>
       </a>
 
       <form action="{% url 'products:product_list' %}" method="get" class="header-search-form">
