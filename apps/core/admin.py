@@ -10,7 +10,7 @@ class SiteSettingForm(forms.ModelForm):
         model = SiteSetting
         fields = "__all__"
         widgets = {
-            **{name: forms.TextInput(attrs={"type": "color", "style": "width: 80px; height: 40px; padding: 2px;"}) for name in ("announcement_color", "theme_primary_color", "theme_accent_color", "theme_text_color", "theme_background_color", "theme_surface_color", "theme_border_color")},
+            **{name: forms.TextInput(attrs={"type": "color", "style": "width: 80px; height: 40px; padding: 2px;"}) for name in ("announcement_color", "theme_primary_color", "theme_menu_color", "theme_accent_color", "theme_text_color", "theme_background_color", "theme_surface_color", "theme_border_color")},
         }
 
 
@@ -20,7 +20,7 @@ class SiteSettingAdmin(admin.ModelAdmin):
     fieldsets = (
         (None, {"fields": ("site_name", "logo", "favicon")}),
         ("نوار اطلاع‌رسانی", {"fields": ("announcement_enabled", "announcement_text", "announcement_color")}),
-        ("رنگ‌بندی کلی سایت", {"fields": ("theme_primary_color", "theme_accent_color", "theme_text_color", "theme_background_color", "theme_surface_color", "theme_border_color")}),
+        ("رنگ‌بندی کلی سایت", {"fields": ("theme_primary_color", "theme_menu_color", "theme_accent_color", "theme_text_color", "theme_background_color", "theme_surface_color", "theme_border_color")}),
         ("اطلاعات تماس", {"fields": ("phone", "email", "address", "working_hours", "map_embed_url")}),
         ("شبکه‌های اجتماعی", {"fields": ("instagram", "telegram", "whatsapp", "linkedin")}),
         ("سئو و کدهای سایت", {"fields": ("footer_text", "default_meta_description", "google_analytics_id", "quick_circles_heading")}),
