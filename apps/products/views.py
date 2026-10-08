@@ -7,7 +7,7 @@ from django.urls import reverse_lazy
 from django.views import View
 from django.views.generic import ListView, DetailView, CreateView, TemplateView
 
-from .models import Product, ProductCategory, ProductInquiry, ProductReview
+from .models import Product, ProductCategory, ProductInquiry, ProductReview, CategoryAttributeTemplate
 
 WISHLIST_SESSION_KEY = "wishlist_product_ids"
 COMPARE_SESSION_KEY = "compare_product_ids"
@@ -56,7 +56,70 @@ class ProductFilterMixin:
         if max_price:
             qs = qs.filter(price__lte=max_price)
 
-        qs = qs.order_by(self.SORT_OPTIONS.get(sort, "-created_at"))
+        # فیلترهای فنی کاملاً داینامیک هستند و تعریف آن‌ها از داشبورد می‌آید.
+        # کلید پارامترها با attr_<id> ساخته می‌شود تا نام مشخصه بتواند فارسی/تکراری باشد.
+        category_for_filters = None
+        if category_slug:
+            category_for_filters = ProductCategory.objects.filter(
+                slug=category_slug, is_active=True
+            ).first()
+        elif getattr(self, "category", None):
+            category_for_filters = self.category
+
+        if category_for_filters:
+            filter_templates = CategoryAttributeTemplate.objects.filter(
+                category=category_for_filters,
+                is_filterable=True,
+            ).order_by("order", "name")
+            for template in filter_templates:
+                param = f"attr_{template.pk}"
+                raw_values = request.GET.getlist(param)
+                if not raw_values:
+                    continue
+                if template.filter_type in (
+                    CategoryAttributeTemplate.FILTER_TYPE_SELECT,
+                    CategoryAttributeTemplate.FILTER_TYPE_MULTISELECT,
+                ):
+                    values = [value.strip() for value in raw_values if value.strip()]
+                    if values:
+                        qs = qs.filter(
+                            specifications__key=template.name,
+                            specifications__value__in=values,
+                        )
+                elif template.filter_type == CategoryAttributeTemplate.FILTER_TYPE_BOOLEAN:
+                    values = {value.lower() for value in raw_values}
+                    if values & {"1", "true", "yes", "بله"}:
+                        qs = qs.filter(
+                            specifications__key=template.name,
+                            specifications__value__iregex=r"^(1|true|yes|بله|دارد|موجود)$",
+                        )
+                    elif values & {"0", "false", "no", "خیر"}:
+                        qs = qs.exclude(
+                            specifications__key=template.name,
+                            specifications__value__iregex=r"^(1|true|yes|بله|دارد|موجود)$",
+                        )
+                elif template.filter_type == CategoryAttributeTemplate.FILTER_TYPE_RANGE:
+                    min_value = request.GET.get(f"{param}_min")
+                    max_value = request.GET.get(f"{param}_max")
+                    if min_value or max_value:
+                        from django.db.models import DecimalField, Value
+                        from django.db.models.functions import Cast, Replace, Trim
+                        spec_qs = ProductSpecification.objects.filter(
+                            product_id=OuterRef("pk"),
+                            key=template.name,
+                        ).annotate(
+                            numeric_value=Cast(
+                                Trim(Replace("value", Value(template.unit or ""), Value(""))),
+                                DecimalField(max_digits=20, decimal_places=6),
+                            )
+                        )
+                        if min_value:
+                            spec_qs = spec_qs.filter(numeric_value__gte=min_value)
+                        if max_value:
+                            spec_qs = spec_qs.filter(numeric_value__lte=max_value)
+                        qs = qs.filter(Exists(spec_qs))
+
+        qs = qs.distinct().order_by(self.SORT_OPTIONS.get(sort, "-created_at"))
         return qs
 
 
