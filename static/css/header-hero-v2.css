@@ -31,7 +31,7 @@
   }
 
   .site-announcement-inner {
-    min-height: 42px;
+    height: 40px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -44,7 +44,7 @@
 
   @media (max-width: 576px) {
     .site-announcement-inner {
-      min-height: 38px;
+      height: 40px;
       padding: 0.45rem 0.75rem;
       font-size: 0.8rem;
     }
@@ -63,7 +63,7 @@
   
   .header-top {
     background: #fff;
-    border-top: 3px solid var(--color-orange);
+    border-top: none;
   }
   
   .header-top-inner {
