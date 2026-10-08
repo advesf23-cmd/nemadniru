@@ -141,6 +141,14 @@ class ProductListView(ProductFilterMixin, ListView):
             .values_list("brand__name", flat=True).distinct().order_by("brand__name")
         )
         ctx["current_sort"] = self.request.GET.get("sort", "newest")
+        active_category = getattr(self, "category", None)
+        if not active_category:
+            slug = self.request.GET.get("category")
+            if slug:
+                active_category = ProductCategory.objects.filter(slug=slug, is_active=True).first()
+        ctx["filter_templates"] = CategoryAttributeTemplate.objects.filter(
+            category=active_category, is_filterable=True
+        ).order_by("order", "name") if active_category else CategoryAttributeTemplate.objects.none()
         return ctx
 
     def get(self, request, *args, **kwargs):
@@ -175,6 +183,14 @@ class ProductCategoryDetailView(ProductFilterMixin, ListView):
             .values_list("brand__name", flat=True).distinct().order_by("brand__name")
         )
         ctx["current_sort"] = self.request.GET.get("sort", "newest")
+        active_category = getattr(self, "category", None)
+        if not active_category:
+            slug = self.request.GET.get("category")
+            if slug:
+                active_category = ProductCategory.objects.filter(slug=slug, is_active=True).first()
+        ctx["filter_templates"] = CategoryAttributeTemplate.objects.filter(
+            category=active_category, is_filterable=True
+        ).order_by("order", "name") if active_category else CategoryAttributeTemplate.objects.none()
         return ctx
 
     def get(self, request, *args, **kwargs):
