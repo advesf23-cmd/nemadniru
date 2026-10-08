@@ -3,22 +3,6 @@
 <html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <style>
-      :root {
-        --color-navy: {{ site_settings.theme_primary_color|default:"#0B2447" }};
-        --color-navy-light: {{ site_settings.theme_primary_color|default:"#0B2447" }};
-        --color-navy-lighter: {{ site_settings.theme_primary_color|default:"#0B2447" }};
-        --color-orange: {{ site_settings.theme_accent_color|default:"#F97316" }};
-        --color-orange-dark: {{ site_settings.theme_accent_color|default:"#F97316" }};
-        --color-gray: {{ site_settings.theme_text_color|default:"#1E293B" }};
-        --color-light-gray: {{ site_settings.theme_surface_color|default:"#F4F6F8" }};
-        --color-white: {{ site_settings.theme_background_color|default:"#FFFFFF" }};
-        --site-text-color: {{ site_settings.theme_text_color|default:"#1E293B" }};
-        --site-border-color: {{ site_settings.theme_border_color|default:"#E2E8F0" }};
-      }
-      body { color: var(--site-text-color); background-color: var(--color-white); }
-      .form-control, .form-select, input, select, textarea { border-color: var(--site-border-color); }
-    </style>
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}{{ site_settings.site_name }}{% endblock %}</title>
@@ -66,6 +50,22 @@
     <!-- استایل هدر جدید (دو ردیفه) + اسلایدر بنر -- عمداً سراسری و اینجا لود می‌شود
          تا در همه‌ی صفحات (نه فقط صفحه اصلی) هدر به‌درستی نمایش داده شود -->
     <link rel="stylesheet" href="{% static 'css/header-hero-v2.css' %}">
+    <style>
+      :root {
+        --color-navy: {{ site_settings.theme_primary_color|default:"#0B2447" }};
+        --color-navy-light: {{ site_settings.theme_primary_color|default:"#0B2447" }};
+        --color-navy-lighter: {{ site_settings.theme_primary_color|default:"#0B2447" }};
+        --color-orange: {{ site_settings.theme_accent_color|default:"#F97316" }};
+        --color-orange-dark: {{ site_settings.theme_accent_color|default:"#F97316" }};
+        --color-gray: {{ site_settings.theme_text_color|default:"#1E293B" }};
+        --color-light-gray: {{ site_settings.theme_surface_color|default:"#F4F6F8" }};
+        --color-white: {{ site_settings.theme_background_color|default:"#FFFFFF" }};
+        --site-text-color: {{ site_settings.theme_text_color|default:"#1E293B" }};
+        --site-border-color: {{ site_settings.theme_border_color|default:"#E2E8F0" }};
+      }
+      body { color: var(--site-text-color); background-color: var(--color-white); }
+      .form-control, .form-select, input, select, textarea { border-color: var(--site-border-color); }
+    </style>
     {% block extra_css %}{% endblock %}
 </head>
 <body>
