@@ -79,6 +79,13 @@ class SiteSetting(TimeStampedModel):
     announcement_enabled = models.BooleanField(_("نمایش نوار اطلاع‌رسانی"), default=False)
     announcement_text = models.CharField(_("متن نوار اطلاع‌رسانی"), max_length=500, blank=True)
     announcement_color = models.CharField(_("رنگ نوار اطلاع‌رسانی"), max_length=7, default="#0d6efd")
+    theme_primary_color = models.CharField(_("رنگ اصلی (کادرها و منوها)"), max_length=7, default="#0B2447")
+    theme_accent_color = models.CharField(_("رنگ تأکیدی (دکمه‌ها و لینک‌ها)"), max_length=7, default="#F97316")
+    theme_text_color = models.CharField(_("رنگ نوشته‌ها"), max_length=7, default="#1E293B")
+    theme_background_color = models.CharField(_("رنگ پس‌زمینه صفحات"), max_length=7, default="#FFFFFF")
+    theme_surface_color = models.CharField(_("رنگ پس‌زمینه کادرها"), max_length=7, default="#F4F6F8")
+    theme_border_color = models.CharField(_("رنگ حاشیه کادرها"), max_length=7, default="#E2E8F0")
+
 
     class Meta:
         verbose_name = _("تنظیمات سایت")
