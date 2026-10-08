@@ -59,6 +59,8 @@ class ProductFilterMixin:
         brand = request.GET.get("brand")
         min_price = request.GET.get("min_price")
         max_price = request.GET.get("max_price")
+        in_stock = request.GET.get("in_stock")
+        orderable = request.GET.get("orderable")
         sort = request.GET.get("sort", "newest")
 
         if category_slug:
@@ -77,6 +79,10 @@ class ProductFilterMixin:
             qs = qs.filter(price__gte=min_price)
         if max_price:
             qs = qs.filter(price__lte=max_price)
+        if in_stock:
+            qs = qs.filter(stock_quantity__gt=0)
+        if orderable:
+            qs = qs.filter(is_orderable=True)
 
         # فیلترهای فنی کاملاً داینامیک هستند و تعریف آن‌ها از داشبورد می‌آید.
         # کلید پارامترها با attr_<id> ساخته می‌شود تا نام مشخصه بتواند فارسی/تکراری باشد.
