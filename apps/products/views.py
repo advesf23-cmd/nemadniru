@@ -7,7 +7,7 @@ from django.urls import reverse_lazy
 from django.views import View
 from django.views.generic import ListView, DetailView, CreateView, TemplateView
 
-from .models import Product, ProductCategory, ProductInquiry, ProductReview, CategoryAttributeTemplate
+from .models import Product, ProductCategory, ProductInquiry, ProductReview, ProductSpecification, CategoryAttributeTemplate
 
 WISHLIST_SESSION_KEY = "wishlist_product_ids"
 COMPARE_SESSION_KEY = "compare_product_ids"
