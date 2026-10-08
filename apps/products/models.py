@@ -87,6 +87,41 @@ class CategoryAttributeTemplate(models.Model):
     unit = models.CharField(_("واحد (مثلاً: A، kA، V)"), max_length=30, blank=True)
     order = models.PositiveIntegerField(_("ترتیب"), default=0)
 
+    FILTER_TYPE_NONE = "none"
+    FILTER_TYPE_SELECT = "select"
+    FILTER_TYPE_MULTISELECT = "multiselect"
+    FILTER_TYPE_RANGE = "range"
+    FILTER_TYPE_BOOLEAN = "boolean"
+    FILTER_TYPE_CHOICES = (
+        (FILTER_TYPE_NONE, _("فیلتر نشود")),
+        (FILTER_TYPE_SELECT, _("انتخاب یک مقدار")),
+        (FILTER_TYPE_MULTISELECT, _("انتخاب چند مقدار")),
+        (FILTER_TYPE_RANGE, _("بازه عددی")),
+        (FILTER_TYPE_BOOLEAN, _("بله / خیر")),
+    )
+    filter_type = models.CharField(
+        _("نوع فیلتر"), max_length=20, choices=FILTER_TYPE_CHOICES,
+        default=FILTER_TYPE_NONE,
+        help_text=_("مشخص می‌کند این مشخصه در جستجوی پیشرفته چگونه نمایش داده شود."),
+    )
+    is_filterable = models.BooleanField(
+        _("نمایش در فیلتر"), default=False,
+        help_text=_("اگر فعال باشد، این مشخصه در فیلتر محصولات همان دسته نمایش داده می‌شود."),
+    )
+    filter_choices = models.TextField(
+        _("گزینه‌های فیلتر"), blank=True,
+        help_text=_("برای فیلترهای انتخابی، هر مقدار را در یک خط بنویسید. می‌توانید «مقدار | عنوان» هم وارد کنید."),
+    )
+    filter_min = models.DecimalField(
+        _("حداقل بازه"), max_digits=14, decimal_places=4, null=True, blank=True,
+    )
+    filter_max = models.DecimalField(
+        _("حداکثر بازه"), max_digits=14, decimal_places=4, null=True, blank=True,
+    )
+    filter_step = models.DecimalField(
+        _("گام بازه"), max_digits=14, decimal_places=4, null=True, blank=True,
+    )
+
     class Meta:
         ordering = ["category", "order"]
         verbose_name = _("قالب مشخصه فنی دسته‌بندی")
