@@ -1,4 +1,10 @@
 {% load static %}
+{% if site_settings.announcement_enabled and site_settings.announcement_text %}
+<div class="site-announcement-bar" style="--announcement-bg: {{ site_settings.announcement_color|default:'#0d6efd' }};">
+  <div class="container site-announcement-inner">{{ site_settings.announcement_text }}</div>
+</div>
+{% endif %}
+
 <header class="site-header-v2">
 
   <!-- ردیف اول: لوگو + نام / جستجو / آیکون‌ها -->
