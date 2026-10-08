@@ -978,7 +978,7 @@
     display: flex;
     align-items: center;
     gap: 0.4rem;
-    color: var(--color-navy);
+    color: var(--color-menu-text);
     text-decoration: none;
     font-size: 0.88rem;
     font-weight: 500;
