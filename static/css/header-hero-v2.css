@@ -253,7 +253,7 @@
     align-items: center;
     gap: 0.5rem;
     background: var(--color-menu);
-    color: #fff;
+    color: var(--color-menu-text);
     border: none;
     padding: 0.55rem 1.2rem;
     font-size: 0.88rem;
