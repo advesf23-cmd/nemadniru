@@ -75,33 +75,19 @@ class SiteSetting(TimeStampedModel):
 
     @property
     def map_embed_src(self):
-        """تبدیل لینک Google Maps (از جمله لینک‌های کوتاه maps.app.goo.gl) به iframe."""
+        """فقط لینک‌های واقعی Google Maps Embed را برای iframe برمی‌گرداند."""
         if not self.map_embed_url:
             return ""
 
         url = self.map_embed_url.strip()
 
-        if "google.com/maps" in url and "output=embed" in url:
+        # لینک‌های Share مثل maps.app.app.goo.gl و لینک‌های معمولی Google Maps
+        # در iframe توسط Google مسدود می‌شوند. فقط URLهای Embed واقعی را
+        # داخل iframe نمایش می‌دهیم.
+        if "google.com/maps/embed" in url or "output=embed" in url:
             return url
 
-        # لینک‌های Share کوتاه Google Maps قابل استفاده مستقیم در iframe نیستند؛
-        # ابتدا مقصد نهایی آن‌ها را پیدا می‌کنیم.
-        if "maps.app.goo.gl/" in url or "goo.gl/maps/" in url:
-            try:
-                from urllib.request import Request, urlopen
-
-                request = Request(
-                    url,
-                    headers={"User-Agent": "Mozilla/5.0"},
-                )
-                with urlopen(request, timeout=4) as response:
-                    url = response.geturl()
-            except Exception:
-                # در صورت در دسترس نبودن Google، حداقل لینک قابل کلیک باقی بماند.
-                return ""
-
-        from urllib.parse import quote
-        return f"https://www.google.com/maps?q={quote(url, safe='')}&output=embed"
+        return ""
     instagram = models.URLField(blank=True)
     telegram = models.URLField(blank=True)
     whatsapp = models.URLField(blank=True)
