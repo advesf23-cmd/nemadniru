@@ -240,7 +240,7 @@
     align-items: center;
     justify-content: flex-start;
     gap: 2rem;
-    min-height: 46px;
+    min-height: 37px;
   }
   
   .header-nav-categories {
@@ -248,6 +248,8 @@
     flex-shrink: 0;
     padding-left: 1.25rem;
     border-left: 1px solid color-mix(in srgb, var(--color-menu-text), transparent 55%);
+    height: 20px;
+    align-self: center;
   }
   
   .categories-toggle {
@@ -257,7 +259,7 @@
     background: var(--color-menu);
     color: var(--color-menu-text);
     border: none;
-    padding: 0.55rem 1.2rem;
+    padding: 0.35rem 1.2rem;
     font-size: 0.88rem;
     font-weight: 600;
     cursor: pointer;
@@ -985,10 +987,27 @@
     font-size: 0.88rem;
     font-weight: 500;
     white-space: nowrap;
+    position: relative;
+    padding-bottom: 3px;
+  }
+
+  .header-nav-links a::after {
+    content: "";
+    position: absolute;
+    right: 0;
+    bottom: -1px;
+    width: 0;
+    height: 2px;
+    background: var(--color-orange);
+    transition: width 0.2s ease;
   }
   
   .header-nav-links a:hover {
     color: var(--color-orange);
+  }
+
+  .header-nav-links a:hover::after {
+    width: 100%;
   }
   
   
