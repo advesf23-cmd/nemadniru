@@ -22,6 +22,35 @@
   
   
   /* =========================================================
+     نوار اطلاع‌رسانی قابل تنظیم از پنل مدیریت
+     ========================================================= */
+  .site-announcement-bar {
+    width: 100%;
+    background: var(--announcement-bg, #0d6efd);
+    color: #fff;
+  }
+
+  .site-announcement-inner {
+    min-height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 0.55rem 1rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    line-height: 1.7;
+  }
+
+  @media (max-width: 576px) {
+    .site-announcement-inner {
+      min-height: 38px;
+      padding: 0.45rem 0.75rem;
+      font-size: 0.8rem;
+    }
+  }
+
+  /* =========================================================
      هدر: ردیف بالا
      ========================================================= */
   
