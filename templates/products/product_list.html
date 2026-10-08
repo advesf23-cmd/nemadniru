@@ -49,6 +49,13 @@
               <input type="number" id="max-price" class="form-control" name="max_price" placeholder="حداکثر" value="{{ request.GET.max_price }}">
             </div>
           </div>
+          <div class="form-card mb-3">
+            <label class="form-label">وضعیت محصول</label>
+            <div class="d-flex flex-column gap-2">
+              <label class="small"><input type="checkbox" name="in_stock" value="1" {% if request.GET.in_stock %}checked{% endif %}> فقط محصولات موجود</label>
+              <label class="small"><input type="checkbox" name="orderable" value="1" {% if request.GET.orderable %}checked{% endif %}> فقط قابل سفارش آنلاین</label>
+            </div>
+          </div>
 
           {% for definition in filter_definitions %}
           {% with template=definition.template %}
