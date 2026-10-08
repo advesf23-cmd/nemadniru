@@ -76,6 +76,9 @@ class SiteSetting(TimeStampedModel):
     default_meta_description = models.CharField(max_length=160, blank=True)
     google_analytics_id = models.CharField(max_length=30, blank=True)
     quick_circles_heading = models.CharField(_("عنوان بالای دایره‌های سریع (زیر اسلایدر)"), max_length=150, blank=True)
+    announcement_enabled = models.BooleanField(_("نمایش نوار اطلاع‌رسانی"), default=False)
+    announcement_text = models.CharField(_("متن نوار اطلاع‌رسانی"), max_length=500, blank=True)
+    announcement_color = models.CharField(_("رنگ نوار اطلاع‌رسانی"), max_length=7, default="#0d6efd")
 
     class Meta:
         verbose_name = _("تنظیمات سایت")
