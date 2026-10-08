@@ -67,7 +67,22 @@ class SiteSetting(TimeStampedModel):
     email = models.EmailField(_("ایمیل"), blank=True)
     address = models.TextField(_("آدرس"), blank=True)
     working_hours = models.CharField(_("ساعات کاری"), max_length=150, blank=True)
-    map_embed_url = models.URLField(_("لینک نقشه گوگل"), blank=True)
+    map_embed_url = models.URLField(
+        _("لینک نقشه گوگل"),
+        blank=True,
+        help_text=_("لینک Google Maps را وارد کنید؛ هم لینک معمولی نقشه و هم لینک Embed پشتیبانی می‌شود."),
+    )
+
+    @property
+    def map_embed_src(self):
+        """تبدیل لینک معمولی Google Maps به آدرس قابل استفاده داخل iframe."""
+        if not self.map_embed_url:
+            return ""
+        url = self.map_embed_url.strip()
+        if "google.com/maps" in url and "output=embed" in url:
+            return url
+        from urllib.parse import quote
+        return f"https://www.google.com/maps?q={quote(url, safe='')}&output=embed"
     instagram = models.URLField(blank=True)
     telegram = models.URLField(blank=True)
     whatsapp = models.URLField(blank=True)
