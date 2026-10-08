@@ -246,20 +246,34 @@
   .header-nav-categories {
     position: relative;
     flex-shrink: 0;
+    display: flex;
+    align-items: center;
     padding-left: 1.25rem;
-    border-left: 1px solid color-mix(in srgb, var(--color-menu-text), transparent 55%);
+    height: 37px;
+    align-self: stretch;
+  }
+
+  .header-nav-categories::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 1px;
     height: 20px;
-    align-self: center;
+    background: color-mix(in srgb, var(--color-menu-text), transparent 55%);
+    transform: translateY(-50%);
   }
   
   .categories-toggle {
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    height: 37px;
     background: var(--color-menu);
     color: var(--color-menu-text);
     border: none;
-    padding: 0.35rem 1.2rem;
+    padding: 0 1.2rem;
+    margin: 0;
     font-size: 0.88rem;
     font-weight: 600;
     cursor: pointer;
