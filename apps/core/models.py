@@ -80,6 +80,7 @@ class SiteSetting(TimeStampedModel):
     announcement_text = models.CharField(_("متن نوار اطلاع‌رسانی"), max_length=500, blank=True)
     announcement_color = models.CharField(_("رنگ نوار اطلاع‌رسانی"), max_length=7, default="#0d6efd")
     theme_primary_color = models.CharField(_("رنگ اصلی کادرها"), max_length=7, default="#0B2447")
+    theme_heading_color = models.CharField(_("رنگ تیترهای صفحات"), max_length=7, default="#0B2447")
     theme_menu_color = models.CharField(_("رنگ نوار منو"), max_length=7, default="#0B2447")
     theme_menu_text_color = models.CharField(_("رنگ نوشته منو"), max_length=7, default="#FFFFFF")
     theme_accent_color = models.CharField(_("رنگ تأکیدی (دکمه‌ها و لینک‌ها)"), max_length=7, default="#F97316")
