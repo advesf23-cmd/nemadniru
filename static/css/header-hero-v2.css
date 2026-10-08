@@ -231,8 +231,8 @@
      ========================================================= */
   
   .header-nav {
-    background: var(--color-light-gray);
-    border-bottom: 1px solid #E2E8F0;
+    background: var(--color-menu);
+    border-bottom: 1px solid var(--site-border-color);
   }
   
   .header-nav-inner {
@@ -252,7 +252,7 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    background: var(--color-navy);
+    background: var(--color-menu);
     color: #fff;
     border: none;
     padding: 0.55rem 1.2rem;
@@ -262,7 +262,7 @@
   }
   
   .categories-toggle:hover {
-    background: var(--color-navy-light);
+    background: color-mix(in srgb, var(--color-menu), #000 12%);
   }
   
   .categories-dropdown {
