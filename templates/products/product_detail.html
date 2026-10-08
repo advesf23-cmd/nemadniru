@@ -102,6 +102,38 @@
   border-radius: 0.4rem;
 }
 
+/* دکمه‌های صفحه محصول — اندازه جمع‌وجور */
+.product-purchase-form {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  max-width: 430px;
+}
+.product-purchase-form .product-quantity {
+  flex: 0 0 78px;
+  width: 78px;
+}
+.product-purchase-form .product-purchase-btn {
+  flex: 0 0 auto;
+  width: auto;
+  min-width: 150px;
+  padding: .45rem .75rem;
+  font-size: .875rem;
+}
+
+.product-detail-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+  margin-top: 1rem;
+}
+.product-detail-actions .btn {
+  margin-top: 0 !important;
+  width: auto;
+  padding: .45rem .75rem;
+  font-size: .875rem;
+}
+
 .product-image-lightbox[hidden] {
   display: none !important;
 }
@@ -346,11 +378,11 @@
           </div>
 
           {% if request.user.is_authenticated %}
-          <form method="post" action="{% url 'shop:add_to_cart' product.pk %}" class="d-flex gap-2 mt-2" id="add-to-cart-form">
+          <form method="post" action="{% url 'shop:add_to_cart' product.pk %}" class="product-purchase-form mt-2" id="add-to-cart-form">
             {% csrf_token %}
             <input type="number" name="quantity" value="1" min="1" max="{{ product.stock_quantity }}"
-                   class="form-control" style="max-width:100px;" id="add-to-cart-qty">
-            <button type="submit" class="btn btn-orange flex-grow-1"><i class="fa-solid fa-cart-shopping me-1"></i> افزودن به سبد خرید</button>
+                   class="form-control product-quantity" id="add-to-cart-qty">
+            <button type="submit" class="btn btn-orange product-purchase-btn"><i class="fa-solid fa-cart-shopping me-1"></i> افزودن به سبد خرید</button>
           </form>
           <script>
             document.getElementById('add-to-cart-form').addEventListener('submit', function (e) {
@@ -387,10 +419,10 @@
           {% endif %}
         {% endif %}
 
-        <a href="{% url 'products:inquiry_create' %}?product={{ product.pk }}" class="btn btn-outline-navy btn-lg mt-3">
+        <a href="{% url 'products:inquiry_create' %}?product={{ product.pk }}" class="btn btn-outline-navy product-detail-action-btn">
           <i class="fa-solid fa-file-invoice me-1"></i> استعلام قیمت این محصول
         </a>
-        <button class="btn btn-outline-navy btn-lg mt-3 wishlist-detail-btn" data-product="{{ product.pk }}">
+        <button type="button" class="btn btn-outline-navy product-detail-action-btn wishlist-detail-btn" data-product="{{ product.pk }}">
           <i class="fa-regular fa-heart"></i> افزودن به علاقه‌مندی‌ها
         </button>
         <script>
