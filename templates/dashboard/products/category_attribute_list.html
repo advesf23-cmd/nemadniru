@@ -1,0 +1,36 @@
+{% extends "dashboard/base_dashboard.html" %}
+{% block title %}فیلترهای فنی محصولات{% endblock %}
+{% block dash_content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <div>
+    <h5 class="mb-1">فیلترهای فنی محصولات</h5>
+    <small class="text-muted">مشخص کنید هر مشخصه فنی در کدام دسته و با چه نوع کنترلی در فیلتر محصولات نمایش داده شود.</small>
+  </div>
+  <a href="{% url 'dashboard:category_attribute_add' %}" class="btn btn-orange"><i class="fa-solid fa-plus me-1"></i> افزودن مشخصه / فیلتر</a>
+</div>
+<div class="dash-table-card">
+  <div class="table-responsive">
+    <table class="table align-middle">
+      <thead><tr><th>دسته</th><th>مشخصه</th><th>واحد</th><th>نوع فیلتر</th><th>نمایش</th><th>ترتیب</th><th>عملیات</th></tr></thead>
+      <tbody>
+      {% for item in attributes %}
+        <tr>
+          <td>{{ item.category.name }}</td>
+          <td class="fw-bold">{{ item.name }}</td>
+          <td>{{ item.unit|default:"—" }}</td>
+          <td>{{ item.get_filter_type_display }}</td>
+          <td>{% if item.is_filterable %}<span class="badge bg-success">فعال</span>{% else %}<span class="badge bg-secondary">خاموش</span>{% endif %}</td>
+          <td>{{ item.order }}</td>
+          <td>
+            <a href="{% url 'dashboard:category_attribute_edit' item.pk %}" class="btn btn-sm btn-outline-navy"><i class="fa-solid fa-pen"></i></a>
+            <a href="{% url 'dashboard:category_attribute_delete' item.pk %}" class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-trash"></i></a>
+          </td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="7" class="text-center text-muted py-4">هنوز مشخصه‌ای تعریف نشده است.</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
