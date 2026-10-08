@@ -5,6 +5,9 @@ from django.urls import reverse_lazy
 from django.views.generic import (
     TemplateView, ListView, CreateView, UpdateView, DeleteView, DetailView, View
 )
+from apps.products.models import (
+     Product, ProductCategory, ProductInquiry, ProductReview, Brand
+)
 
 from apps.products.models import Product, ProductCategory, ProductInquiry, ProductReview
 from apps.services.models import Service
@@ -75,11 +78,15 @@ class DashboardProductListView(StaffRequiredMixin, ListView):
 class DashboardProductCreateView(StaffRequiredMixin, CreateView):
     model = Product
     fields = [
-        "category", "name", "short_description", "description", "cover_image", "brand",
-        "price", "discount_price", "stock_quantity", "sku", "is_orderable",
-        "status", "is_featured", "order",
-        "meta_title", "meta_description",
-    ]
+         "category", "brand", "name", "sku", "mpn",
+         "short_description", "description", "technical_description",
+         "cover_image",
+         "price", "discount_price", "discount_percent_override",
+         "stock_quantity", "is_orderable",
+         "status", "is_featured", "order",
+         "meta_title", "meta_description",
+     ]
+
     template_name = "dashboard/products/form.html"
     success_url = reverse_lazy("dashboard:product_list")
 
@@ -751,3 +758,28 @@ class DashboardQuickCircleDeleteView(StaffRequiredMixin, DeleteView):
     model = QuickCircle
     template_name = "dashboard/confirm_delete.html"
     success_url = reverse_lazy("dashboard:quick_circle_list")
+
+class DashboardBrandListView(StaffRequiredMixin, ListView):
+    model = Brand
+    template_name = "dashboard/products/brand_list.html"
+    context_object_name = "brands"
+
+
+class DashboardBrandCreateView(StaffRequiredMixin, CreateView):
+    model = Brand
+    fields = ["name", "logo", "default_discount_percent", "is_active"]
+    template_name = "dashboard/generic_form.html"
+    success_url = reverse_lazy("dashboard:brand_list")
+
+
+class DashboardBrandUpdateView(StaffRequiredMixin, UpdateView):
+    model = Brand
+    fields = DashboardBrandCreateView.fields
+    template_name = "dashboard/generic_form.html"
+    success_url = reverse_lazy("dashboard:brand_list")
+
+
+class DashboardBrandDeleteView(StaffRequiredMixin, DeleteView):
+    model = Brand
+    template_name = "dashboard/confirm_delete.html"
+    success_url = reverse_lazy("dashboard:brand_list")

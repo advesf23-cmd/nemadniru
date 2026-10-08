@@ -1,17 +1,20 @@
 {% comment %}
-  پارشال بازگشتی برای نمایش کل زیردرخت یک دسته‌بندی در مگامنو، با هر تعداد
-  سطح که در پنل مدیریت تعریف شده باشد (نه فقط یک سطح).
-  nodes: لیست دسته‌بندی‌های همین سطح (هرکدام با attribute پایتونی sub_items)
-  level: عمق فعلی (برای تورفتگی بصری) -- از ۰ شروع می‌شود
+  پارشال بازگشتی -- هر دسته‌ای که زیرمجموعه دارد، با هاور (دسکتاپ) یا کلیک
+  (موبایل/تاچ) یک Flyout جدا در کنارش باز می‌کند؛ اگر آن زیرمجموعه‌ها هم خودشان
+  زیرمجموعه داشته باشند، به همین ترتیب یک Flyout دیگر در کنار خودشان باز
+  می‌شود -- یعنی هر تعداد سطح که در پنل مدیریت تعریف شده باشد، پشتیبانی می‌شود.
+  این دقیقاً همان رفتار قبلی (قبل از تبدیل به پنل مگامنوی تخت) است.
 {% endcomment %}
 {% for node in nodes %}
-<div class="mega-cat-node">
-  <a href="{% url 'products:category_detail' node.slug %}"
-     class="mega-cat-link mega-cat-indent-{{ level }} {% if node.sub_items %}mega-cat-parent-link{% endif %}">
+<div class="categories-dropdown-item {% if node.sub_items %}has-children{% endif %}">
+  <a href="{% url 'products:category_detail' node.slug %}">
     {{ node.name }}
+    {% if node.sub_items %}<i class="fa-solid fa-angle-left submenu-caret"></i>{% endif %}
   </a>
   {% if node.sub_items %}
-    {% include "partials/_category_tree_items.html" with nodes=node.sub_items level=level|add:1 %}
+  <div class="categories-submenu">
+    {% include "partials/_category_tree_items.html" with nodes=node.sub_items %}
+  </div>
   {% endif %}
 </div>
 {% endfor %}

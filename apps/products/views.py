@@ -17,7 +17,8 @@ COMPARE_MAX_ITEMS = 4
 class ProductFilterMixin:
     """
     منطق مشترک فیلتر/جستجو/مرتب‌سازی محصولات -- هم برای درخواست معمولی
-    و هم درخواست AJAX (فیلتر زنده بدون رفرش صفحه) استفاده می‌شود.
+    و هم درخواست AJAX. brand حالا یک ForeignKey به مدل Brand است (نه متن
+    آزاد)، پس فیلتر و جستجو روی brand__name انجام می‌شود.
     """
     SORT_OPTIONS = {
         "newest": "-created_at",
@@ -27,7 +28,7 @@ class ProductFilterMixin:
     }
 
     def get_base_queryset(self):
-        return Product.objects.filter(status="published").select_related("category")
+        return Product.objects.filter(status="published").select_related("category", "brand")
 
     def apply_filters(self, qs):
         request = self.request
@@ -44,10 +45,12 @@ class ProductFilterMixin:
             qs = qs.filter(
                 Q(name__icontains=search_query) |
                 Q(short_description__icontains=search_query) |
-                Q(brand__icontains=search_query)
+                Q(brand__name__icontains=search_query) |
+                Q(mpn__icontains=search_query) |
+                Q(sku__icontains=search_query)
             )
         if brand:
-            qs = qs.filter(brand__iexact=brand)
+            qs = qs.filter(brand__name__iexact=brand)
         if min_price:
             qs = qs.filter(price__gte=min_price)
         if max_price:
@@ -69,9 +72,10 @@ class ProductListView(ProductFilterMixin, ListView):
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         ctx["categories"] = ProductCategory.objects.filter(is_active=True)
+        # لیست نام برندهایی که حداقل یک محصول منتشرشده دارند (برای فیلتر سایدبار)
         ctx["brands"] = (
-            Product.objects.filter(status="published")
-            .exclude(brand="").values_list("brand", flat=True).distinct().order_by("brand")
+            Product.objects.filter(status="published", brand__isnull=False, brand__is_active=True)
+            .values_list("brand__name", flat=True).distinct().order_by("brand__name")
         )
         ctx["current_sort"] = self.request.GET.get("sort", "newest")
         return ctx
@@ -79,7 +83,6 @@ class ProductListView(ProductFilterMixin, ListView):
     def get(self, request, *args, **kwargs):
         self.object_list = self.get_queryset()
         context = self.get_context_data()
-        # درخواست AJAX -- فقط بخش گرید محصولات را بازمی‌گرداند (بدون رفرش کامل صفحه)
         if request.headers.get("X-Requested-With") == "XMLHttpRequest" or request.GET.get("ajax"):
             html = render_to_string("products/_product_grid.html", context, request=request)
             pagination_html = render_to_string("products/_pagination.html", context, request=request)
@@ -97,13 +100,17 @@ class ProductCategoryDetailView(ProductFilterMixin, ListView):
     paginate_by = 12
 
     def get_queryset(self):
-        self.category = ProductCategory.objects.get(slug=self.kwargs["slug"], is_active=True)
+        self.category = get_object_or_404(ProductCategory, slug=self.kwargs["slug"], is_active=True)
         return self.apply_filters(self.get_base_queryset().filter(category=self.category))
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         ctx["categories"] = ProductCategory.objects.filter(is_active=True)
         ctx["current_category"] = self.category
+        ctx["brands"] = (
+            Product.objects.filter(status="published", category=self.category, brand__isnull=False, brand__is_active=True)
+            .values_list("brand__name", flat=True).distinct().order_by("brand__name")
+        )
         ctx["current_sort"] = self.request.GET.get("sort", "newest")
         return ctx
 
@@ -122,13 +129,16 @@ class ProductCategoryDetailView(ProductFilterMixin, ListView):
 
 
 class ProductSearchSuggestView(TemplateView):
-    """اندپوینت سبک برای پیشنهاد جستجوی زنده (Autocomplete) در نوار جستجو"""
+    """اندپوینت سبک برای پیشنهاد جستجوی زنده (Autocomplete) -- شامل جستجو بر اساس MPN هم می‌شود"""
 
     def get(self, request, *args, **kwargs):
         q = request.GET.get("q", "").strip()
         results = []
         if len(q) >= 2:
-            products = Product.objects.filter(status="published", name__icontains=q)[:6]
+            products = Product.objects.filter(
+                Q(name__icontains=q) | Q(mpn__icontains=q) | Q(sku__icontains=q),
+                status="published",
+            ).select_related("category")[:6]
             results = [
                 {
                     "name": p.name,
@@ -148,7 +158,7 @@ class ProductDetailView(DetailView):
     slug_field = "slug"
 
     def get_queryset(self):
-        return Product.objects.filter(status="published")
+        return Product.objects.filter(status="published").select_related("brand", "category")
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
@@ -201,7 +211,7 @@ class ProductInquirySuccessView(TemplateView):
 
 
 # ---------------------------------------------------------------------------
-# علاقه‌مندی‌ها (Wishlist) -- مبتنی بر Session، برای کاربر مهمان و عضو کار می‌کند
+# علاقه‌مندی‌ها (Wishlist) -- مبتنی بر Session
 # ---------------------------------------------------------------------------
 class WishlistToggleView(TemplateView):
     def post(self, request, *args, **kwargs):
@@ -256,12 +266,14 @@ class CompareView(ListView):
 
     def get_queryset(self):
         ids = self.request.session.get(COMPARE_SESSION_KEY, [])
-        return Product.objects.filter(pk__in=ids, status="published").prefetch_related("specifications")
+        return (
+            Product.objects.filter(pk__in=ids, status="published")
+            .select_related("brand").prefetch_related("specifications")
+        )
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         products = ctx["products"]
-        # جمع‌آوری تمام کلیدهای مشخصات فنی موجود بین محصولات انتخاب‌شده برای رندر جدول مقایسه
         spec_keys = []
         for product in products:
             for spec in product.specifications.all():

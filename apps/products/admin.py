@@ -1,7 +1,8 @@
 from django.contrib import admin
 from django.db.models import Case, When
 from .models import (
-    ProductCategory, Product, ProductImage, ProductSpecification, ProductDownload, ProductInquiry, ProductReview
+    ProductCategory, Brand, CategoryAttributeTemplate, Product,
+    ProductImage, ProductSpecification, ProductDownload, ProductInquiry, ProductReview
 )
 
 
@@ -22,10 +23,7 @@ class ProductDownloadInline(admin.TabularInline):
 
 @admin.register(ProductCategory)
 class ProductCategoryAdmin(admin.ModelAdmin):
-    """
-    نمایش دسته‌بندی‌ها به‌صورت درختی: هر زیرمجموعه دقیقاً زیر والدش (با تورفتگی)
-    نمایش داده می‌شود، نه در یک لیست تخت و پراکنده.
-    """
+    """نمایش دسته‌بندی‌ها به‌صورت درختی: هر زیرمجموعه دقیقاً زیر والدش (با تورفتگی) نمایش داده می‌شود."""
     list_display = ("indented_name", "parent", "is_active", "order")
     list_editable = ("order", "is_active")
     prepopulated_fields = {"slug": ("name",)}
@@ -41,14 +39,12 @@ class ProductCategoryAdmin(admin.ModelAdmin):
 
     @staticmethod
     def _tree_ordered_ids(qs):
-        """آی‌دی‌ها را به ترتیب درختی (والد، سپس بلافاصله فرزندانش، سپس نوه‌ها و ...) برمی‌گرداند."""
         items = list(qs)
         by_parent = {}
         for item in items:
             by_parent.setdefault(item.parent_id, []).append(item)
         for children in by_parent.values():
             children.sort(key=lambda c: (c.order, c.name))
-
         ordered_ids = []
 
         def walk(parent_id):
@@ -65,12 +61,10 @@ class ProductCategoryAdmin(admin.ModelAdmin):
         while p is not None:
             depth += 1
             p = p.parent
-        prefix = "— " * depth
-        return f"{prefix}{obj.name}"
+        return f"{'— ' * depth}{obj.name}"
     indented_name.short_description = "نام دسته‌بندی"
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        """در فرم افزودن/ویرایش، فیلد «دسته‌بندی والد» را هم به‌صورت تورفته (درختی) نمایش می‌دهد."""
         field = super().formfield_for_foreignkey(db_field, request, **kwargs)
         if db_field.name == "parent":
             all_categories = list(ProductCategory.objects.all())
@@ -89,15 +83,44 @@ class ProductCategoryAdmin(admin.ModelAdmin):
         return field
 
 
+class CategoryAttributeTemplateInline(admin.TabularInline):
+    """امکان تعریف قالب مشخصات فنی هر دسته، مستقیم از همان صفحه‌ی دسته‌بندی"""
+    model = CategoryAttributeTemplate
+    extra = 1
+
+
+@admin.register(Brand)
+class BrandAdmin(admin.ModelAdmin):
+    list_display = ("name", "default_discount_percent", "is_active")
+    list_editable = ("default_discount_percent", "is_active")
+    prepopulated_fields = {"slug": ("name",)}
+    search_fields = ("name",)
+
+
+@admin.register(CategoryAttributeTemplate)
+class CategoryAttributeTemplateAdmin(admin.ModelAdmin):
+    list_display = ("category", "name", "unit", "order")
+    list_filter = ("category",)
+    list_editable = ("order",)
+
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ("name", "category", "brand", "status", "is_featured", "stock_quantity", "created_at")
-    list_filter = ("category", "status", "is_featured", "brand")
+    list_display = ("name", "category", "brand", "sku", "mpn", "status", "is_featured", "stock_quantity", "created_at")
+    list_filter = ("category", "brand", "status", "is_featured")
     list_editable = ("is_featured",)
-    search_fields = ("name", "sku", "brand")
+    search_fields = ("name", "sku", "mpn", "brand__name")
+    autocomplete_fields = ["brand"]
     prepopulated_fields = {"slug": ("name",)}
     inlines = [ProductImageInline, ProductSpecificationInline, ProductDownloadInline]
+    fieldsets = (
+        (None, {"fields": ("category", "brand", "name", "slug", "status", "is_featured", "order")}),
+        ("شناسه‌های محصول", {"fields": ("sku", "mpn")}),
+        ("توضیحات", {"fields": ("short_description", "description", "technical_description")}),
+        ("تصویر", {"fields": ("cover_image",)}),
+        ("قیمت و موجودی", {"fields": ("price", "discount_price", "discount_percent_override", "stock_quantity", "is_orderable")}),
+        ("سئو", {"fields": ("meta_title", "meta_description", "og_image", "canonical_url"), "classes": ("collapse",)}),
+    )
 
 
 @admin.register(ProductInquiry)

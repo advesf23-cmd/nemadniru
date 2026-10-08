@@ -25,6 +25,168 @@
 }
 </script>
 {% endblock %}
+{% block extra_css %}
+<style>
+/* =========================================================
+   گالری تصاویر محصول
+   ========================================================= */
+.product-gallery {
+  width: 100%;
+}
+
+.product-gallery-main {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 420px;
+  padding: 10px;
+  margin: 0 0 14px;
+  box-sizing: border-box;
+  overflow: hidden;
+  border: 1px solid #e5e7eb;
+  border-radius: 1rem;
+  background: #fff;
+  cursor: zoom-in;
+}
+
+.product-gallery-main img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+  background: #fff;
+  border-radius: 0.65rem;
+}
+
+.product-gallery-thumbs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  width: 100%;
+}
+
+.product-gallery-thumb {
+  flex: 0 0 84px;
+  width: 84px;
+  height: 84px;
+  padding: 5px;
+  box-sizing: border-box;
+  overflow: hidden;
+  border: 2px solid transparent;
+  border-radius: 0.65rem;
+  background: #fff;
+  cursor: pointer;
+  transition: border-color .15s ease, box-shadow .15s ease, transform .15s ease;
+}
+
+.product-gallery-thumb:hover {
+  border-color: #cbd5e1;
+  transform: translateY(-1px);
+}
+
+.product-gallery-thumb.is-active {
+  border-color: var(--color-orange);
+  box-shadow: 0 0 0 2px rgba(0,0,0,.04);
+}
+
+.product-gallery-thumb img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+  background: #fff;
+  border-radius: 0.4rem;
+}
+
+.product-image-lightbox[hidden] {
+  display: none !important;
+}
+
+.product-image-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 30px;
+}
+
+.product-image-lightbox-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, .78);
+}
+
+.product-image-lightbox-dialog {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: min(100%, 1100px);
+  height: min(100%, 90vh);
+  padding: 10px;
+  box-sizing: border-box;
+  background: #fff;
+  border-radius: 1rem;
+  box-shadow: 0 20px 60px rgba(0,0,0,.35);
+}
+
+.product-image-lightbox-dialog img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+  background: #fff;
+  border-radius: .65rem;
+}
+
+.product-image-lightbox-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 2;
+  width: 40px;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255,255,255,.92);
+  color: #111827;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(0,0,0,.15);
+}
+
+@media (max-width: 576px) {
+  .product-gallery-main {
+    height: 320px;
+  }
+
+  .product-gallery-thumb {
+    flex-basis: 70px;
+    width: 70px;
+    height: 70px;
+  }
+
+  .product-image-lightbox {
+    padding: 12px;
+  }
+
+  .product-image-lightbox-dialog {
+    height: 82vh;
+  }
+}
+</style>
+{% endblock %}
+
 {% block content %}
 {% include "partials/page_header.html" with page_title=product.name %}
 
@@ -32,14 +194,90 @@
   <div class="container">
     <div class="row g-5">
       <div class="col-lg-6" data-aos="fade-up">
-        {% if product.cover_image %}
-        <img src="{{ product.cover_image.url }}" class="rounded-4 w-100 mb-3" style="max-height:420px;object-fit:cover;">
-        {% endif %}
-        {% if product.images.all %}
-        <div class="row g-2">
-          {% for img in product.images.all %}
-          <div class="col-3"><img src="{{ img.image.url }}" class="rounded-3 w-100" style="height:80px;object-fit:cover;" alt="{{ img.alt_text }}"></div>
-          {% endfor %}
+        {% if product.cover_image or product.images.all %}
+        <div class="product-gallery" id="product-gallery">
+
+          <button
+            type="button"
+            class="product-gallery-main"
+            id="product-gallery-main"
+            aria-label="نمایش بزرگ تصویر محصول"
+          >
+            {% if product.cover_image %}
+              <img
+                id="product-main-image"
+                src="{{ product.cover_image.url }}"
+                alt="{{ product.name }}"
+              >
+            {% else %}
+              {% for img in product.images.all|slice:":1" %}
+                <img
+                  id="product-main-image"
+                  src="{{ img.image.url }}"
+                  alt="{{ img.alt_text|default:product.name }}"
+                >
+              {% endfor %}
+            {% endif %}
+          </button>
+
+          <div class="product-gallery-thumbs" id="product-gallery-thumbs">
+
+            {% if product.cover_image %}
+            <button
+              type="button"
+              class="product-gallery-thumb is-active"
+              data-image-url="{{ product.cover_image.url }}"
+              data-image-alt="{{ product.name|escape }}"
+              aria-label="تصویر اصلی {{ product.name }}"
+              aria-pressed="true"
+            >
+              <img
+                src="{{ product.cover_image.url }}"
+                alt="{{ product.name }}"
+                loading="lazy"
+              >
+            </button>
+            {% endif %}
+
+            {% for img in product.images.all %}
+            <button
+              type="button"
+              class="product-gallery-thumb{% if not product.cover_image and forloop.first %} is-active{% endif %}"
+              data-image-url="{{ img.image.url }}"
+              data-image-alt="{{ img.alt_text|default:product.name|escape }}"
+              aria-label="نمایش تصویر {{ forloop.counter }} از {{ product.images.count }}"
+              aria-pressed="{% if not product.cover_image and forloop.first %}true{% else %}false{% endif %}"
+            >
+              <img
+                src="{{ img.image.url }}"
+                alt="{{ img.alt_text|default:product.name }}"
+                loading="lazy"
+              >
+            </button>
+            {% endfor %}
+
+          </div>
+        </div>
+
+        <!-- نمایش بزرگ تصویر انتخاب‌شده -->
+        <div class="product-image-lightbox" id="product-image-lightbox" hidden>
+          <div class="product-image-lightbox-backdrop" data-lightbox-close></div>
+          <div
+            class="product-image-lightbox-dialog"
+            role="dialog"
+            aria-modal="true"
+            aria-label="نمایش بزرگ تصویر محصول"
+          >
+            <button
+              type="button"
+              class="product-image-lightbox-close"
+              id="product-lightbox-close"
+              aria-label="بستن تصویر بزرگ"
+            >
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+            <img id="product-lightbox-image" src="" alt="">
+          </div>
         </div>
         {% endif %}
       </div>
@@ -55,7 +293,9 @@
           <span class="small text-muted ms-1">{{ product.average_rating }} از ۵ ({{ product.review_count }} نظر)</span>
         </div>
         {% endif %}
-        {% if product.brand %}<p class="text-muted">برند: {{ product.brand }}</p>{% endif %}
+        {% if product.brand %}<p class="text-muted mb-1">برند: {{ product.brand }}</p>{% endif %}
+        {% if product.mpn %}<p class="text-muted small">کد سازنده (MPN): <span dir="ltr">{{ product.mpn }}</span></p>{% endif %}
+
         <p class="mb-2">
           {% if product.is_in_stock %}<span class="badge bg-success">موجود در انبار</span>
           {% else %}<span class="badge bg-danger">ناموجود</span>{% endif %}
@@ -77,6 +317,12 @@
           </tbody>
         </table>
         {% endif %}
+
+        {% if product.technical_description %}
+        <h6 class="mt-3">توضیحات فنی</h6>
+        <div class="content mb-4">{{ product.technical_description|linebreaks }}</div>
+        {% endif %}
+
 
         {% if product.downloads.all %}
         <h6 class="mt-3">فایل‌های دانلودی</h6>
@@ -231,3 +477,89 @@
   </div>
 </section>
 {% endblock %}
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const gallery = document.getElementById('product-gallery');
+  const mainButton = document.getElementById('product-gallery-main');
+  const mainImage = document.getElementById('product-main-image');
+  const thumbnails = gallery ? Array.from(gallery.querySelectorAll('.product-gallery-thumb')) : [];
+
+  const lightbox = document.getElementById('product-image-lightbox');
+  const lightboxImage = document.getElementById('product-lightbox-image');
+  const lightboxClose = document.getElementById('product-lightbox-close');
+
+  if (!gallery || !mainButton || !mainImage || !thumbnails.length) {
+    return;
+  }
+
+  function selectImage(button, openLightbox) {
+    const url = button.dataset.imageUrl;
+    const alt = button.dataset.imageAlt || '';
+
+    if (!url) return;
+
+    mainImage.src = url;
+    mainImage.alt = alt;
+
+    thumbnails.forEach(function (thumb) {
+      const active = thumb === button;
+      thumb.classList.toggle('is-active', active);
+      thumb.setAttribute('aria-pressed', active ? 'true' : 'false');
+    });
+
+    if (openLightbox) {
+      showLightbox(url, alt);
+    }
+  }
+
+  function showLightbox(url, alt) {
+    if (!lightbox || !lightboxImage) return;
+
+    lightboxImage.src = url;
+    lightboxImage.alt = alt || '';
+    lightbox.hidden = false;
+    document.body.style.overflow = 'hidden';
+  }
+
+  function hideLightbox() {
+    if (!lightbox) return;
+
+    lightbox.hidden = true;
+    document.body.style.overflow = '';
+  }
+
+  thumbnails.forEach(function (button) {
+    button.addEventListener('click', function () {
+      /* کلیک روی thumbnail، همان تصویر را در کادر اصلی نمایش می‌دهد. */
+      selectImage(button, false);
+    });
+
+    /* با دوبار کلیک روی thumbnail، همان تصویر مستقیماً بزرگ می‌شود. */
+    button.addEventListener('dblclick', function () {
+      selectImage(button, true);
+    });
+  });
+
+  /* کلیک روی تصویر اصلی، نسخه بزرگ را باز می‌کند. */
+  mainButton.addEventListener('click', function () {
+    showLightbox(mainImage.src, mainImage.alt);
+  });
+
+  if (lightboxClose) {
+    lightboxClose.addEventListener('click', hideLightbox);
+  }
+
+  lightbox.querySelectorAll('[data-lightbox-close]').forEach(function (element) {
+    element.addEventListener('click', hideLightbox);
+  });
+
+  document.addEventListener('keydown', function (event) {
+    if (event.key === 'Escape' && lightbox && !lightbox.hidden) {
+      hideLightbox();
+    }
+  });
+});
+</script>
+{% endblock %}
+

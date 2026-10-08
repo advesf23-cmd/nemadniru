@@ -294,83 +294,646 @@
   }
   
   
-  /* =========================================================
-     مگامنوی چندستونه و چندسطحی
-     ========================================================= */
-  
-  .categories-submenu {
+/* =========================================================
+   منوی دسته‌بندی کالاها - درختی و چندسطحی
+   ========================================================= */
+
+   .categories-submenu {
     display: none;
+  
     position: absolute;
+  
     top: 0;
-    right: 100%;
-    min-width: 520px;
-    max-width: 70vw;
+    right: calc(100% - 1px);
+  
+    min-width: 270px;
+    max-width: 320px;
+  
     max-height: 75vh;
     overflow-y: auto;
+  
     background: #fff;
+  
     box-shadow: var(--shadow-hover);
+  
+    border: 1px solid #E2E8F0;
+  
     border-radius: 0.6rem;
-    padding: 1rem 1.5rem;
-    margin-inline-end: 2px;
-    column-count: 3;
-    column-gap: 1.75rem;
+  
+    padding: 0.45rem 0;
+  
+    margin: 0;
+  
+    z-index: 1200;
   }
+  
+  
+  /* سطح اول */
+  
+  .categories-dropdown-item {
+    position: relative;
+  }
+  
+  
+  /* باز شدن زیرمنوی سطح اول */
   
   .categories-dropdown-item.has-children:hover > .categories-submenu,
   .categories-dropdown-item.has-children.open > .categories-submenu {
     display: block;
   }
   
+  
+  /* =========================================================
+     آیتم‌های سطوح بعدی
+     ========================================================= */
+  
   .mega-cat-node {
-    break-inside: avoid;
-    margin-bottom: 0.15rem;
+    position: relative;
   }
   
+  
+  /* لینک دسته */
+  
   .mega-cat-link {
-    display: block;
-    padding: 0.35rem 0;
+    display: flex;
+  
+    align-items: center;
+  
+    justify-content: space-between;
+  
+    gap: 0.75rem;
+  
+    width: 100%;
+  
+    min-height: 40px;
+  
+    padding: 0.55rem 1rem;
+  
     color: var(--color-navy);
+  
     text-decoration: none;
+  
     font-size: 0.85rem;
+  
     white-space: nowrap;
+  
+    transition:
+      background-color 0.15s ease,
+      color 0.15s ease;
   }
+  
   
   .mega-cat-link:hover {
     color: var(--color-orange);
+  
+    background: rgba(4, 102, 200, 0.06);
   }
   
-  .mega-cat-parent-link {
-    font-weight: 700;
-    color: var(--color-navy);
+  
+  /* =========================================================
+     زیرمنوی سطوح دوم، سوم، چهارم و ...
+     ========================================================= */
+  
+  /* =========================================================
+   منوی درختی دسته بندی کالاها
+   ========================================================= */
+
+.categories-dropdown-item {
+  position: relative;
+}
+
+
+/* =========================================================
+ پنل سطح اول
+ ========================================================= */
+
+.categories-submenu {
+  display: none;
+
+  position: absolute;
+
+  top: 0;
+  right: calc(100% - 1px);
+
+  width: 270px;
+  min-width: 270px;
+
+  background: #fff;
+
+  border: 1px solid #E2E8F0;
+  border-radius: 0.6rem;
+
+  box-shadow: var(--shadow-hover);
+
+  padding: 0.4rem 0;
+  margin: 0;
+
+  z-index: 1200;
+
+  /*
+   * خیلی مهم:
+   * نباید overflow:auto باشد.
+   * چون زیرمنوی سطح بعد باید از این پنل خارج شود.
+   */
+  overflow: visible;
+
+  column-count: 1;
+}
+
+
+/* باز شدن سطح اول */
+
+.categories-dropdown-item.has-children:hover > .categories-submenu,
+.categories-dropdown-item.has-children.open > .categories-submenu {
+  display: block;
+}
+
+
+/* =========================================================
+ هر آیتم درخت
+ ========================================================= */
+
+.mega-cat-node {
+  position: relative;
+
+  width: 100%;
+}
+
+
+/* =========================================================
+ لینک دسته
+ ========================================================= */
+
+.mega-cat-link {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  width: 100%;
+
+  min-height: 42px;
+
+  padding: 0.55rem 1rem;
+
+  box-sizing: border-box;
+
+  color: var(--color-navy);
+
+  background: transparent;
+
+  text-decoration: none;
+
+  font-size: 0.85rem;
+
+  white-space: nowrap;
+
+  transition:
+      background-color 0.15s ease,
+      color 0.15s ease;
+}
+
+
+.mega-cat-link:hover {
+  background: rgba(4, 102, 200, 0.06);
+
+  color: var(--color-orange);
+}
+
+
+/* =========================================================
+ فلش
+ ========================================================= */
+
+.submenu-caret {
+  flex-shrink: 0;
+
+  margin-right: 10px;
+
+  font-size: 0.68rem;
+
+  opacity: 0.75;
+
+  transition:
+      transform 0.15s ease,
+      opacity 0.15s ease;
+}
+
+
+.mega-cat-node.has-children:hover > .mega-cat-link .submenu-caret {
+  opacity: 1;
+}
+
+
+/* =========================================================
+ زیرمنوی سطح 2، 3، 4 و ...
+ ========================================================= */
+
+.mega-cat-submenu {
+  display: none;
+
+  position: absolute;
+
+  top: 0;
+
+  right: calc(100% - 1px);
+
+  width: 270px;
+  min-width: 270px;
+
+  background: #fff;
+
+  border: 1px solid #E2E8F0;
+
+  border-radius: 0.6rem;
+
+  box-shadow: var(--shadow-hover);
+
+  padding: 0.4rem 0;
+
+  margin: 0;
+
+  z-index: 1300;
+
+  /*
+   * بسیار مهم:
+   * اینجا هم نباید overflow:auto باشد.
+   */
+  overflow: visible;
+
+  column-count: 1;
+}
+
+
+/* =========================================================
+ باز شدن تمام سطوح
+ ========================================================= */
+
+.mega-cat-node.has-children:hover > .mega-cat-submenu,
+.mega-cat-node.has-children.open > .mega-cat-submenu {
+  display: block;
+}
+
+
+/* =========================================================
+ فلش در حالت باز
+ ========================================================= */
+
+.mega-cat-node.has-children:hover > .mega-cat-link .submenu-caret,
+.mega-cat-node.has-children.open > .mega-cat-link .submenu-caret {
+  transform: rotate(-90deg);
+}
+
+
+/* =========================================================
+ عمق‌های بعدی
+ ========================================================= */
+
+.mega-cat-submenu .mega-cat-submenu {
+  top: 0;
+
+  right: calc(100% - 1px);
+}
+
+
+/* =========================================================
+ موبایل
+ ========================================================= */
+
+@media (max-width: 768px) {
+
+  .categories-submenu,
+  .mega-cat-submenu {
+
+      position: static;
+
+      display: none;
+
+      width: 100%;
+      min-width: 0;
+
+      background: transparent;
+
+      border: 0;
+
+      border-inline-start: 1px solid #E2E8F0;
+
+      border-radius: 0;
+
+      box-shadow: none;
+
+      padding: 0;
+
+      margin: 0;
+
+      overflow: visible;
+
+      column-count: 1;
+  }
+
+
+  .categories-dropdown-item.has-children.open > .categories-submenu,
+  .mega-cat-node.has-children.open > .mega-cat-submenu {
+      display: block;
+  }
+
+}
+  
+  /* باز شدن با Hover */
+  
+  .mega-cat-node.has-children:hover > .mega-cat-submenu {
+    display: block;
   }
   
-  .mega-cat-indent-0 {
-    padding-right: 0;
-    font-size: 0.9rem;
+  
+  /* باز شدن با JavaScript در موبایل */
+  
+  .mega-cat-node.has-children.open > .mega-cat-submenu {
+    display: block;
   }
   
-  .mega-cat-indent-1 {
-    padding-right: 0.9rem;
-    font-size: 0.85rem;
+  
+  /* =========================================================
+     فلش
+     ========================================================= */
+  
+  .submenu-caret {
+    flex-shrink: 0;
+  
+    font-size: 0.7rem;
+  
+    opacity: 0.7;
+  
+    transition:
+      transform 0.15s ease,
+      opacity 0.15s ease;
   }
   
-  .mega-cat-indent-2 {
-    padding-right: 1.8rem;
-    font-size: 0.82rem;
-    color: var(--color-gray);
+  
+  .mega-cat-link:hover .submenu-caret {
+    opacity: 1;
   }
   
-  .mega-cat-indent-3 {
-    padding-right: 2.7rem;
-    font-size: 0.8rem;
-    color: var(--color-gray);
+  
+  /* =========================================================
+     فلش و باز شدن در حالت open
+     ========================================================= */
+  
+  .mega-cat-node.has-children.open > .mega-cat-link .submenu-caret {
+    transform: rotate(-90deg);
   }
   
-  .mega-cat-indent-4 {
-    padding-right: 3.6rem;
-    font-size: 0.78rem;
-    color: var(--color-gray);
+  
+  /* =========================================================
+     موبایل
+     ========================================================= */
+  
+  /* =========================================================
+   منوی درختی دسته بندی کالاها
+   ========================================================= */
+
+.categories-dropdown-item {
+  position: relative;
+}
+
+
+/* =========================================================
+ پنل سطح اول
+ ========================================================= */
+
+.categories-submenu {
+  display: none;
+
+  position: absolute;
+
+  top: 0;
+  right: calc(100% - 1px);
+
+  width: 270px;
+  min-width: 270px;
+
+  background: #fff;
+
+  border: 1px solid #E2E8F0;
+  border-radius: 0.6rem;
+
+  box-shadow: var(--shadow-hover);
+
+  padding: 0.4rem 0;
+  margin: 0;
+
+  z-index: 1200;
+
+  /*
+   * خیلی مهم:
+   * نباید overflow:auto باشد.
+   * چون زیرمنوی سطح بعد باید از این پنل خارج شود.
+   */
+  overflow: visible;
+
+  column-count: 1;
+}
+
+
+/* باز شدن سطح اول */
+
+.categories-dropdown-item.has-children:hover > .categories-submenu,
+.categories-dropdown-item.has-children.open > .categories-submenu {
+  display: block;
+}
+
+
+/* =========================================================
+ هر آیتم درخت
+ ========================================================= */
+
+.mega-cat-node {
+  position: relative;
+
+  width: 100%;
+}
+
+
+/* =========================================================
+ لینک دسته
+ ========================================================= */
+
+.mega-cat-link {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  width: 100%;
+
+  min-height: 42px;
+
+  padding: 0.55rem 1rem;
+
+  box-sizing: border-box;
+
+  color: var(--color-navy);
+
+  background: transparent;
+
+  text-decoration: none;
+
+  font-size: 0.85rem;
+
+  white-space: nowrap;
+
+  transition:
+      background-color 0.15s ease,
+      color 0.15s ease;
+}
+
+
+.mega-cat-link:hover {
+  background: rgba(4, 102, 200, 0.06);
+
+  color: var(--color-orange);
+}
+
+
+/* =========================================================
+ فلش
+ ========================================================= */
+
+.submenu-caret {
+  flex-shrink: 0;
+
+  margin-right: 10px;
+
+  font-size: 0.68rem;
+
+  opacity: 0.75;
+
+  transition:
+      transform 0.15s ease,
+      opacity 0.15s ease;
+}
+
+
+.mega-cat-node.has-children:hover > .mega-cat-link .submenu-caret {
+  opacity: 1;
+}
+
+
+/* =========================================================
+ زیرمنوی سطح 2، 3، 4 و ...
+ ========================================================= */
+
+.mega-cat-submenu {
+  display: none;
+
+  position: absolute;
+
+  top: 0;
+
+  right: calc(100% - 1px);
+
+  width: 270px;
+  min-width: 270px;
+
+  background: #fff;
+
+  border: 1px solid #E2E8F0;
+
+  border-radius: 0.6rem;
+
+  box-shadow: var(--shadow-hover);
+
+  padding: 0.4rem 0;
+
+  margin: 0;
+
+  z-index: 1300;
+
+  /*
+   * بسیار مهم:
+   * اینجا هم نباید overflow:auto باشد.
+   */
+  overflow: visible;
+
+  column-count: 1;
+}
+
+
+/* =========================================================
+ باز شدن تمام سطوح
+ ========================================================= */
+
+.mega-cat-node.has-children:hover > .mega-cat-submenu,
+.mega-cat-node.has-children.open > .mega-cat-submenu {
+  display: block;
+}
+
+
+/* =========================================================
+ فلش در حالت باز
+ ========================================================= */
+
+.mega-cat-node.has-children:hover > .mega-cat-link .submenu-caret,
+.mega-cat-node.has-children.open > .mega-cat-link .submenu-caret {
+  transform: rotate(-90deg);
+}
+
+
+/* =========================================================
+ عمق‌های بعدی
+ ========================================================= */
+
+.mega-cat-submenu .mega-cat-submenu {
+  top: 0;
+
+  right: calc(100% - 1px);
+}
+
+
+/* =========================================================
+ موبایل
+ ========================================================= */
+
+@media (max-width: 768px) {
+
+  .categories-submenu,
+  .mega-cat-submenu {
+
+      position: static;
+
+      display: none;
+
+      width: 100%;
+      min-width: 0;
+
+      background: transparent;
+
+      border: 0;
+
+      border-inline-start: 1px solid #E2E8F0;
+
+      border-radius: 0;
+
+      box-shadow: none;
+
+      padding: 0;
+
+      margin: 0;
+
+      overflow: visible;
+
+      column-count: 1;
   }
+
+
+  .categories-dropdown-item.has-children.open > .categories-submenu,
+  .mega-cat-node.has-children.open > .mega-cat-submenu {
+      display: block;
+  }
+
+}
   
   .header-nav-links {
     display: flex;
@@ -1262,7 +1825,7 @@
   
   
     .categories-submenu {
-      column-count: 2;
+      column-count: 3;
   
       min-width: 380px;
     }
