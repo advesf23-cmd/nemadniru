@@ -172,6 +172,7 @@ class ProductListView(ProductFilterMixin, ListView):
             category=active_category, is_filterable=True
         ).order_by("order", "name") if active_category else CategoryAttributeTemplate.objects.none()
         ctx["filter_definitions"] = self._build_filter_definitions(ctx["filter_templates"])
+        ctx["current_category"] = active_category
         return ctx
 
     def get(self, request, *args, **kwargs):
@@ -215,6 +216,7 @@ class ProductCategoryDetailView(ProductFilterMixin, ListView):
             category=active_category, is_filterable=True
         ).order_by("order", "name") if active_category else CategoryAttributeTemplate.objects.none()
         ctx["filter_definitions"] = self._build_filter_definitions(ctx["filter_templates"])
+        ctx["current_category"] = active_category
         return ctx
 
     def get(self, request, *args, **kwargs):
