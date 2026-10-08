@@ -7,57 +7,91 @@
   <div class="container">
     <div class="row g-4">
 
-      <!-- سایدبار فیلتر -->
+      <!-- سایدبار جستجوی پیشرفته -->
       <div class="col-lg-3">
         <div class="form-card mb-3">
-          <label class="form-label">جستجوی محصول</label>
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <label class="form-label mb-0">جستجوی محصول</label>
+          </div>
           <div class="position-relative">
-            <input type="text" id="search-input" class="form-control" placeholder="نام محصول..." value="{{ request.GET.q }}" autocomplete="off">
+            <input type="text" id="search-input" class="form-control" placeholder="نام، کد یا برند..." value="{{ request.GET.q }}" autocomplete="off">
             <div id="search-suggestions" class="list-group position-absolute w-100 shadow" style="z-index:20;display:none;"></div>
           </div>
         </div>
 
-        <!--
-          سایدبار دسته‌بندی -- این‌ها لینک‌های واقعی هستند (نه فیلتر AJAX)، چون این
-          قالب هم برای صفحه‌ی «همه محصولات» (/products/) و هم برای صفحه‌ی هر
-          دسته‌بندی به‌تنهایی (/products/category/<slug>/) استفاده می‌شود. در حالت
-          دوم، دسته‌بندی از روی خودِ آدرس صفحه قفل شده، پس فیلتر AJAX نمی‌توانست
-          واقعاً به صفحه‌ی دسته‌بندی دیگر برود؛ لینک مستقیم این مشکل را کاملاً حل می‌کند.
-        -->
         <div class="form-card mb-3">
           <label class="form-label">دسته‌بندی</label>
-          <ul class="list-unstyled d-flex flex-column gap-1" id="category-filter">
-            <li>
-              <a href="{% url 'products:product_list' %}" class="d-block py-1 {% if not current_category %}text-orange fw-bold{% else %}text-dark{% endif %}">همه دسته‌ها</a>
-            </li>
+          <select id="category-select" class="form-select">
+            <option value="{% url 'products:product_list' %}" {% if not current_category %}selected{% endif %}>همه دسته‌ها</option>
             {% for cat in categories %}
-            <li>
-              <a href="{% url 'products:category_detail' cat.slug %}" class="d-block py-1 {% if current_category.slug == cat.slug %}text-orange fw-bold{% else %}text-dark{% endif %}">{{ cat.name }}</a>
-            </li>
-            {% endfor %}
-          </ul>
-        </div>
-
-        {% if brands %}
-        <div class="form-card mb-3">
-          <label class="form-label">برند</label>
-          <select id="brand-filter" class="form-select">
-            <option value="">همه برندها</option>
-            {% for brand in brands %}
-            <option value="{{ brand }}" {% if request.GET.brand == brand %}selected{% endif %}>{{ brand }}</option>
+            <option value="{% url 'products:category_detail' cat.slug %}" {% if current_category.slug == cat.slug %}selected{% endif %}>{{ cat.name }}</option>
             {% endfor %}
           </select>
         </div>
-        {% endif %}
 
-        <div class="form-card">
-          <label class="form-label">محدوده قیمت (تومان)</label>
-          <div class="d-flex gap-2">
-            <input type="number" id="min-price" class="form-control" placeholder="حداقل" value="{{ request.GET.min_price }}">
-            <input type="number" id="max-price" class="form-control" placeholder="حداکثر" value="{{ request.GET.max_price }}">
+        <form id="advanced-filter-form">
+          {% if brands %}
+          <div class="form-card mb-3">
+            <label class="form-label">برند</label>
+            <select id="brand-filter" class="form-select" name="brand">
+              <option value="">همه برندها</option>
+              {% for brand in brands %}
+              <option value="{{ brand }}" {% if request.GET.brand == brand %}selected{% endif %}>{{ brand }}</option>
+              {% endfor %}
+            </select>
           </div>
-          <button id="apply-price" class="btn btn-outline-navy w-100 mt-2">اعمال فیلتر قیمت</button>
-        </div>
+          {% endif %}
+
+          <div class="form-card mb-3">
+            <label class="form-label">محدوده قیمت (تومان)</label>
+            <div class="d-flex gap-2">
+              <input type="number" id="min-price" class="form-control" name="min_price" placeholder="حداقل" value="{{ request.GET.min_price }}">
+              <input type="number" id="max-price" class="form-control" name="max_price" placeholder="حداکثر" value="{{ request.GET.max_price }}">
+            </div>
+          </div>
+
+          {% for definition in filter_definitions %}
+          {% with template=definition.template %}
+          <div class="form-card mb-3 technical-filter-card">
+            <label class="form-label d-flex justify-content-between align-items-center">
+              <span>{{ template.name }}</span>
+              {% if template.unit %}<small class="text-muted">{{ template.unit }}</small>{% endif %}
+            </label>
+
+            {% if template.filter_type == "range" %}
+              <div class="d-flex gap-2">
+                <input type="number" step="{{ template.filter_step|default:'any' }}" class="form-control" name="attr_{{ template.pk }}_min" placeholder="از{% if template.filter_min %} {{ template.filter_min }}{% endif %}" value="{{ definition.min_value }}">
+                <input type="number" step="{{ template.filter_step|default:'any' }}" class="form-control" name="attr_{{ template.pk }}_max" placeholder="تا{% if template.filter_max %} {{ template.filter_max }}{% endif %}" value="{{ definition.max_value }}">
+              </div>
+            {% elif template.filter_type == "boolean" %}
+              <div class="d-flex flex-column gap-2">
+                <label class="small"><input type="radio" name="attr_{{ template.pk }}" value="1" {% if "1" in definition.selected %}checked{% endif %}> بله</label>
+                <label class="small"><input type="radio" name="attr_{{ template.pk }}" value="0" {% if "0" in definition.selected %}checked{% endif %}> خیر</label>
+              </div>
+            {% elif template.filter_type == "select" %}
+              <select class="form-select" name="attr_{{ template.pk }}">
+                <option value="">همه</option>
+                {% for choice in definition.choices %}
+                <option value="{{ choice.value }}" {% if choice.value in definition.selected %}selected{% endif %}>{{ choice.label }}</option>
+                {% endfor %}
+              </select>
+            {% elif template.filter_type == "multiselect" %}
+              <div class="d-flex flex-column gap-2">
+                {% for choice in definition.choices %}
+                <label class="small">
+                  <input type="checkbox" name="attr_{{ template.pk }}" value="{{ choice.value }}" {% if choice.value in definition.selected %}checked{% endif %}>
+                  {{ choice.label }}
+                </label>
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
+          {% endwith %}
+          {% endfor %}
+
+          <button type="submit" class="btn btn-orange w-100 mb-2"><i class="fa-solid fa-filter me-1"></i> اعمال فیلترها</button>
+          <button type="button" id="clear-filters" class="btn btn-outline-navy w-100">حذف همه فیلترها</button>
+        </form>
       </div>
 
       <!-- گرید محصولات -->
@@ -92,39 +126,33 @@
   const searchInput = document.getElementById('search-input');
   const suggestionsBox = document.getElementById('search-suggestions');
   const sortSelect = document.getElementById('sort-select');
-  const brandFilter = document.getElementById('brand-filter');
-  const minPrice = document.getElementById('min-price');
-  const maxPrice = document.getElementById('max-price');
-  const applyPriceBtn = document.getElementById('apply-price');
-
+  const categorySelect = document.getElementById('category-select');
+  const filterForm = document.getElementById('advanced-filter-form');
+  const clearFilters = document.getElementById('clear-filters');
   const baseUrl = "{{ request.path }}";
-  let currentState = {
-    q: searchInput.value || "",
-    brand: "{{ request.GET.brand|default:'' }}",
-    min_price: minPrice.value || "",
-    max_price: maxPrice.value || "",
-    sort: sortSelect.value,
-    page: 1,
-  };
 
-  function buildQuery(state) {
+  function buildParams() {
     const params = new URLSearchParams();
-    Object.entries(state).forEach(([k, v]) => { if (v) params.set(k, v); });
-    return params.toString();
+    if (searchInput.value.trim()) params.set('q', searchInput.value.trim());
+    const formData = new FormData(filterForm);
+    for (const [key, value] of formData.entries()) {
+      if (value) params.append(key, value);
+    }
+    if (sortSelect.value) params.set('sort', sortSelect.value);
+    params.set('page', '1');
+    return params;
   }
 
   function loadProducts(pushHistory = true) {
-    const query = buildQuery(currentState);
-    fetch(`${baseUrl}?${query}`, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+    const params = buildParams();
+    fetch(baseUrl + '?' + params.toString(), { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
       .then((res) => res.json())
       .then((data) => {
         grid.innerHTML = data.html;
         pagination.innerHTML = data.pagination;
-        resultCount.textContent = `${data.count} محصول یافت شد`;
+        resultCount.textContent = data.count + ' محصول یافت شد';
         bindPaginationLinks();
-        if (pushHistory) {
-          window.history.pushState({}, "", `${baseUrl}?${query}`);
-        }
+        if (pushHistory) window.history.pushState({}, '', baseUrl + '?' + params.toString());
       });
   }
 
@@ -132,26 +160,28 @@
     pagination.querySelectorAll('[data-page]').forEach((link) => {
       link.addEventListener('click', (e) => {
         e.preventDefault();
-        currentState.page = link.dataset.page;
-        loadProducts();
-        window.scrollTo({ top: grid.offsetTop - 100, behavior: 'smooth' });
+        const params = buildParams();
+        params.set('page', link.dataset.page);
+        fetch(baseUrl + '?' + params.toString(), { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+          .then((res) => res.json())
+          .then((data) => {
+            grid.innerHTML = data.html;
+            pagination.innerHTML = data.pagination;
+            resultCount.textContent = data.count + ' محصول یافت شد';
+            bindPaginationLinks();
+            window.history.pushState({}, '', baseUrl + '?' + params.toString());
+            window.scrollTo({ top: grid.offsetTop - 100, behavior: 'smooth' });
+          });
       });
     });
   }
   bindPaginationLinks();
 
-  // جستجوی زنده با تأخیر (Debounce)
   let searchTimer;
   searchInput.addEventListener('input', () => {
     clearTimeout(searchTimer);
     const value = searchInput.value.trim();
-    searchTimer = setTimeout(() => {
-      currentState.q = value;
-      currentState.page = 1;
-      loadProducts();
-    }, 400);
-
-    // پیشنهاد جستجوی زنده (autocomplete)
+    searchTimer = setTimeout(() => loadProducts(), 450);
     if (value.length >= 2) {
       fetch(`{% url 'products:search_suggest' %}?q=${encodeURIComponent(value)}`)
         .then((res) => res.json())
@@ -161,46 +191,39 @@
               <a href="${r.url}" class="list-group-item list-group-item-action d-flex align-items-center gap-2">
                 ${r.image ? `<img src="${r.image}" width="36" height="36" style="object-fit:cover;border-radius:6px;">` : ''}
                 <span>${r.name}<br><small class="text-muted">${r.category}</small></span>
-              </a>
-            `).join('');
+              </a>`).join('');
             suggestionsBox.style.display = 'block';
-          } else {
-            suggestionsBox.style.display = 'none';
-          }
+          } else suggestionsBox.style.display = 'none';
         });
-    } else {
-      suggestionsBox.style.display = 'none';
-    }
+    } else suggestionsBox.style.display = 'none';
   });
+
   document.addEventListener('click', (e) => {
-    if (!suggestionsBox.contains(e.target) && e.target !== searchInput) {
-      suggestionsBox.style.display = 'none';
-    }
+    if (!suggestionsBox.contains(e.target) && e.target !== searchInput) suggestionsBox.style.display = 'none';
   });
 
-  // برند
-  if (brandFilter) {
-    brandFilter.addEventListener('change', () => {
-      currentState.brand = brandFilter.value;
-      currentState.page = 1;
-      loadProducts();
-    });
-  }
-
-  // قیمت
-  applyPriceBtn.addEventListener('click', () => {
-    currentState.min_price = minPrice.value;
-    currentState.max_price = maxPrice.value;
-    currentState.page = 1;
+  filterForm.addEventListener('submit', (e) => {
+    e.preventDefault();
     loadProducts();
   });
 
-  // مرتب‌سازی
-  sortSelect.addEventListener('change', () => {
-    currentState.sort = sortSelect.value;
-    currentState.page = 1;
+  filterForm.querySelectorAll('input[type="radio"], input[type="checkbox"]').forEach((input) => {
+    input.addEventListener('change', () => loadProducts());
+  });
+
+  sortSelect.addEventListener('change', () => loadProducts());
+
+  categorySelect.addEventListener('change', () => {
+    window.location.href = categorySelect.value;
+  });
+
+  clearFilters.addEventListener('click', () => {
+    filterForm.reset();
+    searchInput.value = '';
     loadProducts();
   });
+
+  window.addEventListener('popstate', () => window.location.reload());
 })();
 </script>
 {% endblock %}
