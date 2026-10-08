@@ -6,7 +6,7 @@ from django.views.generic import (
     TemplateView, ListView, CreateView, UpdateView, DeleteView, DetailView, View
 )
 from apps.products.models import (
-     Product, ProductCategory, ProductInquiry, ProductReview, Brand
+     Product, ProductCategory, ProductInquiry, ProductReview, Brand, CategoryAttributeTemplate
 )
 
 from apps.products.models import Product, ProductCategory, ProductInquiry, ProductReview
@@ -140,6 +140,37 @@ class DashboardProductCategoryDeleteView(StaffRequiredMixin, DeleteView):
     model = ProductCategory
     template_name = "dashboard/confirm_delete.html"
     success_url = reverse_lazy("dashboard:product_category_list")
+
+class DashboardCategoryAttributeListView(StaffRequiredMixin, ListView):
+    model = CategoryAttributeTemplate
+    template_name = "dashboard/products/category_attribute_list.html"
+    context_object_name = "attributes"
+
+    def get_queryset(self):
+        return CategoryAttributeTemplate.objects.select_related("category").order_by("category", "order", "name")
+
+
+class DashboardCategoryAttributeCreateView(StaffRequiredMixin, CreateView):
+    model = CategoryAttributeTemplate
+    fields = [
+        "category", "name", "unit", "order", "is_filterable", "filter_type",
+        "filter_choices", "filter_min", "filter_max", "filter_step",
+    ]
+    template_name = "dashboard/generic_form.html"
+    success_url = reverse_lazy("dashboard:category_attribute_list")
+
+
+class DashboardCategoryAttributeUpdateView(StaffRequiredMixin, UpdateView):
+    model = CategoryAttributeTemplate
+    fields = DashboardCategoryAttributeCreateView.fields
+    template_name = "dashboard/generic_form.html"
+    success_url = reverse_lazy("dashboard:category_attribute_list")
+
+
+class DashboardCategoryAttributeDeleteView(StaffRequiredMixin, DeleteView):
+    model = CategoryAttributeTemplate
+    template_name = "dashboard/confirm_delete.html"
+    success_url = reverse_lazy("dashboard:category_attribute_list")
 
 
 class DashboardProductReviewListView(StaffRequiredMixin, ListView):
