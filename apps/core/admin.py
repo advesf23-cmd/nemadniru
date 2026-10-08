@@ -6,6 +6,14 @@ from .models import (
 
 @admin.register(SiteSetting)
 class SiteSettingAdmin(admin.ModelAdmin):
+    fieldsets = (
+        (None, {"fields": ("site_name", "logo", "favicon")}),
+        ("نوار اطلاع‌رسانی", {"fields": ("announcement_enabled", "announcement_text", "announcement_color")}),
+        ("اطلاعات تماس", {"fields": ("phone", "email", "address", "working_hours", "map_embed_url")}),
+        ("شبکه‌های اجتماعی", {"fields": ("instagram", "telegram", "whatsapp", "linkedin")}),
+        ("سئو و کدهای سایت", {"fields": ("footer_text", "default_meta_description", "google_analytics_id", "quick_circles_heading")}),
+    )
+
     def has_add_permission(self, request):
         return not SiteSetting.objects.exists()
 
