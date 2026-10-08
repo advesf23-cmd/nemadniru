@@ -1,11 +1,22 @@
+from django import forms
 from django.contrib import admin
 from .models import (
     SiteSetting, Statistic, Certificate, Partner, Testimonial, FAQ, HomeSlide, Menu, PromoBanner, QuickCircle
 )
 
 
+class SiteSettingForm(forms.ModelForm):
+    class Meta:
+        model = SiteSetting
+        fields = "__all__"
+        widgets = {
+            "announcement_color": forms.TextInput(attrs={"type": "color", "style": "width: 80px; height: 40px; padding: 2px;"}),
+        }
+
+
 @admin.register(SiteSetting)
 class SiteSettingAdmin(admin.ModelAdmin):
+    form = SiteSettingForm
     fieldsets = (
         (None, {"fields": ("site_name", "logo", "favicon")}),
         ("نوار اطلاع‌رسانی", {"fields": ("announcement_enabled", "announcement_text", "announcement_color")}),
