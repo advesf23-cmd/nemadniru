@@ -1410,12 +1410,7 @@
   
     padding: 2rem 3rem;
   
-    background:
-      linear-gradient(
-        0deg,
-        rgba(0,40,85,.85),
-        transparent
-      );
+    background: transparent;
   
     color: #fff;
   
