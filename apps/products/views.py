@@ -30,6 +30,28 @@ class ProductFilterMixin:
     def get_base_queryset(self):
         return Product.objects.filter(status="published").select_related("category", "brand")
 
+    def _build_filter_definitions(self, templates):
+        definitions = []
+        for template in templates:
+            choices = []
+            for line in template.filter_choices.splitlines():
+                line = line.strip()
+                if not line:
+                    continue
+                if "|" in line:
+                    value, label = [part.strip() for part in line.split("|", 1)]
+                else:
+                    value = label = line
+                choices.append({"value": value, "label": label})
+            definitions.append({
+                "template": template,
+                "choices": choices,
+                "selected": self.request.GET.getlist(f"attr_{template.pk}"),
+                "min_value": self.request.GET.get(f"attr_{template.pk}_min", ""),
+                "max_value": self.request.GET.get(f"attr_{template.pk}_max", ""),
+            })
+        return definitions
+
     def apply_filters(self, qs):
         request = self.request
         category_slug = request.GET.get("category")
@@ -149,6 +171,7 @@ class ProductListView(ProductFilterMixin, ListView):
         ctx["filter_templates"] = CategoryAttributeTemplate.objects.filter(
             category=active_category, is_filterable=True
         ).order_by("order", "name") if active_category else CategoryAttributeTemplate.objects.none()
+        ctx["filter_definitions"] = self._build_filter_definitions(ctx["filter_templates"])
         return ctx
 
     def get(self, request, *args, **kwargs):
@@ -191,6 +214,7 @@ class ProductCategoryDetailView(ProductFilterMixin, ListView):
         ctx["filter_templates"] = CategoryAttributeTemplate.objects.filter(
             category=active_category, is_filterable=True
         ).order_by("order", "name") if active_category else CategoryAttributeTemplate.objects.none()
+        ctx["filter_definitions"] = self._build_filter_definitions(ctx["filter_templates"])
         return ctx
 
     def get(self, request, *args, **kwargs):
