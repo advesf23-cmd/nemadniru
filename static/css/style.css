@@ -4,14 +4,14 @@
    ========================================================= */
 
 :root {
-  --color-navy: #0B2447;
-  --color-navy-light: #173A6B;
-  --color-navy-lighter: #1F4E8C;
-  --color-orange: #F97316;
-  --color-orange-dark: #DB5F0B;
-  --color-light-gray: #F4F6F8;
-  --color-gray: #64748B;
-  --color-white: #FFFFFF;
+  --color-navy: #174F52;
+  --color-navy-light: #23686A;
+  --color-navy-lighter: #2C7A78;
+  --color-orange: #B45332;
+  --color-orange-dark: #8F3F28;
+  --color-light-gray: #F5F2EA;
+  --color-gray: #5D6B68;
+  --color-white: #FFFEFA;
   --radius-lg: 1.25rem;
   --radius-md: 0.85rem;
   --shadow-soft: 0 10px 30px rgba(11, 36, 71, 0.08);
@@ -23,7 +23,7 @@
 
 body {
   font-family: "Vazirmatn", "Tahoma", sans-serif;
-  color: #1E293B;
+  color: #263638;
   background: var(--color-white);
   line-height: 1.85;
 }
@@ -54,7 +54,7 @@ a { transition: var(--transition); }
   padding: 0.75rem 2rem;
   border-radius: 50px;
   font-weight: 600;
-  box-shadow: 0 8px 20px rgba(249, 115, 22, 0.35);
+  box-shadow: 0 8px 20px rgba(180, 83, 50, 0.28);
 }
 .btn-orange:hover { background: var(--color-orange-dark); transform: translateY(-2px); }
 .btn-outline-navy {
@@ -129,7 +129,7 @@ a { transition: var(--transition); }
 .icon-box {
   width: 60px; height: 60px;
   border-radius: 16px;
-  background: rgba(249, 115, 22, 0.12);
+  background: rgba(180, 83, 50, 0.12);
   display: flex; align-items: center; justify-content: center;
   margin-bottom: 1rem;
 }
@@ -163,7 +163,7 @@ a { transition: var(--transition); }
 .partner-item { display: flex; flex-direction: column; align-items: center; justify-content: center; }
 
 /* ---------------- FAQ ---------------- */
-.accordion-button:not(.collapsed) { background: rgba(249,115,22,.08); color: var(--color-orange); }
+.accordion-button:not(.collapsed) { background: rgba(180,83,50,.08); color: var(--color-orange); }
 .accordion-button:focus { box-shadow: none; }
 
 /* ---------------- Testimonials ---------------- */
@@ -203,7 +203,7 @@ a { transition: var(--transition); }
 }
 .form-control:focus, .form-select:focus {
   border-color: var(--color-orange);
-  box-shadow: 0 0 0 0.2rem rgba(249,115,22,.15);
+  box-shadow: 0 0 0 0.2rem rgba(180,83,50,.15);
 }
 .form-card {
   background: #fff;
