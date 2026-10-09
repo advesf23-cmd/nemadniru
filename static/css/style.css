@@ -609,3 +609,140 @@ a { transition: var(--transition); }
 .home-products-view-all {
   direction: rtl;
 }
+
+
+/* Two homepage promotional banners inspired by the supplied marketplace reference */
+.home-promo-banners-section {
+  padding: 0 0 2.25rem;
+  background: #fff;
+}
+.home-promo-banners {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+.home-promo-banner {
+  min-height: 230px;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  border-radius: 1rem;
+  padding: 1.5rem 1.6rem;
+  color: #fff;
+}
+.home-promo-banner--industrial {
+  background: linear-gradient(112deg, #b72d1d 0%, #e14a25 55%, #8c1f19 100%);
+}
+.home-promo-banner--automation {
+  background: linear-gradient(112deg, #174f52 0%, #287a79 54%, #a7c5bd 100%);
+}
+.home-promo-banner::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  width: 280px;
+  height: 280px;
+  border: 1px solid rgba(255,255,255,.2);
+  border-radius: 50%;
+  left: -50px;
+  top: -90px;
+  box-shadow: 0 0 0 24px rgba(255,255,255,.035), 0 0 0 52px rgba(255,255,255,.025);
+}
+.home-promo-banner::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(0,0,0,.12), transparent 75%);
+  pointer-events: none;
+}
+.home-promo-banner-copy {
+  width: 66%;
+  position: relative;
+  z-index: 2;
+  margin-right: auto;
+  text-align: right;
+}
+.home-promo-kicker {
+  display: inline-block;
+  margin-bottom: .4rem;
+  color: rgba(255,255,255,.83);
+  font-size: .78rem;
+  font-weight: 700;
+}
+.home-promo-banner-copy h2 {
+  color: #fff;
+  font-size: clamp(1.1rem, 1.7vw, 1.55rem);
+  font-weight: 800;
+  line-height: 1.55;
+  margin: 0 0 .45rem;
+}
+.home-promo-banner-copy p {
+  color: rgba(255,255,255,.88);
+  font-size: .84rem;
+  line-height: 1.9;
+  margin: 0 0 .85rem;
+  max-width: 390px;
+}
+.home-promo-buy {
+  display: inline-flex;
+  align-items: center;
+  gap: .6rem;
+  padding: .55rem 1.15rem;
+  border-radius: 999px;
+  background: #fff;
+  color: #303638 !important;
+  font-size: .82rem;
+  font-weight: 750;
+  text-decoration: none;
+  transition: transform .18s ease, box-shadow .18s ease;
+}
+.home-promo-buy:hover {
+  color: #174f52 !important;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 14px rgba(0,0,0,.16);
+}
+.home-promo-banner-art {
+  position: absolute;
+  left: 5%;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 36%;
+  height: 88%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255,255,255,.93);
+  pointer-events: none;
+}
+.home-promo-banner-art > i {
+  position: relative;
+  z-index: 1;
+  font-size: clamp(4rem, 7vw, 7.5rem);
+  filter: drop-shadow(0 8px 12px rgba(0,0,0,.2));
+}
+.home-promo-orbit {
+  position: absolute;
+  width: 175px;
+  height: 175px;
+  border: 1px solid rgba(255,255,255,.32);
+  border-radius: 50%;
+  box-shadow: 0 0 0 16px rgba(255,255,255,.06), 0 0 0 34px rgba(255,255,255,.04);
+}
+@media (max-width: 767.98px) {
+  .home-promo-banners { grid-template-columns: 1fr; gap: .8rem; }
+  .home-promo-banner { min-height: 210px; padding: 1.2rem; }
+  .home-promo-banner-copy { width: 68%; }
+  .home-promo-banner-copy h2 { font-size: 1.15rem; }
+  .home-promo-banner-copy p { font-size: .78rem; }
+  .home-promo-banner-art { left: 2%; width: 32%; }
+  .home-promo-banner-art > i { font-size: 4.2rem; }
+  .home-promo-orbit { width: 120px; height: 120px; }
+}
+@media (max-width: 420px) {
+  .home-promo-banner { min-height: 225px; }
+  .home-promo-banner-copy { width: 72%; }
+  .home-promo-banner-art { left: -5%; opacity: .75; }
+}
