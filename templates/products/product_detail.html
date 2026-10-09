@@ -438,6 +438,37 @@
       </div>
     </div>
 
+    {% if product_attribute_values %}
+    <section class="product-dynamic-specifications mt-5" aria-labelledby="dynamic-specifications-title">
+      <h4 id="dynamic-specifications-title" class="mb-3">مشخصات فنی محصول</h4>
+      {% regroup product_attribute_values by attribute.group as specification_groups %}
+      {% for group in specification_groups %}
+      <div class="form-card mb-3">
+        {% if group.grouper %}<h6 class="mb-3">{{ group.grouper.name }}</h6>{% endif %}
+        <div class="table-responsive">
+          <table class="table table-sm align-middle mb-0">
+            <tbody>
+              {% for item in group.list %}
+              <tr>
+                <th scope="row" style="width:40%">{{ item.attribute.name }}</th>
+                <td>
+                  {% if item.value_number != None %}{{ item.value_number }}{% if item.attribute.unit %} {{ item.attribute.unit }}{% endif %}
+                  {% elif item.value_boolean != None %}{% if item.value_boolean %}بله{% else %}خیر{% endif %}
+                  {% elif item.value_date %}{{ item.value_date|date:"Y/m/d" }}
+                  {% elif item.selected_values.all %}{% for choice in item.selected_values.all %}{{ choice.value }}{% if not forloop.last %}، {% endif %}{% endfor %}
+                  {% elif item.value_file %}<a href="{{ item.value_file.url }}" target="_blank" rel="noopener">دریافت فایل</a>
+                  {% else %}{{ item.value_text|default:"—" }}{% endif %}
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      {% endfor %}
+    </section>
+    {% endif %}
+
     <!-- بخش نظرات و امتیازات -->
     <div id="reviews" class="mt-5">
       <h5 class="mb-4">نظرات کاربران ({{ product.review_count }})</h5>
