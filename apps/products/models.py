@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
@@ -373,6 +374,28 @@ class ProductAttributeValue(TimeStampedModel):
         indexes = [models.Index(fields=["attribute", "value_number"]), models.Index(fields=["attribute", "value_boolean"])]
         verbose_name = _("مقدار مشخصه محصول")
         verbose_name_plural = _("مقادیر مشخصات محصول")
+
+    def clean(self):
+        super().clean()
+        if not self.attribute_id:
+            return
+        attribute = self.attribute
+        value = (self.value_text or "").strip()
+        if attribute.is_required and not value and self.value_number is None and self.value_boolean is None and self.value_date is None and not self.value_file and not self.selected_values.exists():
+            raise ValidationError({"value_text": "این مشخصه اجباری است."})
+        if self.value_number is not None:
+            if attribute.min_value is not None and self.value_number < attribute.min_value:
+                raise ValidationError({"value_number": f"مقدار باید حداقل {attribute.min_value} باشد."})
+            if attribute.max_value is not None and self.value_number > attribute.max_value:
+                raise ValidationError({"value_number": f"مقدار نباید بیشتر از {attribute.max_value} باشد."})
+        if value and attribute.validation_regex:
+            import re
+            if not re.fullmatch(attribute.validation_regex, value):
+                raise ValidationError({"value_text": "مقدار واردشده با الگوی اعتبارسنجی مشخصه مطابقت ندارد."})
+        if value and attribute.data_type == Attribute.COLOR:
+            import re
+            if not re.fullmatch(r"#[0-9a-fA-F]{6}", value):
+                raise ValidationError({"value_text": "کد رنگ باید به شکل #RRGGBB باشد."})
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
