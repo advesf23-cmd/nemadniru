@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib import admin
 from .models import (
-    SiteSetting, Statistic, Certificate, Partner, Testimonial, FAQ, HomeSlide, Menu, PromoBanner, QuickCircle
+    SiteSetting, Statistic, Certificate, Partner, Testimonial, FAQ, HomeSlide, Menu, PromoBanner, QuickCircle, HomePromoBanner
 )
 
 
@@ -84,3 +84,15 @@ class PromoBannerAdmin(admin.ModelAdmin):
 class QuickCircleAdmin(admin.ModelAdmin):
     list_display = ("title", "order", "is_active")
     list_editable = ("order", "is_active")
+
+
+@admin.register(HomePromoBanner)
+class HomePromoBannerAdmin(admin.ModelAdmin):
+    list_display = ("title", "button_text", "order", "is_active")
+    list_editable = ("order", "is_active")
+    list_filter = ("is_active",)
+    fieldsets = (
+        ("محتوای بنر", {"fields": ("image", "title", "description")}),
+        ("دکمه و مقصد", {"fields": ("button_text", "link_url")}),
+        ("نمایش", {"fields": ("order", "is_active")}),
+    )
