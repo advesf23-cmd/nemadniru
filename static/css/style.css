@@ -270,3 +270,34 @@ a { transition: var(--transition); }
 .rating-input input:checked ~ label,
 .rating-input label:hover,
 .rating-input label:hover ~ label { color: var(--color-orange); }
+
+
+/* Homepage shopping tabs */
+.home-product-tabs .nav-link {
+  border: 1px solid var(--color-border, #E2E8F0);
+  border-radius: 50px;
+  color: var(--color-navy);
+  background: #fff;
+  padding: 0.55rem 1.25rem;
+  font-weight: 600;
+}
+.home-product-tabs .nav-link:hover {
+  border-color: var(--color-orange);
+  color: var(--color-orange);
+}
+.home-product-tabs .nav-link.active {
+  background: var(--color-orange);
+  border-color: var(--color-orange);
+  color: #fff;
+}
+.home-products-section .product-card img {
+  height: 210px;
+  width: 100%;
+  object-fit: contain;
+  background: #fff;
+  padding: 0.5rem;
+}
+.home-products-section .product-card h6 {
+  min-height: 3rem;
+  line-height: 1.6;
+}
