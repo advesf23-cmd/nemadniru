@@ -435,12 +435,16 @@
 
       if (direction === "next") {
 
+        /*
+         * حرکت اصلی اکنون راست -> چپ است؛
+         * بنابراین Peekها هم باید به همین جهت حرکت کنند.
+         */
         peekPrev.classList.add(
-          "peek-motion-next"
+          "peek-motion-prev"
         );
 
         peekNext.classList.add(
-          "peek-motion-next"
+          "peek-motion-prev"
         );
 
       }
@@ -449,23 +453,18 @@
       /* -----------------------------------------
          direction === "prev"
 
-         یعنی:
-
-         راست -> چپ
-
-         تصویر قدیمی به چپ می‌رود.
-
-         تصویر جدید از راست وارد می‌شود.
+         حرکت اصلی چپ -> راست است؛
+         Peekها نیز باید چپ -> راست حرکت کنند.
          ----------------------------------------- */
 
       else {
 
         peekPrev.classList.add(
-          "peek-motion-prev"
+          "peek-motion-next"
         );
 
         peekNext.classList.add(
-          "peek-motion-prev"
+          "peek-motion-next"
         );
       }
     }
