@@ -1,0 +1,41 @@
+{% extends "dashboard/base_dashboard.html" %}
+{% block title %}فیلترهای جستجوی پیشرفته{% endblock %}
+{% block dash_content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h5 class="mb-0">فیلترهای جستجوی پیشرفته (سایدبار صفحه‌ی محصولات)</h5>
+  <a href="{% url 'dashboard:filter_attribute_add' %}" class="btn btn-orange"><i class="fa-solid fa-plus me-1"></i> افزودن فیلتر</a>
+</div>
+
+<div class="alert alert-info small">
+  <i class="fa-solid fa-circle-info me-1"></i>
+  هر ردیف این جدول، یک گروه فیلتر در سمت راست صفحه‌ی محصولات می‌سازد. فقط کافی است
+  «نام مشخصه فنی» را دقیقاً مطابق عنوانی بنویسید که در «مشخصات فنی» محصولات ثبت
+  کرده‌اید (مثلاً «جریان نامی»)؛ گزینه‌های قابل انتخاب (۱۶A، ۲۵A، ...) خودکار از
+  مقادیر واقعی همان محصولات ساخته می‌شوند و نیاز به ورود دستی ندارند.
+  <br>
+  <strong>نکته:</strong> مقادیر باید یکدست وارد شده باشند؛ «۱۶۰ A» و «۱۶۰A» دو گزینه‌ی جدا حساب می‌شوند.
+</div>
+
+<div class="dash-table-card">
+  <table class="table align-middle">
+    <thead><tr><th>عنوان در سایت</th><th>نام مشخصه فنی</th><th>محدوده نمایش</th><th>ترتیب</th><th>فعال</th><th>عملیات</th></tr></thead>
+    <tbody>
+      {% for f in filters %}
+      <tr>
+        <td>{{ f.name }}</td>
+        <td><code>{{ f.spec_key }}</code></td>
+        <td>{% if f.category %}دسته «{{ f.category.name }}» و زیرمجموعه‌ها{% else %}<span class="badge bg-light text-dark border">همه‌ی صفحات</span>{% endif %}</td>
+        <td>{{ f.order }}</td>
+        <td>{% if f.is_active %}<span class="badge bg-success">فعال</span>{% else %}<span class="badge bg-secondary">غیرفعال</span>{% endif %}</td>
+        <td>
+          <a href="{% url 'dashboard:filter_attribute_edit' f.pk %}" class="btn btn-sm btn-outline-navy"><i class="fa-solid fa-pen"></i></a>
+          <a href="{% url 'dashboard:filter_attribute_delete' f.pk %}" class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-trash"></i></a>
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="6" class="text-center text-muted py-4">هنوز فیلتری تعریف نشده است. با «افزودن فیلتر» شروع کنید.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

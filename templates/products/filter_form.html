@@ -1,0 +1,53 @@
+{% extends "dashboard/base_dashboard.html" %}
+{% block title %}{% if object %}ویرایش فیلتر{% else %}افزودن فیلتر{% endif %}{% endblock %}
+{% block dash_content %}
+<div class="dash-table-card" style="max-width:720px;">
+  <h5 class="mb-4">{% if object %}ویرایش فیلتر: {{ object.name }}{% else %}افزودن فیلتر جستجوی پیشرفته{% endif %}</h5>
+
+  <form method="post">
+    {% csrf_token %}
+    {% if form.non_field_errors %}<div class="alert alert-danger">{{ form.non_field_errors }}</div>{% endif %}
+
+    <div class="mb-3">
+      <label class="form-label">{{ form.name.label }}</label>
+      {{ form.name }}
+      <div class="form-text">عنوانی که مشتری در سایت می‌بیند (مثلاً «جریان نامی»).</div>
+      {% if form.name.errors %}<div class="text-danger small mt-1">{{ form.name.errors }}</div>{% endif %}
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">{{ form.spec_key.label }}</label>
+      {{ form.spec_key }}
+      <datalist id="spec-keys">
+        {% for key in existing_spec_keys %}<option value="{{ key }}">{% endfor %}
+      </datalist>
+      <div class="form-text">{{ form.spec_key.help_text }} -- با شروع تایپ، کلیدهای موجود پیشنهاد داده می‌شوند.</div>
+      {% if form.spec_key.errors %}<div class="text-danger small mt-1">{{ form.spec_key.errors }}</div>{% endif %}
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">{{ form.category.label }}</label>
+      {{ form.category }}
+      <div class="form-text">{{ form.category.help_text }}</div>
+      {% if form.category.errors %}<div class="text-danger small mt-1">{{ form.category.errors }}</div>{% endif %}
+    </div>
+
+    <div class="row g-3 mb-3">
+      <div class="col-md-6">
+        <label class="form-label">{{ form.order.label }}</label>
+        {{ form.order }}
+        {% if form.order.errors %}<div class="text-danger small mt-1">{{ form.order.errors }}</div>{% endif %}
+      </div>
+      <div class="col-md-6 d-flex align-items-end">
+        <div class="form-check">
+          {{ form.is_active }}
+          <label class="form-check-label" for="{{ form.is_active.id_for_label }}">{{ form.is_active.label }}</label>
+        </div>
+      </div>
+    </div>
+
+    <button type="submit" class="btn btn-orange">ذخیره</button>
+    <a href="{% url 'dashboard:filter_attribute_list' %}" class="btn btn-outline-navy">انصراف</a>
+  </form>
+</div>
+{% endblock %}
