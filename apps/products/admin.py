@@ -120,6 +120,9 @@ class CategoryAttributeTemplateAdmin(admin.ModelAdmin):
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
+    class Media:
+        js = ("admin/js/product_dynamic_attributes.js",)
+
     list_display = ("name", "category", "brand", "sku", "mpn", "status", "is_featured", "stock_quantity", "created_at")
     list_filter = ("category", "brand", "status", "is_featured")
     list_editable = ("is_featured",)
