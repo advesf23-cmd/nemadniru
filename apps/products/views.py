@@ -104,7 +104,7 @@ class ProductFilterMixin:
             for template in filter_templates:
                 param = f"attr_{template.pk}"
                 raw_values = request.GET.getlist(param)
-                if not raw_values:
+                if not raw_values and template.filter_type != CategoryAttributeTemplate.FILTER_TYPE_RANGE:
                     continue
                 if template.filter_type in (
                     CategoryAttributeTemplate.FILTER_TYPE_SELECT,
