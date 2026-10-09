@@ -28,9 +28,9 @@
 
     <div class="tab-content" id="homeProductTabsContent">
       <div class="tab-pane fade show active" id="home-latest" role="tabpanel" aria-labelledby="home-latest-tab" tabindex="0">
-        <div class="row g-3 g-md-4">
+        <div class="home-product-rail">
           {% for product in latest_products %}
-          <div class="col-6 col-md-4 col-lg-3">
+          <div class="home-product-item">
             <a href="{{ product.get_absolute_url }}" class="text-decoration-none text-dark d-block h-100">
               <div class="card product-card h-100 position-relative">
                 {% if product.price and product.final_price and product.final_price < product.price %}
@@ -57,9 +57,9 @@
       </div>
 
       <div class="tab-pane fade" id="home-featured" role="tabpanel" aria-labelledby="home-featured-tab" tabindex="0">
-        <div class="row g-3 g-md-4">
+        <div class="home-product-rail">
           {% for product in featured_products %}
-          <div class="col-6 col-md-4 col-lg-3">
+          <div class="home-product-item">
             <a href="{{ product.get_absolute_url }}" class="text-decoration-none text-dark d-block h-100">
               <div class="card product-card h-100 position-relative">
                 <span class="badge bg-orange position-absolute top-0 start-0 m-2">پیشنهاد سایت</span>
@@ -84,9 +84,9 @@
       </div>
 
       <div class="tab-pane fade" id="home-discount" role="tabpanel" aria-labelledby="home-discount-tab" tabindex="0">
-        <div class="row g-3 g-md-4">
+        <div class="home-product-rail">
           {% for product in discounted_products %}
-          <div class="col-6 col-md-4 col-lg-3">
+          <div class="home-product-item">
             <a href="{{ product.get_absolute_url }}" class="text-decoration-none text-dark d-block h-100">
               <div class="card product-card h-100 position-relative">
                 {% if product.homepage_discount_percent %}<span class="badge bg-orange position-absolute top-0 start-0 m-2">{{ product.homepage_discount_percent|floatformat:0 }}٪ تخفیف</span>{% else %}<span class="badge bg-orange position-absolute top-0 start-0 m-2">تخفیف‌دار</span>{% endif %}
