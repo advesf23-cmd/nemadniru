@@ -1,7 +1,7 @@
 from django.db.models import Case, DecimalField, ExpressionWrapper, F, Q, Value, When
 from django.views.generic import TemplateView
 
-from apps.core.models import Statistic, Certificate, Partner, Testimonial, FAQ, HomeSlide, PromoBanner, QuickCircle
+from apps.core.models import Statistic, Certificate, Partner, Testimonial, FAQ, HomeSlide, PromoBanner, QuickCircle, HomePromoBanner
 from apps.products.models import Product
 from apps.services.models import Service
 from apps.projects.models import Project
@@ -16,7 +16,8 @@ class HomeView(TemplateView):
         ctx = super().get_context_data(**kwargs)
         ctx.update({
             "slides": HomeSlide.objects.filter(is_active=True),
-            "promo_banners": PromoBanner.objects.filter(is_active=True),
+            "promo_banners": PromoBanner.objects.filter(is_active=True)[:4],
+            "home_promo_banners": HomePromoBanner.objects.filter(is_active=True)[:2],
             "quick_circles": QuickCircle.objects.filter(is_active=True),
             "statistics": Statistic.objects.all(),
             "certificates": Certificate.objects.all(),
