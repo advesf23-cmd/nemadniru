@@ -3,9 +3,8 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-    # Independent branch from the original product schema; Django applies this
-    # alongside subsequent legacy migrations without rewriting existing data.
-    dependencies = [("products", "0001_initial")]
+    # Extend the current products migration graph so Django has one leaf node.
+    dependencies = [("products", "0007_configurable_category_filters")]
 
     operations = [
         migrations.CreateModel(
