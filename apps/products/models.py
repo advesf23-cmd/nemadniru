@@ -370,7 +370,7 @@ class ProductAttributeValue(TimeStampedModel):
     variant = models.ForeignKey(ProductVariant, null=True, blank=True, on_delete=models.CASCADE, related_name="attribute_values")
 
     class Meta:
-        constraints = [models.UniqueConstraint(fields=["product", "attribute", "variant"], name="uniq_product_attribute_variant")]
+        constraints = [models.UniqueConstraint(fields=["product", "attribute"], name="uniq_product_attribute")]
         indexes = [models.Index(fields=["attribute", "value_number"]), models.Index(fields=["attribute", "value_boolean"])]
         verbose_name = _("مقدار مشخصه محصول")
         verbose_name_plural = _("مقادیر مشخصات محصول")
