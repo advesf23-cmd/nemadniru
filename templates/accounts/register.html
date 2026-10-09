@@ -42,14 +42,14 @@
           </div>
           <div class="col-md-6">
             <label class="form-label">رمز عبور *</label>
-            <input type="password" name="password" id="reg-password" class="form-control" required minlength="8">
+            <input type="password" name="password" id="reg-password" class="form-control" required minlength="6">
             {% if form.password.errors %}
               {% for err in form.password.errors %}<div class="text-danger small mt-1">{{ err }}</div>{% endfor %}
             {% endif %}
           </div>
           <div class="col-md-6">
             <label class="form-label">تکرار رمز عبور *</label>
-            <input type="password" id="reg-password-confirm" class="form-control" required minlength="8">
+            <input type="password" id="reg-password-confirm" class="form-control" required minlength="6">
             <div class="text-danger small mt-1" id="password-mismatch-error" style="display:none;">رمز عبور و تکرار آن یکسان نیستند.</div>
           </div>
         </div>
