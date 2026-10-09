@@ -5,6 +5,119 @@
 
 {% include "partials/hero_slider.html" %}
 
+{% load humanize %}
+<section class="section-padding bg-light-gray home-products-section">
+  <div class="container">
+    <div class="section-title mb-4">
+      <span class="eyebrow">SHOP PRODUCTS</span>
+      <h2>محصولات فروشگاه</h2>
+      <p>جدیدترین محصولات، پیشنهادهای ویژه و بیشترین تخفیف‌ها را بررسی کنید.</p>
+    </div>
+
+    <ul class="nav nav-pills justify-content-center gap-2 mb-4 home-product-tabs" id="homeProductTabs" role="tablist">
+      <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="home-latest-tab" data-bs-toggle="pill" data-bs-target="#home-latest" type="button" role="tab" aria-controls="home-latest" aria-selected="true">جدیدترین‌ها</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="home-featured-tab" data-bs-toggle="pill" data-bs-target="#home-featured" type="button" role="tab" aria-controls="home-featured" aria-selected="false">پیشنهاد سایت</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="home-discount-tab" data-bs-toggle="pill" data-bs-target="#home-discount" type="button" role="tab" aria-controls="home-discount" aria-selected="false">بیشترین تخفیف</button>
+      </li>
+    </ul>
+
+    <div class="tab-content" id="homeProductTabsContent">
+      <div class="tab-pane fade show active" id="home-latest" role="tabpanel" aria-labelledby="home-latest-tab" tabindex="0">
+        <div class="row g-3 g-md-4">
+          {% for product in latest_products %}
+          <div class="col-6 col-md-4 col-lg-3">
+            <a href="{{ product.get_absolute_url }}" class="text-decoration-none text-dark d-block h-100">
+              <div class="card product-card h-100 position-relative">
+                {% if product.price and product.final_price and product.final_price < product.price %}
+                <span class="badge bg-orange position-absolute top-0 start-0 m-2">تخفیف</span>
+                {% endif %}
+                {% if product.cover_image %}
+                <img src="{{ product.cover_image.url }}" alt="{{ product.name }}" loading="lazy">
+                {% else %}
+                <div class="d-flex align-items-center justify-content-center bg-white" style="height:220px;"><i class="fa-solid fa-box-open fa-2x text-muted"></i></div>
+                {% endif %}
+                <div class="p-3">
+                  <small class="text-orange">{{ product.category.name }}</small>
+                  <h6 class="mt-1 mb-2">{{ product.name }}</h6>
+                  {% if product.final_price %}<div class="fw-bold">{{ product.final_price|intcomma }} تومان</div>{% endif %}
+                  {% if product.price and product.final_price and product.final_price < product.price %}<del class="text-muted small">{{ product.price|intcomma }} تومان</del>{% endif %}
+                </div>
+              </div>
+            </a>
+          </div>
+          {% empty %}
+          <div class="col-12 text-center text-muted py-4">هنوز محصولی برای نمایش ثبت نشده است.</div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="tab-pane fade" id="home-featured" role="tabpanel" aria-labelledby="home-featured-tab" tabindex="0">
+        <div class="row g-3 g-md-4">
+          {% for product in featured_products %}
+          <div class="col-6 col-md-4 col-lg-3">
+            <a href="{{ product.get_absolute_url }}" class="text-decoration-none text-dark d-block h-100">
+              <div class="card product-card h-100 position-relative">
+                <span class="badge bg-orange position-absolute top-0 start-0 m-2">پیشنهاد سایت</span>
+                {% if product.cover_image %}
+                <img src="{{ product.cover_image.url }}" alt="{{ product.name }}" loading="lazy">
+                {% else %}
+                <div class="d-flex align-items-center justify-content-center bg-white" style="height:220px;"><i class="fa-solid fa-box-open fa-2x text-muted"></i></div>
+                {% endif %}
+                <div class="p-3">
+                  <small class="text-orange">{{ product.category.name }}</small>
+                  <h6 class="mt-1 mb-2">{{ product.name }}</h6>
+                  {% if product.final_price %}<div class="fw-bold">{{ product.final_price|intcomma }} تومان</div>{% endif %}
+                  {% if product.price and product.final_price and product.final_price < product.price %}<del class="text-muted small">{{ product.price|intcomma }} تومان</del>{% endif %}
+                </div>
+              </div>
+            </a>
+          </div>
+          {% empty %}
+          <div class="col-12 text-center text-muted py-4">محصولی به‌عنوان پیشنهاد سایت انتخاب نشده است.</div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="tab-pane fade" id="home-discount" role="tabpanel" aria-labelledby="home-discount-tab" tabindex="0">
+        <div class="row g-3 g-md-4">
+          {% for product in discounted_products %}
+          <div class="col-6 col-md-4 col-lg-3">
+            <a href="{{ product.get_absolute_url }}" class="text-decoration-none text-dark d-block h-100">
+              <div class="card product-card h-100 position-relative">
+                {% if product.homepage_discount_percent %}<span class="badge bg-orange position-absolute top-0 start-0 m-2">{{ product.homepage_discount_percent|floatformat:0 }}٪ تخفیف</span>{% else %}<span class="badge bg-orange position-absolute top-0 start-0 m-2">تخفیف‌دار</span>{% endif %}
+                {% if product.cover_image %}
+                <img src="{{ product.cover_image.url }}" alt="{{ product.name }}" loading="lazy">
+                {% else %}
+                <div class="d-flex align-items-center justify-content-center bg-white" style="height:220px;"><i class="fa-solid fa-box-open fa-2x text-muted"></i></div>
+                {% endif %}
+                <div class="p-3">
+                  <small class="text-orange">{{ product.category.name }}</small>
+                  <h6 class="mt-1 mb-2">{{ product.name }}</h6>
+                  {% if product.final_price %}<div class="fw-bold">{{ product.final_price|intcomma }} تومان</div>{% endif %}
+                  {% if product.price and product.final_price and product.final_price < product.price %}<del class="text-muted small">{{ product.price|intcomma }} تومان</del>{% endif %}
+                </div>
+              </div>
+            </a>
+          </div>
+          {% empty %}
+          <div class="col-12 text-center text-muted py-4">در حال حاضر محصول تخفیف‌داری ثبت نشده است.</div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <div class="text-center mt-4">
+      <a href="{% url 'products:product_list' %}" class="btn btn-outline-navy">مشاهده همه محصولات</a>
+    </div>
+  </div>
+</section>
+
+
 <section class="section-padding">
   <div class="container">
     <div class="section-title" data-aos="fade-up">
@@ -36,33 +149,7 @@
   </div>
 </section>
 
-<section class="section-padding bg-light-gray">
-  <div class="container">
-    <div class="section-title" data-aos="fade-up">
-      <span class="eyebrow">FEATURED PRODUCTS</span>
-      <h2>محصولات ویژه</h2>
-    </div>
-    <div class="row g-4">
-      {% for product in featured_products %}
-      <div class="col-6 col-md-3" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:'50' }}">
-        <a href="{{ product.get_absolute_url }}" class="text-decoration-none text-dark">
-          <div class="card product-card h-100">
-            {% if product.cover_image %}<img src="{{ product.cover_image.url }}" alt="{{ product.name }}">{% endif %}
-            <div class="p-3">
-              <h6 class="mb-0">{{ product.name }}</h6>
-            </div>
-          </div>
-        </a>
-      </div>
-      {% empty %}
-      <div class="col-12 text-center text-muted">محصولات ویژه به‌زودی از پنل مدیریت اضافه می‌شوند.</div>
-      {% endfor %}
-    </div>
-    <div class="text-center mt-4">
-      <a href="{% url 'products:product_list' %}" class="btn btn-outline-navy">مشاهده همه محصولات</a>
-    </div>
-  </div>
-</section>
+
 
 <section class="section-padding">
   <div class="container">
