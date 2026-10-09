@@ -381,7 +381,8 @@ class ProductAttributeValue(TimeStampedModel):
             return
         attribute = self.attribute
         value = (self.value_text or "").strip()
-        if attribute.is_required and not value and self.value_number is None and self.value_boolean is None and self.value_date is None and not self.value_file and not self.selected_values.exists():
+        has_selected_values = bool(self.pk and self.selected_values.exists())
+        if attribute.is_required and attribute.data_type not in (Attribute.SELECT, Attribute.MULTISELECT) and not value and self.value_number is None and self.value_boolean is None and self.value_date is None and not self.value_file and not has_selected_values:
             raise ValidationError({"value_text": "این مشخصه اجباری است."})
         if self.value_number is not None:
             if attribute.min_value is not None and self.value_number < attribute.min_value:
