@@ -5,8 +5,28 @@
 
 <section class="section-padding">
   <div class="container">
-    <div class="row g-5">
-      <div class="col-lg-8">
+    <div class="row g-4">
+      <div class="col-lg-3 order-1">
+        <div class="form-card mb-4 p-3">
+          <h6 class="mb-3">دسته‌بندی‌ها</h6>
+          <ul class="list-unstyled d-flex flex-column gap-2 mb-0" id="category-filter">
+            <li><a href="#" data-category="" class="filter-link {% if not request.GET.category %}text-orange fw-bold{% else %}text-dark{% endif %}">همه مقالات</a></li>
+            {% for cat in categories %}
+            <li><a href="#" data-category="{{ cat.slug }}" class="filter-link {% if request.GET.category == cat.slug %}text-orange fw-bold{% else %}text-dark{% endif %}">{{ cat.name }}</a></li>
+            {% endfor %}
+          </ul>
+        </div>
+        <div class="form-card p-3">
+          <h6 class="mb-3">برچسب‌ها</h6>
+          <div class="d-flex flex-wrap gap-2" id="tag-filter">
+            {% for tag in tags %}
+            <a href="#" data-tag="{{ tag.name }}" class="btn btn-sm btn-outline-navy tag-link">{{ tag.name }}</a>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-9 order-2">
         <div class="filter-bar d-flex justify-content-between align-items-center flex-wrap gap-2">
           <div class="d-flex gap-2 flex-grow-1" style="max-width:400px;">
             <input type="text" id="search-input" class="form-control" placeholder="جستجو در مقالات..." value="{{ request.GET.q }}">
@@ -20,26 +40,6 @@
 
         <div id="post-grid-wrapper">{% include "blog/_post_grid.html" %}</div>
         <div id="pagination-wrapper">{% include "blog/_pagination.html" %}</div>
-      </div>
-
-      <div class="col-lg-4">
-        <div class="form-card mb-4">
-          <h6 class="mb-3">دسته‌بندی‌ها</h6>
-          <ul class="list-unstyled d-flex flex-column gap-2" id="category-filter">
-            <li><a href="#" data-category="" class="filter-link {% if not request.GET.category %}text-orange fw-bold{% else %}text-dark{% endif %}">همه مقالات</a></li>
-            {% for cat in categories %}
-            <li><a href="#" data-category="{{ cat.slug }}" class="filter-link {% if request.GET.category == cat.slug %}text-orange fw-bold{% else %}text-dark{% endif %}">{{ cat.name }}</a></li>
-            {% endfor %}
-          </ul>
-        </div>
-        <div class="form-card">
-          <h6 class="mb-3">برچسب‌ها</h6>
-          <div class="d-flex flex-wrap gap-2" id="tag-filter">
-            {% for tag in tags %}
-            <a href="#" data-tag="{{ tag.name }}" class="btn btn-sm btn-outline-navy tag-link">{{ tag.name }}</a>
-            {% endfor %}
-          </div>
-        </div>
       </div>
     </div>
   </div>
