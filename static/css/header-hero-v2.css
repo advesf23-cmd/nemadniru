@@ -4,16 +4,16 @@
    ========================================================= */
 
    :root {
-    --smart-blue: #0466c8;
-    --sapphire: #0353a4;
-    --regal-navy: #023e7d;
-    --prussian-blue: #002855;
-    --prussian-blue-2: #001845;
-    --prussian-blue-3: #001233;
-    --twilight-indigo: #33415c;
-    --blue-slate: #5c677d;
-    --slate-grey: #7d8597;
-    --lavender-grey: #979dac;
+    --smart-blue: #2C7A78;
+    --sapphire: #23686A;
+    --regal-navy: #174F52;
+    --prussian-blue: #174F52;
+    --prussian-blue-2: #123F42;
+    --prussian-blue-3: #0D3032;
+    --twilight-indigo: #385B5B;
+    --blue-slate: #5D6B68;
+    --slate-grey: #87918B;
+    --lavender-grey: #B6B8AA;
   
     --color-navy: var(--prussian-blue);
     --color-navy-light: var(--regal-navy);
