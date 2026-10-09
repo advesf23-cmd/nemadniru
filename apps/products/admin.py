@@ -2,7 +2,9 @@ from django.contrib import admin
 from django.db.models import Case, When
 from .models import (
     ProductCategory, Brand, CategoryAttributeTemplate, Product,
-    ProductImage, ProductSpecification, ProductDownload, ProductInquiry, ProductReview
+    ProductImage, ProductSpecification, ProductDownload, ProductInquiry, ProductReview,
+    Attribute, AttributeGroup, AttributeSet, AttributeSetAttribute, AttributeValue,
+    ProductAttributeValue, ProductVariant, VariantAttributeValue
 )
 
 
@@ -14,6 +16,18 @@ class ProductImageInline(admin.TabularInline):
 class ProductSpecificationInline(admin.TabularInline):
     model = ProductSpecification
     extra = 1
+
+
+class ProductAttributeValueInline(admin.TabularInline):
+    model = ProductAttributeValue
+    extra = 1
+    autocomplete_fields = ("attribute",)
+    fields = ("attribute", "value_text", "value_number", "value_boolean", "value_date", "value_file", "variant")
+
+
+class ProductVariantInline(admin.TabularInline):
+    model = ProductVariant
+    extra = 0
 
 
 class ProductDownloadInline(admin.TabularInline):
@@ -112,7 +126,7 @@ class ProductAdmin(admin.ModelAdmin):
     search_fields = ("name", "sku", "mpn", "brand__name")
     autocomplete_fields = ["brand"]
     prepopulated_fields = {"slug": ("name",)}
-    inlines = [ProductImageInline, ProductSpecificationInline, ProductDownloadInline]
+    inlines = [ProductImageInline, ProductSpecificationInline, ProductAttributeValueInline, ProductVariantInline, ProductDownloadInline]
     fieldsets = (
         (None, {"fields": ("category", "brand", "name", "slug", "status", "is_featured", "order")}),
         ("شناسه‌های محصول", {"fields": ("sku", "mpn")}),
@@ -140,3 +154,60 @@ class ProductReviewAdmin(admin.ModelAdmin):
     def approve_reviews(self, request, queryset):
         queryset.update(is_approved=True)
     approve_reviews.short_description = "تأیید نظرات انتخاب‌شده"
+
+
+@admin.register(AttributeGroup)
+class AttributeGroupAdmin(admin.ModelAdmin):
+    list_display = ("name", "order")
+    search_fields = ("name",)
+    list_editable = ("order",)
+
+
+@admin.register(Attribute)
+class AttributeAdmin(admin.ModelAdmin):
+    list_display = ("name", "code", "data_type", "group", "is_required", "is_filterable", "is_active")
+    list_filter = ("data_type", "group", "is_required", "is_filterable", "is_active")
+    search_fields = ("name", "code")
+    prepopulated_fields = {"code": ("name",)}
+
+
+class AttributeSetAttributeInline(admin.TabularInline):
+    model = AttributeSetAttribute
+    extra = 1
+    autocomplete_fields = ("attribute",)
+
+
+@admin.register(AttributeSet)
+class AttributeSetAdmin(admin.ModelAdmin):
+    list_display = ("name", "is_active", "updated_at")
+    search_fields = ("name",)
+    list_filter = ("is_active",)
+    inlines = [AttributeSetAttributeInline]
+
+
+@admin.register(AttributeValue)
+class AttributeValueAdmin(admin.ModelAdmin):
+    list_display = ("attribute", "value", "language_code", "usage_count")
+    list_filter = ("attribute", "language_code")
+    search_fields = ("value", "normalized_value", "attribute__name")
+
+
+@admin.register(ProductVariant)
+class ProductVariantAdmin(admin.ModelAdmin):
+    list_display = ("product", "name", "sku", "price", "stock_quantity", "is_active")
+    list_filter = ("is_active",)
+    search_fields = ("product__name", "name", "sku")
+
+
+@admin.register(ProductAttributeValue)
+class ProductAttributeValueAdmin(admin.ModelAdmin):
+    list_display = ("product", "attribute", "value_text", "value_number", "variant")
+    list_filter = ("attribute",)
+    search_fields = ("product__name", "attribute__name", "value_text")
+
+
+@admin.register(VariantAttributeValue)
+class VariantAttributeValueAdmin(admin.ModelAdmin):
+    list_display = ("variant", "attribute", "value_text", "value_number")
+    list_filter = ("attribute",)
+    search_fields = ("variant__name", "attribute__name", "value_text")
