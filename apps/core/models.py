@@ -315,3 +315,22 @@ class QuickCircle(TimeStampedModel):
 
     def __str__(self):
         return self.title
+
+
+class HomePromoBanner(TimeStampedModel):
+    """بنرهای تبلیغاتی قابل مدیریت که زیر بخش محصولات صفحه اصلی نمایش داده می‌شوند."""
+    image = models.ImageField(_("تصویر تبلیغاتی"), upload_to="home_promo_banners/")
+    title = models.CharField(_("عنوان روی تصویر"), max_length=150, blank=True)
+    description = models.CharField(_("متن توضیحی روی تصویر"), max_length=300, blank=True)
+    button_text = models.CharField(_("متن دکمه"), max_length=60, blank=True, default="مشاهده محصولات")
+    link_url = models.CharField(_("لینک مقصد"), max_length=255, blank=True)
+    order = models.PositiveIntegerField(_("ترتیب نمایش"), default=0)
+    is_active = models.BooleanField(_("فعال"), default=True)
+
+    class Meta:
+        ordering = ["order"]
+        verbose_name = _("بنر تبلیغاتی زیر محصولات")
+        verbose_name_plural = _("دو بنر تبلیغاتی زیر محصولات")
+
+    def __str__(self):
+        return self.title or f"بنر تبلیغاتی زیر محصولات #{self.pk}"
