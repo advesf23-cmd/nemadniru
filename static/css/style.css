@@ -595,3 +595,17 @@ a { transition: var(--transition); }
   .home-product-arrow--left { left: -.75rem; }
   .home-product-arrow--right { right: -.75rem; }
 }
+
+
+/* Keep the section title on the right and the "view all" link on the left */
+.home-products-heading {
+  direction: ltr;
+  flex-direction: row-reverse;
+}
+.home-products-heading-copy {
+  direction: rtl;
+  text-align: right;
+}
+.home-products-view-all {
+  direction: rtl;
+}
