@@ -279,6 +279,11 @@ class ProductDetailView(DetailView):
             category=self.object.category, status="published"
         ).exclude(pk=self.object.pk)[:4]
         ctx["reviews"] = self.object.reviews.filter(is_approved=True)
+        ctx["product_attribute_values"] = self.object.attribute_values.filter(
+            attribute__is_visible=True, variant__isnull=True
+        ).select_related("attribute", "attribute__group").prefetch_related("selected_values").order_by(
+            "attribute__group__order", "attribute__group__name", "attribute__name"
+        )
         return ctx
 
 
