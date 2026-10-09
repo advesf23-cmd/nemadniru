@@ -214,32 +214,34 @@
 
 
       /*
-       * سمت راست = PREV
+       * در ساختار فعلی HTML، heroPeekPrev در ستون چپ قرار دارد؛
+       * بنابراین تصویر اسلاید بعدی (+1) را نمایش می‌دهد.
        */
 
       peekPrev.style.setProperty(
         "--peek-current",
-        `url("${prevUrl}")`
+        `url("${nextUrl}")`
       );
 
       peekPrev.style.setProperty(
         "--peek-next",
-        `url("${prevUrl}")`
+        `url("${nextUrl}")`
       );
 
 
       /*
-       * سمت چپ = NEXT
+       * heroPeekNext در ستون راست قرار دارد؛
+       * بنابراین تصویر اسلاید قبلی (-1) را نمایش می‌دهد.
        */
 
       peekNext.style.setProperty(
         "--peek-current",
-        `url("${nextUrl}")`
+        `url("${prevUrl}")`
       );
 
       peekNext.style.setProperty(
         "--peek-next",
-        `url("${nextUrl}")`
+        `url("${prevUrl}")`
       );
     }
 
@@ -375,32 +377,32 @@
 
 
       /*
-       * سمت راست = PREV
+       * heroPeekPrev در ستون چپ است: اسلاید بعدی (+1).
        */
 
       peekPrev.style.setProperty(
-        "--peek-current",
-        `url("${oldPrevUrl}")`
-      );
-
-      peekPrev.style.setProperty(
-        "--peek-next",
-        `url("${newPrevUrl}")`
-      );
-
-
-      /*
-       * سمت چپ = NEXT
-       */
-
-      peekNext.style.setProperty(
         "--peek-current",
         `url("${oldNextUrl}")`
       );
 
-      peekNext.style.setProperty(
+      peekPrev.style.setProperty(
         "--peek-next",
         `url("${newNextUrl}")`
+      );
+
+
+      /*
+       * heroPeekNext در ستون راست است: اسلاید قبلی (-1).
+       */
+
+      peekNext.style.setProperty(
+        "--peek-current",
+        `url("${oldPrevUrl}")`
+      );
+
+      peekNext.style.setProperty(
+        "--peek-next",
+        `url("${newPrevUrl}")`
       );
 
 
