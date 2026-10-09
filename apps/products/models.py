@@ -36,8 +36,116 @@ class Brand(TimeStampedModel, SlugModel):
         super().save(*args, **kwargs)
 
 
+class AttributeSet(TimeStampedModel):
+    name = models.CharField(_("نام قالب مشخصات"), max_length=150, unique=True)
+    description = models.TextField(_("توضیحات"), blank=True)
+    is_active = models.BooleanField(_("فعال"), default=True)
+
+    class Meta:
+        ordering = ["name"]
+        verbose_name = _("قالب مشخصات")
+        verbose_name_plural = _("قالب‌های مشخصات")
+
+    def __str__(self):
+        return self.name
+
+
+class AttributeGroup(TimeStampedModel):
+    name = models.CharField(_("نام گروه مشخصات"), max_length=100, unique=True)
+    order = models.PositiveIntegerField(_("ترتیب"), default=0)
+
+    class Meta:
+        ordering = ["order", "name"]
+        verbose_name = _("گروه مشخصات")
+        verbose_name_plural = _("گروه‌های مشخصات")
+
+    def __str__(self):
+        return self.name
+
+
+class Attribute(TimeStampedModel):
+    TEXT = "text"
+    LONG_TEXT = "long_text"
+    NUMBER = "number"
+    BOOLEAN = "boolean"
+    SELECT = "select"
+    MULTISELECT = "multiselect"
+    COLOR = "color"
+    DATE = "date"
+    FILE = "file"
+    IMAGE = "image"
+    TYPE_CHOICES = [(v, label) for v, label in (
+        (TEXT, _("متن کوتاه")), (LONG_TEXT, _("متن بلند")), (NUMBER, _("عدد")),
+        (BOOLEAN, _("بله/خیر")), (SELECT, _("انتخابی")), (MULTISELECT, _("چندانتخابی")),
+        (COLOR, _("رنگ")), (DATE, _("تاریخ")), (FILE, _("فایل")), (IMAGE, _("تصویر")),
+    )]
+    name = models.CharField(_("نام مشخصه"), max_length=150, unique=True)
+    code = models.SlugField(_("کد یکتا"), max_length=160, unique=True, allow_unicode=True)
+    data_type = models.CharField(_("نوع داده"), max_length=20, choices=TYPE_CHOICES, default=TEXT)
+    unit = models.CharField(_("واحد"), max_length=30, blank=True)
+    group = models.ForeignKey(AttributeGroup, null=True, blank=True, on_delete=models.SET_NULL, related_name="attributes", verbose_name=_("گروه"))
+    is_required = models.BooleanField(_("اجباری"), default=False)
+    is_filterable = models.BooleanField(_("قابل فیلتر"), default=False)
+    is_comparable = models.BooleanField(_("قابل مقایسه"), default=True)
+    is_searchable = models.BooleanField(_("قابل جستجو"), default=False)
+    is_visible = models.BooleanField(_("نمایش در صفحه محصول"), default=True)
+    min_value = models.DecimalField(_("حداقل مقدار عددی"), max_digits=18, decimal_places=4, null=True, blank=True)
+    max_value = models.DecimalField(_("حداکثر مقدار عددی"), max_digits=18, decimal_places=4, null=True, blank=True)
+    validation_regex = models.CharField(_("عبارت اعتبارسنجی متن"), max_length=255, blank=True)
+    is_active = models.BooleanField(_("فعال"), default=True)
+
+    class Meta:
+        ordering = ["group__order", "name"]
+        indexes = [models.Index(fields=["data_type", "is_active"])]
+        verbose_name = _("مشخصه")
+        verbose_name_plural = _("مشخصه‌ها")
+
+    def __str__(self):
+        return self.name
+
+
+class AttributeSetAttribute(models.Model):
+    attribute_set = models.ForeignKey(AttributeSet, on_delete=models.CASCADE, related_name="items")
+    attribute = models.ForeignKey(Attribute, on_delete=models.CASCADE, related_name="set_items")
+    order = models.PositiveIntegerField(_("ترتیب"), default=0)
+    is_required_override = models.BooleanField(_("اجباری در این قالب"), null=True, blank=True)
+
+    class Meta:
+        ordering = ["order", "id"]
+        constraints = [models.UniqueConstraint(fields=["attribute_set", "attribute"], name="uniq_attribute_in_set")]
+        verbose_name = _("مشخصه قالب")
+        verbose_name_plural = _("مشخصه‌های قالب")
+
+    def __str__(self):
+        return f"{self.attribute_set} — {self.attribute}"
+
+
+class AttributeValue(TimeStampedModel):
+    attribute = models.ForeignKey(Attribute, on_delete=models.CASCADE, related_name="known_values")
+    value = models.CharField(_("مقدار استاندارد"), max_length=500)
+    normalized_value = models.CharField(_("مقدار نرمال‌شده"), max_length=500, editable=False)
+    language_code = models.CharField(_("زبان"), max_length=10, default="fa")
+    usage_count = models.PositiveIntegerField(_("تعداد استفاده"), default=0)
+
+    class Meta:
+        ordering = ["value"]
+        constraints = [models.UniqueConstraint(fields=["attribute", "normalized_value", "language_code"], name="uniq_attribute_value_language")]
+        indexes = [models.Index(fields=["attribute", "normalized_value"]), models.Index(fields=["attribute", "usage_count"])]
+        verbose_name = _("مقدار شناخته‌شده مشخصه")
+        verbose_name_plural = _("مقادیر شناخته‌شده مشخصه‌ها")
+
+    def save(self, *args, **kwargs):
+        self.normalized_value = " ".join(self.value.casefold().split())
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.attribute}: {self.value}"
+
+
 class ProductCategory(TimeStampedModel, SlugModel, SEOModel):
     name = models.CharField(_("نام دسته‌بندی"), max_length=150)
+    attribute_set = models.ForeignKey(AttributeSet, null=True, blank=True, on_delete=models.SET_NULL, related_name="categories", verbose_name=_("قالب مشخصات"))
+    inherit_parent_attributes = models.BooleanField(_("ارث‌بری مشخصات از والد"), default=True)
     parent = models.ForeignKey(
         "self", null=True, blank=True, on_delete=models.CASCADE, related_name="children",
         verbose_name=_("دسته‌بندی والد"),
@@ -229,6 +337,74 @@ class Product(TimeStampedModel, SlugModel, SEOModel, PublishableModel):
     @property
     def review_count(self):
         return self.reviews.filter(is_approved=True).count()
+
+
+class ProductVariant(TimeStampedModel):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="variants", verbose_name=_("محصول والد"))
+    name = models.CharField(_("نام تنوع"), max_length=150)
+    sku = models.CharField(_("SKU تنوع"), max_length=60, unique=True)
+    price = models.DecimalField(_("قیمت"), max_digits=14, decimal_places=0, null=True, blank=True)
+    stock_quantity = models.PositiveIntegerField(_("موجودی"), default=0)
+    is_active = models.BooleanField(_("فعال"), default=True)
+
+    class Meta:
+        ordering = ["id"]
+        indexes = [models.Index(fields=["product", "is_active"])]
+        verbose_name = _("تنوع محصول")
+        verbose_name_plural = _("تنوع‌های محصول")
+
+    def __str__(self):
+        return f"{self.product.name} — {self.name}"
+
+
+class ProductAttributeValue(TimeStampedModel):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="attribute_values")
+    attribute = models.ForeignKey(Attribute, on_delete=models.PROTECT, related_name="product_values")
+    value_text = models.TextField(_("مقدار متنی"), blank=True)
+    value_number = models.DecimalField(_("مقدار عددی"), max_digits=18, decimal_places=4, null=True, blank=True)
+    value_boolean = models.BooleanField(_("مقدار بله/خیر"), null=True, blank=True)
+    value_date = models.DateField(_("تاریخ"), null=True, blank=True)
+    value_file = models.FileField(_("فایل"), upload_to="products/attributes/", null=True, blank=True)
+    selected_values = models.ManyToManyField(AttributeValue, blank=True, related_name="product_assignments", verbose_name=_("مقادیر انتخاب‌شده"))
+    variant = models.ForeignKey(ProductVariant, null=True, blank=True, on_delete=models.CASCADE, related_name="attribute_values")
+
+    class Meta:
+        constraints = [models.UniqueConstraint(fields=["product", "attribute", "variant"], name="uniq_product_attribute_variant")]
+        indexes = [models.Index(fields=["attribute", "value_number"]), models.Index(fields=["attribute", "value_boolean"])]
+        verbose_name = _("مقدار مشخصه محصول")
+        verbose_name_plural = _("مقادیر مشخصات محصول")
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        if self.value_text.strip() and self.attribute_id:
+            from django.db.models import F
+            known, created = AttributeValue.objects.get_or_create(
+                attribute=self.attribute,
+                normalized_value=" ".join(self.value_text.casefold().split()),
+                language_code="fa",
+                defaults={"value": self.value_text.strip()},
+            )
+            if created:
+                AttributeValue.objects.filter(pk=known.pk).update(usage_count=1)
+            else:
+                AttributeValue.objects.filter(pk=known.pk).update(usage_count=F("usage_count") + 1)
+
+    def __str__(self):
+        return f"{self.product}: {self.attribute}"
+
+
+class VariantAttributeValue(TimeStampedModel):
+    variant = models.ForeignKey(ProductVariant, on_delete=models.CASCADE, related_name="variant_values")
+    attribute = models.ForeignKey(Attribute, on_delete=models.PROTECT, related_name="variant_values")
+    value_text = models.TextField(blank=True)
+    value_number = models.DecimalField(max_digits=18, decimal_places=4, null=True, blank=True)
+    value_boolean = models.BooleanField(null=True, blank=True)
+    selected_values = models.ManyToManyField(AttributeValue, blank=True, related_name="variant_assignments")
+
+    class Meta:
+        constraints = [models.UniqueConstraint(fields=["variant", "attribute"], name="uniq_variant_attribute")]
+        verbose_name = _("مشخصه تنوع")
+        verbose_name_plural = _("مشخصات تنوع‌ها")
 
 
 class ProductImage(TimeStampedModel):
