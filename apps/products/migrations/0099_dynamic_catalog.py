@@ -83,7 +83,7 @@ class Migration(migrations.Migration):
             name="ProductVariant",
             fields=[
                 ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
-                ("created_at", models.DateTimeField(auto_now_add=True, verbose_name="تاریخ ایجاد", verbose_name="تاریخ ایجاد")),
+                ("created_at", models.DateTimeField(auto_now_add=True, verbose_name="تاریخ ایجاد")),
                 ("updated_at", models.DateTimeField(auto_now=True, verbose_name="تاریخ بروزرسانی")),
                 ("name", models.CharField(max_length=150, verbose_name="نام تنوع")),
                 ("sku", models.CharField(max_length=60, unique=True, verbose_name="SKU تنوع")),
