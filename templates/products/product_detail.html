@@ -59,6 +59,27 @@
   object-position: center;
   background: #fff;
   border-radius: 0.65rem;
+  transform: scale(1);
+  transform-origin: center center;
+  transition: transform .12s ease-out;
+  will-change: transform;
+}
+
+.product-gallery-main.is-zoomed img {
+  transform: scale(2.2);
+}
+
+/* بزرگ‌نمایی دنبال‌کننده موس فقط در دستگاه‌هایی با موس/اشاره‌گر دقیق فعال است. */
+@media (hover: hover) and (pointer: fine) {
+  .product-gallery-main.is-zoomed {
+    cursor: zoom-in;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .product-gallery-main img {
+    transition: none;
+  }
 }
 
 .product-gallery-thumbs {
@@ -603,7 +624,36 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   });
 
-  /* کلیک روی تصویر اصلی، نسخه بزرگ را باز می‌کند. */
+  /*
+   * بزرگ‌نمایی داخل همان قاب: با حرکت موس، نقطه‌ای که زیر موس است
+   * به مرکز ناحیه بزرگ‌نمایی تبدیل می‌شود. در موبایل این رفتار فعال نیست.
+   */
+  const supportsHoverZoom = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+
+  if (supportsHoverZoom) {
+    mainButton.addEventListener('pointerenter', function (event) {
+      if (event.pointerType !== 'mouse') return;
+      mainButton.classList.add('is-zoomed');
+    });
+
+    mainButton.addEventListener('pointermove', function (event) {
+      if (event.pointerType !== 'mouse') return;
+
+      const rect = mainButton.getBoundingClientRect();
+      if (!rect.width || !rect.height) return;
+
+      const x = Math.max(0, Math.min(100, ((event.clientX - rect.left) / rect.width) * 100));
+      const y = Math.max(0, Math.min(100, ((event.clientY - rect.top) / rect.height) * 100));
+      mainImage.style.transformOrigin = x + '% ' + y + '%';
+    });
+
+    mainButton.addEventListener('pointerleave', function () {
+      mainButton.classList.remove('is-zoomed');
+      mainImage.style.transformOrigin = 'center center';
+    });
+  }
+
+  /* کلیک روی تصویر اصلی همچنان نسخه بزرگ را باز می‌کند. */
   mainButton.addEventListener('click', function () {
     showLightbox(mainImage.src, mainImage.alt);
   });
