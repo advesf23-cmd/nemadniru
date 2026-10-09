@@ -6,13 +6,16 @@
 {% include "partials/hero_slider.html" %}
 
 {% load humanize %}
-<section class="section-padding bg-light-gray home-products-section">
+<section class="section-padding home-products-section">
   <div class="container">
-    <div class="section-title mb-4">
-      <span class="eyebrow">SHOP PRODUCTS</span>
-      <h2>محصولات فروشگاه</h2>
-      <p>جدیدترین محصولات، پیشنهادهای ویژه و بیشترین تخفیف‌ها را بررسی کنید.</p>
-    </div>
+    <div class="home-products-panel">
+      <div class="home-products-heading">
+        <div class="home-products-heading-copy">
+          <h2>محصولات فروشگاه</h2>
+          <p>جدیدترین محصولات، پیشنهادهای ویژه و بیشترین تخفیف‌ها را بررسی کنید.</p>
+        </div>
+        <a href="{% url 'products:product_list' %}" class="home-products-view-all">مشاهده همه <i class="fa-solid fa-chevron-left"></i></a>
+      </div>
 
     <ul class="nav nav-pills justify-content-center gap-2 mb-4 home-product-tabs" id="homeProductTabs" role="tablist">
       <li class="nav-item" role="presentation">
@@ -111,8 +114,6 @@
       </div>
     </div>
 
-    <div class="text-center mt-4">
-      <a href="{% url 'products:product_list' %}" class="btn btn-outline-navy">مشاهده همه محصولات</a>
     </div>
   </div>
 </section>
