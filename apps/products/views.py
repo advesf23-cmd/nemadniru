@@ -1,4 +1,6 @@
 from django.contrib import messages
+from django.contrib.admin.views.decorators import staff_member_required
+from django.views.decorators.http import require_GET
 from django.db.models import Q, OuterRef, Exists
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect
@@ -7,7 +9,7 @@ from django.urls import reverse_lazy
 from django.views import View
 from django.views.generic import ListView, DetailView, CreateView, TemplateView
 
-from .models import Product, ProductCategory, ProductInquiry, ProductReview, ProductSpecification, CategoryAttributeTemplate
+from .models import Product, ProductCategory, ProductInquiry, ProductReview, ProductSpecification, CategoryAttributeTemplate, Attribute, AttributeValue, AttributeSetAttribute
 
 WISHLIST_SESSION_KEY = "wishlist_product_ids"
 COMPARE_SESSION_KEY = "compare_product_ids"
@@ -392,3 +394,50 @@ class CompareView(ListView):
                     spec_keys.append(spec.key)
         ctx["spec_keys"] = spec_keys
         return ctx
+
+
+@staff_member_required
+@require_GET
+def admin_category_attributes(request):
+    """Return the effective dynamic attributes for a category, including ancestors."""
+    category_id = request.GET.get("category")
+    category = ProductCategory.objects.filter(pk=category_id, is_active=True).select_related("attribute_set", "parent").first()
+    if not category:
+        return JsonResponse({"results": []})
+    categories = []
+    current = category
+    while current:
+        categories.append(current)
+        if not current.inherit_parent_attributes:
+            break
+        current = current.parent
+    result = {}
+    for item in reversed(categories):
+        if not item.attribute_set_id:
+            continue
+        links = AttributeSetAttribute.objects.filter(
+            attribute_set_id=item.attribute_set_id, attribute__is_active=True
+        ).select_related("attribute", "attribute__group").order_by("order", "attribute__name")
+        for link in links:
+            result[link.attribute_id] = {
+                "id": link.attribute_id,
+                "name": link.attribute.name,
+                "type": link.attribute.data_type,
+                "unit": link.attribute.unit,
+                "required": link.is_required_override if link.is_required_override is not None else link.attribute.is_required,
+                "group": link.attribute.group.name if link.attribute.group_id else "",
+            }
+    return JsonResponse({"results": list(result.values())})
+
+
+@staff_member_required
+@require_GET
+def admin_attribute_values(request):
+    """Autocomplete for controlled vocabulary; only staff can query the catalog."""
+    attribute_id = request.GET.get("attribute")
+    query = request.GET.get("q", "").strip()
+    values = AttributeValue.objects.filter(attribute_id=attribute_id)
+    if query:
+        values = values.filter(value__icontains=query)
+    values = values.order_by("-usage_count", "value")[:20]
+    return JsonResponse({"results": [{"value": item.value, "count": item.usage_count} for item in values]})
