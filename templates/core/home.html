@@ -31,7 +31,9 @@
 
     <div class="tab-content" id="homeProductTabsContent">
       <div class="tab-pane fade show active" id="home-latest" role="tabpanel" aria-labelledby="home-latest-tab" tabindex="0">
-        <div class="home-product-rail">
+        <div class="home-product-rail-wrap">
+          <button type="button" class="home-product-arrow home-product-arrow--left" aria-label="حرکت محصولات به چپ" onclick="this.nextElementSibling.scrollBy({left:-420,behavior:'smooth'})"><i class="fa-solid fa-chevron-left"></i></button>
+          <div class="home-product-rail">
           {% for product in latest_products %}
           <div class="home-product-item">
             <a href="{{ product.get_absolute_url }}" class="text-decoration-none text-dark d-block h-100">
@@ -56,11 +58,15 @@
           {% empty %}
           <div class="col-12 text-center text-muted py-4">هنوز محصولی برای نمایش ثبت نشده است.</div>
           {% endfor %}
+          </div>
+          <button type="button" class="home-product-arrow home-product-arrow--right" aria-label="حرکت محصولات به راست" onclick="this.previousElementSibling.scrollBy({left:420,behavior:'smooth'})"><i class="fa-solid fa-chevron-right"></i></button>
         </div>
       </div>
 
       <div class="tab-pane fade" id="home-featured" role="tabpanel" aria-labelledby="home-featured-tab" tabindex="0">
-        <div class="home-product-rail">
+        <div class="home-product-rail-wrap">
+          <button type="button" class="home-product-arrow home-product-arrow--left" aria-label="حرکت محصولات به چپ" onclick="this.nextElementSibling.scrollBy({left:-420,behavior:'smooth'})"><i class="fa-solid fa-chevron-left"></i></button>
+          <div class="home-product-rail">
           {% for product in featured_products %}
           <div class="home-product-item">
             <a href="{{ product.get_absolute_url }}" class="text-decoration-none text-dark d-block h-100">
@@ -83,11 +89,15 @@
           {% empty %}
           <div class="col-12 text-center text-muted py-4">محصولی به‌عنوان پیشنهاد سایت انتخاب نشده است.</div>
           {% endfor %}
+          </div>
+          <button type="button" class="home-product-arrow home-product-arrow--right" aria-label="حرکت محصولات به راست" onclick="this.previousElementSibling.scrollBy({left:420,behavior:'smooth'})"><i class="fa-solid fa-chevron-right"></i></button>
         </div>
       </div>
 
       <div class="tab-pane fade" id="home-discount" role="tabpanel" aria-labelledby="home-discount-tab" tabindex="0">
-        <div class="home-product-rail">
+        <div class="home-product-rail-wrap">
+          <button type="button" class="home-product-arrow home-product-arrow--left" aria-label="حرکت محصولات به چپ" onclick="this.nextElementSibling.scrollBy({left:-420,behavior:'smooth'})"><i class="fa-solid fa-chevron-left"></i></button>
+          <div class="home-product-rail">
           {% for product in discounted_products %}
           <div class="home-product-item">
             <a href="{{ product.get_absolute_url }}" class="text-decoration-none text-dark d-block h-100">
@@ -110,6 +120,8 @@
           {% empty %}
           <div class="col-12 text-center text-muted py-4">در حال حاضر محصول تخفیف‌داری ثبت نشده است.</div>
           {% endfor %}
+          </div>
+          <button type="button" class="home-product-arrow home-product-arrow--right" aria-label="حرکت محصولات به راست" onclick="this.previousElementSibling.scrollBy({left:420,behavior:'smooth'})"><i class="fa-solid fa-chevron-right"></i></button>
         </div>
       </div>
     </div>
