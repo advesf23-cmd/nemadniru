@@ -18,9 +18,7 @@ def _validate_upload(upload, *, allowed_extensions, max_size, label):
 
     extension = Path(upload.name).suffix.lower()
     if extension not in allowed_extensions:
-        raise forms.ValidationError(
-            f"نوع فایل {label} مجاز نیست. فایل PDF، DOC یا DOCX انتخاب کنید."
-        )
+        raise forms.ValidationError(f"نوع فایل {label} مجاز نیست.")
     if upload.size > max_size:
         max_mb = max_size // (1024 * 1024)
         raise forms.ValidationError(f"حجم فایل {label} نباید بیشتر از {max_mb} مگابایت باشد.")
