@@ -19,10 +19,13 @@ LOGIN_LOCKOUT_SECONDS = 15 * 60  # ۱۵ دقیقه قفل پس از تلاش‌�
 
 
 def _client_ip(request):
-    xff = request.META.get("HTTP_X_FORWARDED_FOR")
-    if xff:
-        return xff.split(",")[0].strip()
-    return request.META.get("REMOTE_ADDR", "unknown")
+    """
+    Trust only the client IP header overwritten by our reverse proxy.
+    Do not use the left-most X-Forwarded-For value: clients can spoof it.
+    The application must not be exposed directly to the internet when using
+    HTTP_X_REAL_IP; Nginx is configured to overwrite that header.
+    """
+    return request.META.get("HTTP_X_REAL_IP") or request.META.get("REMOTE_ADDR", "unknown")
 
 
 def _login_attempts_key(request, username):
