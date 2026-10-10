@@ -390,6 +390,15 @@ class OrderSuccessView(DetailView):
     slug_field = "order_number"
     slug_url_kwarg = "order_number"
 
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        if self.request.user.is_authenticated:
+            return queryset.filter(user=self.request.user)
+        # Guest checkout is not supported by the current checkout flow. Keep
+        # the success page tied to the order created in this browser session.
+        order_id = self.request.session.get("last_order_id")
+        return queryset.filter(pk=order_id) if order_id else queryset.none()
+
 
 class MyOrdersView(LoginRequiredMixin, ListView):
     model = Order
@@ -421,9 +430,9 @@ class OrderAccessMixin:
     def get_order_or_none(self, request, order_number):
         qs = Order.objects.filter(order_number=order_number)
         if request.user.is_authenticated:
-            order = qs.filter(user=request.user).first()
-            if order:
-                return order
+            # An authenticated user must not fall back to another customer's
+            # phone-number-based access if the order is not theirs.
+            return qs.filter(user=request.user).first()
         phone = request.GET.get("phone", "").strip()
         if phone:
             return qs.filter(phone=phone).first()
@@ -471,7 +480,7 @@ class CancelOrderView(View):
         phone = request.POST.get("phone", "").strip()
         qs = Order.objects.filter(order_number=order_number)
         if request.user.is_authenticated:
-            order = qs.filter(user=request.user).first() or qs.filter(phone=phone).first()
+            order = qs.filter(user=request.user).first()
         else:
             order = qs.filter(phone=phone).first()
 
