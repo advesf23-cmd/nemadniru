@@ -13,7 +13,10 @@ class PrivateFileDownloadAccessTests(TestCase):
     def setUp(self):
         self.temp_media = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp_media.cleanup)
-        self.settings_override = override_settings(\n            MEDIA_ROOT=str(Path(self.temp_media.name) / "media"),\n            PRIVATE_MEDIA_ROOT=str(Path(self.temp_media.name) / "private"),\n        )
+        self.settings_override = override_settings(
+            MEDIA_ROOT=str(Path(self.temp_media.name) / "media"),
+            PRIVATE_MEDIA_ROOT=str(Path(self.temp_media.name) / "private"),
+        )
         self.settings_override.enable()
         self.addCleanup(self.settings_override.disable)
 
