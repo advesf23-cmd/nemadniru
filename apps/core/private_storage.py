@@ -16,9 +16,16 @@ class PrivateMediaStorage(FileSystemStorage):
     """
 
     def __init__(self, *args, **kwargs):
-        kwargs.setdefault("location", settings.PRIVATE_MEDIA_ROOT)
+        # Resolve PRIVATE_MEDIA_ROOT lazily so settings overrides in tests and
+        # deployments are respected; explicit locations remain useful in tests.
+        kwargs.setdefault("location", None)
         kwargs.setdefault("base_url", None)
         super().__init__(*args, **kwargs)
+
+    @property
+    def location(self):
+        configured_location = self._location or settings.PRIVATE_MEDIA_ROOT
+        return str(Path(configured_location).resolve())
 
     def url(self, name):
         # Sensitive files must only be served through staff-authorized views.
