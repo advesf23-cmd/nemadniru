@@ -117,6 +117,13 @@ class PrivateMediaStorageTests(TestCase):
             self.assertEqual(storage.location, str(Path(private_root).resolve()))
             self.assertEqual(storage.url("quotes/confidential.pdf"), "")
 
+
+    def test_storage_uses_configured_private_root(self):
+        with tempfile.TemporaryDirectory() as private_root:
+            with override_settings(PRIVATE_MEDIA_ROOT=private_root):
+                storage = PrivateMediaStorage()
+                self.assertEqual(storage.location, str(Path(private_root).resolve()))
+
     def test_existing_public_media_files_remain_readable_during_migration(self):
         with tempfile.TemporaryDirectory() as private_root, tempfile.TemporaryDirectory() as legacy_root:
             legacy_file = Path(legacy_root) / "quotes" / "legacy.pdf"
