@@ -4,11 +4,11 @@
 <h5 class="mb-3">درخواست‌های استعلام قیمت</h5>
 <div class="dash-table-card">
   <table class="table align-middle">
-    <thead><tr><th>نام</th><th>شرکت</th><th>تلفن</th><th>نوع پروژه</th><th>تاریخ</th><th>وضعیت</th><th>عملیات</th></tr></thead>
+    <thead><tr><th>نام</th><th>شرکت</th><th>تلفن</th><th>نوع پروژه</th><th>پیوست</th><th>تاریخ</th><th>وضعیت</th><th>عملیات</th></tr></thead>
     <tbody>
       {% for q in quotes %}
       <tr class="{% if not q.is_read %}fw-bold{% endif %}">
-        <td>{{ q.full_name }}</td><td>{{ q.company_name|default:"—" }}</td><td>{{ q.phone }}</td><td>{{ q.project_type|default:"—" }}</td><td>{{ q.created_at|date:"Y/m/d" }}</td>
+        <td>{{ q.full_name }}</td><td>{{ q.company_name|default:"—" }}</td><td>{{ q.phone }}</td><td>{{ q.project_type|default:"—" }}</td><td>{% if q.attachment %}<a class="btn btn-sm btn-outline-navy" href="{% url 'dashboard:quote_attachment_download' q.pk %}">دانلود فایل</a>{% else %}—{% endif %}</td><td>{{ q.created_at|date:"Y/m/d" }}</td>
         <td>{% if q.is_processed %}<span class="badge bg-success">پردازش‌شده</span>{% else %}<span class="badge bg-orange">در انتظار</span>{% endif %}</td>
         <td>
           {% if not q.is_processed %}
@@ -19,7 +19,7 @@
         </td>
       </tr>
       {% empty %}
-      <tr><td colspan="7" class="text-center text-muted py-4">درخواستی ثبت نشده است.</td></tr>
+      <tr><td colspan="8" class="text-center text-muted py-4">درخواستی ثبت نشده است.</td></tr>
       {% endfor %}
     </tbody>
   </table>
