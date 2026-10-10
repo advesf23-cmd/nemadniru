@@ -31,11 +31,18 @@ class PrivateMediaStorage(FileSystemStorage):
         # Sensitive files must only be served through staff-authorized views.
         return ""
 
+    def _legacy_path(self, name):
+        media_root = Path(settings.MEDIA_ROOT).resolve()
+        legacy_path = (media_root / name).resolve()
+        if not legacy_path.is_relative_to(media_root):
+            return None
+        return legacy_path
+
     def exists(self, name):
         if super().exists(name):
             return True
-        legacy_path = Path(settings.MEDIA_ROOT) / name
-        return legacy_path.is_file()
+        legacy_path = self._legacy_path(name)
+        return bool(legacy_path and legacy_path.is_file())
 
     def _open(self, name, mode="rb"):
         try:
@@ -45,7 +52,7 @@ class PrivateMediaStorage(FileSystemStorage):
             # written to the public media directory.
             if mode != "rb":
                 raise
-            legacy_path = Path(settings.MEDIA_ROOT) / name
-            if not legacy_path.is_file():
+            legacy_path = self._legacy_path(name)
+            if not legacy_path or not legacy_path.is_file():
                 raise
             return File(legacy_path.open(mode), name=name)
