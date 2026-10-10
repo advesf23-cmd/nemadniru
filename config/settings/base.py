@@ -140,6 +140,8 @@ STATICFILES_DIRS = [BASE_DIR / "static"]
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
+# Sensitive uploads are stored outside the public MEDIA_ROOT.
+PRIVATE_MEDIA_ROOT = Path(config("PRIVATE_MEDIA_ROOT", default=str(BASE_DIR / "private_media"))).resolve()
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
