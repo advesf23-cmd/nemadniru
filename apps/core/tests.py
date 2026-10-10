@@ -3,6 +3,7 @@ import tempfile
 
 from django.conf import settings
 from django.core.cache import cache
+from django.core.files.base import ContentFile
 from django.http import HttpResponse
 from django.test import RequestFactory, TestCase, override_settings
 
@@ -124,14 +125,37 @@ class PrivateMediaStorageTests(TestCase):
                 storage = PrivateMediaStorage()
                 self.assertEqual(storage.location, str(Path(private_root).resolve()))
 
-    def test_existing_public_media_files_remain_readable_during_migration(self):
-        with tempfile.TemporaryDirectory() as private_root, tempfile.TemporaryDirectory() as legacy_root:
-            legacy_file = Path(legacy_root) / "quotes" / "legacy.pdf"
+    def test_new_uploads_are_written_only_to_private_root(self):
+        with tempfile.TemporaryDirectory() as private_root, tempfile.TemporaryDirectory() as public_root:
+            with override_settings(
+                MEDIA_ROOT=public_root,
+                PRIVATE_MEDIA_ROOT=private_root,
+            ):
+                storage = PrivateMediaStorage()
+                saved_name = storage.save(
+                    "quotes/new.pdf",
+                    ContentFile(b"%PDF-private-test"),
+                )
+
+                private_file = Path(private_root) / saved_name
+                public_file = Path(public_root) / saved_name
+                self.assertTrue(private_file.is_file())
+                self.assertFalse(public_file.exists())
+                with storage.open(saved_name, "rb") as file_handle:
+                    self.assertEqual(file_handle.read(), b"%PDF-private-test")
+                self.assertEqual(storage.url(saved_name), "")
+
+    def test_legacy_public_upload_is_not_read_through_private_storage(self):
+        with tempfile.TemporaryDirectory() as private_root, tempfile.TemporaryDirectory() as public_root:
+            legacy_file = Path(public_root) / "quotes" / "legacy.pdf"
             legacy_file.parent.mkdir(parents=True)
             legacy_file.write_bytes(b"%PDF-legacy-test")
 
-            with override_settings(MEDIA_ROOT=legacy_root):
-                storage = PrivateMediaStorage(location=private_root)
-                self.assertTrue(storage.exists("quotes/legacy.pdf"))
-                with storage.open("quotes/legacy.pdf", "rb") as file_handle:
-                    self.assertEqual(file_handle.read(), b"%PDF-legacy-test")
+            with override_settings(
+                MEDIA_ROOT=public_root,
+                PRIVATE_MEDIA_ROOT=private_root,
+            ):
+                storage = PrivateMediaStorage()
+                self.assertFalse(storage.exists("quotes/legacy.pdf"))
+                with self.assertRaises(FileNotFoundError):
+                    storage.open("quotes/legacy.pdf", "rb")
