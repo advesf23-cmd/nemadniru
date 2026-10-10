@@ -1,9 +1,12 @@
 from pathlib import Path
+import tempfile
 
 from django.conf import settings
 from django.core.cache import cache
 from django.http import HttpResponse
-from django.test import RequestFactory, TestCase
+from django.test import RequestFactory, TestCase, override_settings
+
+from apps.core.private_storage import PrivateMediaStorage
 
 from .security_middleware import SensitiveEndpointRateLimitMiddleware
 
@@ -104,3 +107,24 @@ class NginxPrivateUploadConfigTests(TestCase):
 
     def test_nginx_overwrites_real_ip_header_from_connection_address(self):
         self.assertIn("proxy_set_header X-Real-IP $remote_addr;", self.nginx_config)
+
+
+
+class PrivateMediaStorageTests(TestCase):
+    def test_private_storage_has_no_public_url(self):
+        with tempfile.TemporaryDirectory() as private_root:
+            storage = PrivateMediaStorage(location=private_root)
+            self.assertEqual(storage.location, str(Path(private_root).resolve()))
+            self.assertEqual(storage.url("quotes/confidential.pdf"), "")
+
+    def test_existing_public_media_files_remain_readable_during_migration(self):
+        with tempfile.TemporaryDirectory() as private_root, tempfile.TemporaryDirectory() as legacy_root:
+            legacy_file = Path(legacy_root) / "quotes" / "legacy.pdf"
+            legacy_file.parent.mkdir(parents=True)
+            legacy_file.write_bytes(b"%PDF-legacy-test")
+
+            with override_settings(MEDIA_ROOT=legacy_root):
+                storage = PrivateMediaStorage(location=private_root)
+                self.assertTrue(storage.exists("quotes/legacy.pdf"))
+                with storage.open("quotes/legacy.pdf", "rb") as file_handle:
+                    self.assertEqual(file_handle.read(), b"%PDF-legacy-test")
