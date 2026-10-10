@@ -1,4 +1,5 @@
 import tempfile
+from pathlib import Path
 
 from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
@@ -86,3 +87,21 @@ class PrivateFileDownloadAccessTests(TestCase):
         self.assertEqual(response["X-Content-Type-Options"], "nosniff")
         self.assertIn("attachment", response["Content-Disposition"])
         self.assertEqual(b"".join(response.streaming_content), b"%PDF-1.4\nprivate resume test")
+
+    def test_staff_user_gets_404_when_quote_attachment_file_is_missing(self):
+        self.client.force_login(self.staff_user)
+        Path(self.quote.attachment.path).unlink()
+        url = reverse("dashboard:quote_attachment_download", kwargs={"pk": self.quote.pk})
+
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 404)
+
+    def test_staff_user_gets_404_when_resume_file_is_missing(self):
+        self.client.force_login(self.staff_user)
+        Path(self.application.resume.path).unlink()
+        url = reverse("dashboard:application_resume_download", kwargs={"pk": self.application.pk})
+
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 404)
