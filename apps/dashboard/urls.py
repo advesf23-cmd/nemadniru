@@ -1,6 +1,6 @@
 from django.urls import path
 from . import views
-from .private_files import DashboardResumeDownloadView
+from .private_files import DashboardQuoteAttachmentDownloadView, DashboardResumeDownloadView
 
 app_name = "dashboard"
 
@@ -57,6 +57,7 @@ urlpatterns = [
     path("inbox/messages/", views.DashboardContactMessageListView.as_view(), name="message_list"),
     path("inbox/messages/<int:pk>/mark-read/", views.DashboardMarkMessageReadView.as_view(), name="message_mark_read"),
     path("inbox/quotes/", views.DashboardQuoteRequestListView.as_view(), name="quote_list"),
+    path("inbox/quotes/<int:pk>/attachment/", DashboardQuoteAttachmentDownloadView.as_view(), name="quote_attachment_download"),
     path("inbox/quotes/<int:pk>/mark-processed/", views.DashboardMarkQuoteProcessedView.as_view(), name="quote_mark_processed"),
     path("inbox/product-inquiries/", views.DashboardProductInquiryListView.as_view(), name="inquiry_list"),
     path("inbox/product-inquiries/<int:pk>/mark-read/", views.DashboardMarkInquiryReadView.as_view(), name="inquiry_mark_read"),
