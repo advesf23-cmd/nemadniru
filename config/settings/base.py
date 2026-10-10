@@ -58,6 +58,7 @@ MIDDLEWARE = [
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.locale.LocaleMiddleware",  # پشتیبانی چندزبانه (فارسی پیش‌فرض)
     "django.middleware.common.CommonMiddleware",
+    "apps.core.security_middleware.SensitiveEndpointRateLimitMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
