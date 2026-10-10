@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views
+from .private_files import DashboardResumeDownloadView
 
 app_name = "dashboard"
 
@@ -60,6 +61,7 @@ urlpatterns = [
     path("inbox/product-inquiries/", views.DashboardProductInquiryListView.as_view(), name="inquiry_list"),
     path("inbox/product-inquiries/<int:pk>/mark-read/", views.DashboardMarkInquiryReadView.as_view(), name="inquiry_mark_read"),
     path("inbox/applications/", views.DashboardJobApplicationListView.as_view(), name="application_list"),
+    path("inbox/applications/<int:pk>/resume/", DashboardResumeDownloadView.as_view(), name="application_resume_download"),
     path("inbox/applications/<int:pk>/mark-reviewed/", views.DashboardMarkApplicationReviewedView.as_view(), name="application_mark_reviewed"),
 
     # فرصت‌های شغلی
