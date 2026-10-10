@@ -16,6 +16,7 @@ class SensitiveEndpointRateLimitMiddleware:
     RULES = (
         (re.compile(r"^/accounts/login/?$"), frozenset({"POST"}), 20, "login"),
         (re.compile(r"^/shop/track-order/?$"), frozenset({"POST"}), 10, "order-track"),
+        (re.compile(r"^/shop/order/success/[^/]+/?$"), frozenset({"GET"}), 30, "order-success"),
         (
             re.compile(r"^/shop/order/[^/]+/(?:detail|invoice)/?$"),
             frozenset({"GET"}),
@@ -58,4 +59,10 @@ class SensitiveEndpointRateLimitMiddleware:
                     return response
                 break
 
-        return self.get_response(request)
+        response = self.get_response(request)
+        if request.path_info.startswith("/shop/order/") or request.path_info.startswith("/shop/track-order"):
+            # Customer order pages contain personal and commercial information.
+            response["Cache-Control"] = "private, no-store"
+            response["Referrer-Policy"] = "no-referrer"
+            response["X-Content-Type-Options"] = "nosniff"
+        return response
