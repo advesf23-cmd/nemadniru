@@ -1,3 +1,6 @@
+from pathlib import Path
+
+from django.conf import settings
 from django.core.cache import cache
 from django.http import HttpResponse
 from django.test import RequestFactory, TestCase
@@ -75,3 +78,29 @@ class SensitiveEndpointRateLimitTests(TestCase):
 
     def test_order_cancel_post_is_limited_after_ten_requests(self):
         self._assert_limited_after("/shop/order/STE-ABC123/cancel/", "post", 10)
+
+
+
+class NginxPrivateUploadConfigTests(TestCase):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        config_path = Path(settings.BASE_DIR) / "docker" / "nginx" / "nginx.conf"
+        cls.nginx_config = config_path.read_text(encoding="utf-8")
+
+    def test_private_upload_directories_have_explicit_deny_location(self):
+        self.assertIn(
+            r"location ~* ^/media/(?:quotes|careers/resumes)/",
+            self.nginx_config,
+        )
+        self.assertIn("return 404;", self.nginx_config)
+
+    def test_private_upload_deny_rule_precedes_public_media_alias(self):
+        deny_position = self.nginx_config.index(
+            r"location ~* ^/media/(?:quotes|careers/resumes)/"
+        )
+        public_media_position = self.nginx_config.index("location /media/ {")
+        self.assertLess(deny_position, public_media_position)
+
+    def test_nginx_overwrites_real_ip_header_from_connection_address(self):
+        self.assertIn("proxy_set_header X-Real-IP $remote_addr;", self.nginx_config)
