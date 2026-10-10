@@ -9,7 +9,7 @@
       {% for a in applications %}
       <tr class="{% if not a.is_reviewed %}fw-bold{% endif %}">
         <td>{{ a.full_name }}</td><td>{{ a.position }}</td><td>{{ a.email }}</td>
-        <td><a href="{{ a.resume.url }}" target="_blank"><i class="fa-solid fa-file-arrow-down"></i></a></td>
+        <td><a href="{% url 'dashboard:application_resume_download' a.pk %}"><i class="fa-solid fa-file-arrow-down"></i></a></td>
         <td>{{ a.created_at|date:"Y/m/d" }}</td>
         <td>{% if a.is_reviewed %}<span class="badge bg-success">بررسی‌شده</span>{% else %}<span class="badge bg-orange">جدید</span>{% endif %}</td>
         <td>

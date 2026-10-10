@@ -1,4 +1,4 @@
-import uuid
+import secrets
 
 from django.conf import settings
 from django.db import models
@@ -169,7 +169,8 @@ class Order(TimeStampedModel):
 
     def save(self, *args, **kwargs):
         if not self.order_number:
-            self.order_number = f"STE-{uuid.uuid4().hex[:8].upper()}"
+            # 64 bits of cryptographically secure randomness; field length remains 20.
+            self.order_number = f"STE-{secrets.token_hex(8).upper()}"
         super().save(*args, **kwargs)
 
     @property

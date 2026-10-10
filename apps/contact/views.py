@@ -6,6 +6,7 @@ from django.core.mail import send_mail
 from django.conf import settings as dj_settings
 
 from .models import ContactMessage, QuoteRequest, JobPosition, JobApplication
+from .forms import QuoteRequestForm, JobApplicationForm
 
 
 class ContactPageView(CreateView):
@@ -32,10 +33,7 @@ class ContactPageView(CreateView):
 
 class QuoteRequestCreateView(CreateView):
     model = QuoteRequest
-    fields = [
-        "full_name", "company_name", "phone", "email",
-        "project_type", "budget_range", "description", "attachment",
-    ]
+    form_class = QuoteRequestForm
     template_name = "contact/quote_request.html"
     success_url = reverse_lazy("contact:quote_request")
 
@@ -56,7 +54,7 @@ class CareersListView(ListView):
 
 class JobApplicationCreateView(CreateView):
     model = JobApplication
-    fields = ["position", "full_name", "email", "phone", "resume", "cover_letter"]
+    form_class = JobApplicationForm
     template_name = "contact/job_application_form.html"
     success_url = reverse_lazy("contact:careers")
 

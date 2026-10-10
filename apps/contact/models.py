@@ -2,6 +2,7 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from apps.core.models import TimeStampedModel
+from apps.core.private_storage import PrivateMediaStorage
 
 
 class ContactMessage(TimeStampedModel):
@@ -30,7 +31,7 @@ class QuoteRequest(TimeStampedModel):
     project_type = models.CharField(_("نوع پروژه"), max_length=150, blank=True)
     budget_range = models.CharField(_("محدوده بودجه تقریبی"), max_length=100, blank=True)
     description = models.TextField(_("شرح درخواست"))
-    attachment = models.FileField(_("فایل پیوست (نقشه/مشخصات)"), upload_to="quotes/", blank=True, null=True)
+    attachment = models.FileField(_("فایل پیوست (نقشه/مشخصات)"), upload_to="quotes/", storage=PrivateMediaStorage(), blank=True, null=True)
     is_read = models.BooleanField(default=False)
     is_processed = models.BooleanField(default=False)
 
@@ -72,7 +73,7 @@ class JobApplication(TimeStampedModel):
     full_name = models.CharField(_("نام و نام خانوادگی"), max_length=150)
     email = models.EmailField(_("ایمیل"))
     phone = models.CharField(_("شماره تماس"), max_length=20)
-    resume = models.FileField(_("فایل رزومه"), upload_to="careers/resumes/")
+    resume = models.FileField(_("فایل رزومه"), upload_to="careers/resumes/", storage=PrivateMediaStorage())
     cover_letter = models.TextField(_("متن معرفی"), blank=True)
     is_reviewed = models.BooleanField(default=False)
 

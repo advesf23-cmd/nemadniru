@@ -7,7 +7,7 @@ services:
     environment:
       POSTGRES_DB: ${DB_NAME:-samantajhiz}
       POSTGRES_USER: ${DB_USER:-postgres}
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?Set a strong DB_PASSWORD in .env}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -30,6 +30,8 @@ services:
     volumes:
       - static_volume:/app/staticfiles
       - media_volume:/app/media
+      # Sensitive uploads must never be mounted into the public Nginx container.
+      - private_media_volume:/app/private_media
     depends_on:
       db:
         condition: service_healthy
@@ -52,3 +54,4 @@ volumes:
   postgres_data:
   static_volume:
   media_volume:
+  private_media_volume:
