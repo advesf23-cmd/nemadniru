@@ -1,19 +1,13 @@
 from pathlib import Path
 
 from django.conf import settings
-from django.core.files import File
 from django.core.files.storage import FileSystemStorage
 from django.utils.deconstruct import deconstructible
 
 
 @deconstructible
 class PrivateMediaStorage(FileSystemStorage):
-    """Store sensitive uploads outside MEDIA_ROOT.
-
-    Existing files are read from MEDIA_ROOT as a compatibility fallback until
-    they can be copied into PRIVATE_MEDIA_ROOT. New writes always use the
-    private location. The fallback is deliberately read-only.
-    """
+    """Store sensitive uploads outside MEDIA_ROOT with no public URL."""
 
     def __init__(self, *args, **kwargs):
         # Resolve PRIVATE_MEDIA_ROOT lazily so settings overrides in tests and
@@ -30,29 +24,3 @@ class PrivateMediaStorage(FileSystemStorage):
     def url(self, name):
         # Sensitive files must only be served through staff-authorized views.
         return ""
-
-    def _legacy_path(self, name):
-        media_root = Path(settings.MEDIA_ROOT).resolve()
-        legacy_path = (media_root / name).resolve()
-        if not legacy_path.is_relative_to(media_root):
-            return None
-        return legacy_path
-
-    def exists(self, name):
-        if super().exists(name):
-            return True
-        legacy_path = self._legacy_path(name)
-        return bool(legacy_path and legacy_path.is_file())
-
-    def _open(self, name, mode="rb"):
-        try:
-            return super()._open(name, mode)
-        except FileNotFoundError:
-            # Legacy files remain readable during migration, but are never
-            # written to the public media directory.
-            if mode != "rb":
-                raise
-            legacy_path = self._legacy_path(name)
-            if not legacy_path or not legacy_path.is_file():
-                raise
-            return File(legacy_path.open(mode), name=name)
