@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django import forms
 from django.db.models import Case, When
 from .models import (
     ProductCategory, Brand, CategoryAttributeTemplate, Product,
@@ -18,11 +19,53 @@ class ProductSpecificationInline(admin.TabularInline):
     extra = 1
 
 
+class ProductAttributeValueInlineForm(forms.ModelForm):
+    class Meta:
+        model = ProductAttributeValue
+        fields = "__all__"
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        field = self.fields.get("selected_values")
+        if field is None:
+            return
+
+        attribute_id = None
+        if self.is_bound:
+            attribute_id = self.data.get(self.add_prefix("attribute"))
+        if not attribute_id:
+            attribute_id = getattr(self.instance, "attribute_id", None)
+
+        if attribute_id:
+            field.queryset = AttributeValue.objects.filter(
+                attribute_id=attribute_id
+            )
+        else:
+            field.queryset = AttributeValue.objects.none()
+
+    def clean(self):
+        cleaned = super().clean()
+        attribute = cleaned.get("attribute")
+        selected_values = cleaned.get("selected_values")
+
+        if attribute and selected_values:
+            if selected_values.exclude(attribute=attribute).exists():
+                self.add_error(
+                    "selected_values",
+                    "همه مقادیر انتخاب‌شده باید متعلق به مشخصه انتخاب‌شده باشند.",
+                )
+        return cleaned
+
+
 class ProductAttributeValueInline(admin.TabularInline):
     model = ProductAttributeValue
+    form = ProductAttributeValueInlineForm
     extra = 1
-    autocomplete_fields = ("attribute",)
-    fields = ("attribute", "value_text", "value_number", "value_boolean", "value_date", "value_file", "variant")
+    autocomplete_fields = ("attribute", "selected_values")
+    fields = (
+        "attribute", "value_text", "selected_values",
+        "value_number", "value_boolean", "value_date", "value_file", "variant",
+    )
 
 
 class ProductVariantInline(admin.TabularInline):

@@ -399,19 +399,77 @@ class ProductAttributeValue(TimeStampedModel):
                 raise ValidationError({"value_text": "کد رنگ باید به شکل #RRGGBB باشد."})
 
     def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
-        if self.value_text.strip() and self.attribute_id:
-            from django.db.models import F
-            known, created = AttributeValue.objects.get_or_create(
-                attribute=self.attribute,
-                normalized_value=" ".join(self.value_text.casefold().split()),
-                language_code="fa",
-                defaults={"value": self.value_text.strip()},
+        from django.db.models import F
+
+        update_fields = kwargs.get("update_fields")
+        should_sync_catalog = (
+            update_fields is None
+            or bool({"value_text", "attribute"} & set(update_fields))
+        )
+
+        old_assignment = None
+        if self.pk and should_sync_catalog:
+            old_assignment = (
+                type(self).objects.filter(pk=self.pk)
+                .values("attribute_id", "value_text")
+                .first()
             )
-            if created:
-                AttributeValue.objects.filter(pk=known.pk).update(usage_count=1)
-            else:
-                AttributeValue.objects.filter(pk=known.pk).update(usage_count=F("usage_count") + 1)
+
+        super().save(*args, **kwargs)
+
+        if not should_sync_catalog:
+            return
+
+        current_assignment = (
+            type(self).objects.filter(pk=self.pk)
+            .values("attribute_id", "value_text")
+            .first()
+        )
+        if not current_assignment:
+            return
+
+        new_attribute_id = current_assignment["attribute_id"]
+        new_value = (current_assignment["value_text"] or "").strip()
+        new_normalized = " ".join(new_value.casefold().split())
+
+        old_attribute_id = None
+        old_normalized = ""
+        if old_assignment:
+            old_attribute_id = old_assignment["attribute_id"]
+            old_value = (old_assignment["value_text"] or "").strip()
+            old_normalized = " ".join(old_value.casefold().split())
+
+        value_changed = (
+            old_assignment is None
+            or old_attribute_id != new_attribute_id
+            or old_normalized != new_normalized
+        )
+
+        if new_attribute_id and new_normalized:
+            known, created = AttributeValue.objects.get_or_create(
+                attribute_id=new_attribute_id,
+                normalized_value=new_normalized,
+                language_code="fa",
+                defaults={"value": new_value, "usage_count": 1},
+            )
+
+            if not created and value_changed:
+                AttributeValue.objects.filter(pk=known.pk).update(
+                    usage_count=F("usage_count") + 1
+                )
+
+        if (
+            old_assignment
+            and old_attribute_id
+            and old_normalized
+            and value_changed
+        ):
+            AttributeValue.objects.filter(
+                attribute_id=old_attribute_id,
+                normalized_value=old_normalized,
+                language_code="fa",
+                usage_count__gt=0,
+            ).update(usage_count=F("usage_count") - 1)
 
     def __str__(self):
         return f"{self.product}: {self.attribute}"

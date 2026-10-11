@@ -6,6 +6,9 @@ from .models import (
     Product,
     ProductCategory,
     ProductSpecification,
+    Attribute,
+    AttributeValue,
+    ProductAttributeValue,
 )
 
 
@@ -75,3 +78,103 @@ class ProductAdvancedFilterTests(TestCase):
         self.assertEqual(response.status_code, 200)
         products = list(response.context["products"])
         self.assertEqual([p.pk for p in products], [self.product_3p.pk])
+
+
+class ProductAttributeValueCatalogTests(TestCase):
+    def setUp(self):
+        self.category = ProductCategory.objects.create(name="Catalog Test")
+        self.product = Product.objects.create(
+            category=self.category,
+            name="Catalog Test Product",
+            description="",
+            status="published",
+            cover_image="",
+        )
+        self.second_product = Product.objects.create(
+            category=self.category,
+            name="Catalog Test Product 2",
+            description="",
+            status="published",
+            cover_image="",
+        )
+        self.attribute = Attribute.objects.create(
+            name="Test Voltage",
+            code="test-voltage",
+            data_type=Attribute.TEXT,
+        )
+
+    def test_new_text_value_is_added_to_catalog(self):
+        ProductAttributeValue.objects.create(
+            product=self.product,
+            attribute=self.attribute,
+            value_text="230 V",
+        )
+
+        known = AttributeValue.objects.get(
+            attribute=self.attribute,
+            normalized_value="230 v",
+            language_code="fa",
+        )
+        self.assertEqual(known.value, "230 V")
+        self.assertEqual(known.usage_count, 1)
+
+    def test_saving_unchanged_value_does_not_change_count(self):
+        assignment = ProductAttributeValue.objects.create(
+            product=self.product,
+            attribute=self.attribute,
+            value_text="230 V",
+        )
+
+        assignment.save()
+        assignment.refresh_from_db()
+
+        known = AttributeValue.objects.get(
+            attribute=self.attribute,
+            normalized_value="230 v",
+            language_code="fa",
+        )
+        self.assertEqual(known.usage_count, 1)
+
+    def test_normalized_duplicate_reuses_catalog_value(self):
+        ProductAttributeValue.objects.create(
+            product=self.product,
+            attribute=self.attribute,
+            value_text="230 V",
+        )
+        ProductAttributeValue.objects.create(
+            product=self.second_product,
+            attribute=self.attribute,
+            value_text="  230   v  ",
+        )
+
+        known_values = AttributeValue.objects.filter(
+            attribute=self.attribute,
+            normalized_value="230 v",
+            language_code="fa",
+        )
+        self.assertEqual(known_values.count(), 1)
+        self.assertEqual(known_values.get().usage_count, 2)
+
+    def test_changing_value_updates_both_usage_counts(self):
+        assignment = ProductAttributeValue.objects.create(
+            product=self.product,
+            attribute=self.attribute,
+            value_text="230 V",
+        )
+
+        assignment.value_text = "400 V"
+        assignment.save()
+
+        old_value = AttributeValue.objects.get(
+            attribute=self.attribute,
+            normalized_value="230 v",
+            language_code="fa",
+        )
+        new_value = AttributeValue.objects.get(
+            attribute=self.attribute,
+            normalized_value="400 v",
+            language_code="fa",
+        )
+
+        self.assertEqual(old_value.usage_count, 0)
+        self.assertEqual(new_value.usage_count, 1)
