@@ -1,0 +1,29 @@
+﻿Database integrity audit (read-only)
+No records will be inserted, updated, or deleted.
+[OK] No duplicates: Product attribute repeated on one product
+[OK] No duplicates: Variant attribute repeated on one variant
+[OK] No duplicates: Product specification key repeated (ignoring case/outer spaces)
+[OK] No duplicates: Category template name repeated within a category
+[OK] No duplicates: Attribute repeated in one attribute set
+[OK] No duplicates: Known attribute value repeated (ignoring case/outer spaces)
+[OK] No duplicates: Same product repeated in one cart
+[OK] No duplicates: Multiple carts for one signed-in user
+[OK] No duplicates: Multiple guest carts for one session
+[OK] No duplicates: Duplicate non-empty product SKU
+[OK] No duplicates: Duplicate variant SKU
+[OK] No multiple empty-string product SKUs
+[OK] Product attribute linked to a variant belonging to another product
+[OK] Negative product price
+[OK] Negative product discount price
+[OK] Discount price exceeds regular price
+[OK] Product discount percentage outside 0..100
+[OK] Brand discount percentage outside 0..100
+[OK] Coupon percentage outside 0..100
+[OK] Negative fixed coupon discount
+[OK] Coupon valid_from later than valid_to
+[OK] Attribute minimum exceeds maximum
+[OK] Cart item quantity <= 0
+[OK] Order item quantity <= 0
+[OK] No product-category parent cycles
+
+Audit finished: no issues found by the checks included in this command.

@@ -17,7 +17,8 @@ class ProductImageInline(admin.TabularInline):
 class ProductSpecificationInline(admin.TabularInline):
     model = ProductSpecification
     extra = 1
-
+    verbose_name = "مشخصه فنی (ساختار قدیمی؛ مبنای فیلتر دسته‌بندی)"
+    verbose_name_plural = "مشخصات فنی (ساختار قدیمی؛ مبنای فیلتر دسته‌بندی)"
 
 class ProductAttributeValueInlineForm(forms.ModelForm):
     class Meta:
@@ -62,10 +63,10 @@ class ProductAttributeValueInline(admin.TabularInline):
     form = ProductAttributeValueInlineForm
     extra = 1
     autocomplete_fields = ("attribute", "selected_values")
-    fields = (
-        "attribute", "value_text", "selected_values",
-        "value_number", "value_boolean", "value_date", "value_file", "variant",
-    )
+    verbose_name = "مشخصه پویا (ساختار جدید؛ نمایش و مقایسه)"
+    verbose_name_plural = "مشخصات پویا (ساختار جدید؛ نمایش و مقایسه)"
+    fields = ("attribute", "value_text", "value_number", "value_boolean", "value_date", "value_file")
+    
 
 
 class ProductVariantInline(admin.TabularInline):

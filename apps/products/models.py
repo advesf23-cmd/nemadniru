@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.core.exceptions import ValidationError
-from django.db import models
+from django.db import models, transaction
+from .attribute_utils import adjust_usage_count
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
@@ -397,79 +398,35 @@ class ProductAttributeValue(TimeStampedModel):
             import re
             if not re.fullmatch(r"#[0-9a-fA-F]{6}", value):
                 raise ValidationError({"value_text": "کد رنگ باید به شکل #RRGGBB باشد."})
+        if self.variant_id:
+            raise ValidationError({"variant": "مشخصات مخصوص تنوع باید در «مشخصات تنوع» (VariantAttributeValue) ثبت شود."})
+        if value and self.value_number is None and attribute.data_type == Attribute.NUMBER:
+            raise ValidationError({"value_text": "برای مشخصه عددی، مقدار را در فیلد «مقدار عددی» وارد کنید."})
+        if value and self.value_boolean is None and attribute.data_type == Attribute.BOOLEAN:
+            raise ValidationError({"value_text": "برای مشخصه بله/خیر، فیلد «مقدار بله/خیر» را پر کنید."})
+        if value and self.value_date is None and attribute.data_type == Attribute.DATE:
+            raise ValidationError({"value_text": "برای مشخصه تاریخ، فیلد «تاریخ» را پر کنید."})
 
     def save(self, *args, **kwargs):
-        from django.db.models import F
+        with transaction.atomic():
+            old = None
+            if self.pk:
+                old = type(self).objects.filter(pk=self.pk).values("attribute_id", "value_text").first()
+            super().save(*args, **kwargs)
+            new = type(self).objects.filter(pk=self.pk).values("attribute_id", "value_text").first()
 
-        update_fields = kwargs.get("update_fields")
-        should_sync_catalog = (
-            update_fields is None
-            or bool({"value_text", "attribute"} & set(update_fields))
-        )
+            def key(row):
+                if not row:
+                    return None
+                text = " ".join((row["value_text"] or "").casefold().split())
+                return (row["attribute_id"], text) if text else None
 
-        old_assignment = None
-        if self.pk and should_sync_catalog:
-            old_assignment = (
-                type(self).objects.filter(pk=self.pk)
-                .values("attribute_id", "value_text")
-                .first()
-            )
-
-        super().save(*args, **kwargs)
-
-        if not should_sync_catalog:
-            return
-
-        current_assignment = (
-            type(self).objects.filter(pk=self.pk)
-            .values("attribute_id", "value_text")
-            .first()
-        )
-        if not current_assignment:
-            return
-
-        new_attribute_id = current_assignment["attribute_id"]
-        new_value = (current_assignment["value_text"] or "").strip()
-        new_normalized = " ".join(new_value.casefold().split())
-
-        old_attribute_id = None
-        old_normalized = ""
-        if old_assignment:
-            old_attribute_id = old_assignment["attribute_id"]
-            old_value = (old_assignment["value_text"] or "").strip()
-            old_normalized = " ".join(old_value.casefold().split())
-
-        value_changed = (
-            old_assignment is None
-            or old_attribute_id != new_attribute_id
-            or old_normalized != new_normalized
-        )
-
-        if new_attribute_id and new_normalized:
-            known, created = AttributeValue.objects.get_or_create(
-                attribute_id=new_attribute_id,
-                normalized_value=new_normalized,
-                language_code="fa",
-                defaults={"value": new_value, "usage_count": 1},
-            )
-
-            if not created and value_changed:
-                AttributeValue.objects.filter(pk=known.pk).update(
-                    usage_count=F("usage_count") + 1
-                )
-
-        if (
-            old_assignment
-            and old_attribute_id
-            and old_normalized
-            and value_changed
-        ):
-            AttributeValue.objects.filter(
-                attribute_id=old_attribute_id,
-                normalized_value=old_normalized,
-                language_code="fa",
-                usage_count__gt=0,
-            ).update(usage_count=F("usage_count") - 1)
+            old_key, new_key = key(old), key(new)
+            if old_key != new_key:
+                if old_key:
+                    adjust_usage_count(old["attribute_id"], old["value_text"], -1)
+                if new_key:
+                    adjust_usage_count(new["attribute_id"], new["value_text"], +1)
 
     def __str__(self):
         return f"{self.product}: {self.attribute}"

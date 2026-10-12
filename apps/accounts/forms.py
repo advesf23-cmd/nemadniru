@@ -1,4 +1,5 @@
 from django import forms
+from django.contrib.auth import password_validation
 
 from .models import User
 
@@ -28,9 +29,7 @@ class ProfileForm(forms.ModelForm):
     """
     فرم ویرایش پروفایل -- عمداً برچسب‌های فیلد به‌صورت صریح فارسی تعریف شده‌اند،
     چون فیلدهای first_name/last_name/email از AbstractUser جنگو به‌ارث می‌رسند
-    و verbose_name پیش‌فرض‌شان انگلیسی است (بسته به فعال بودن کاتالوگ ترجمه‌ی
-    خود جنگو ممکن است انگلیسی نمایش داده شود). این‌جا دیگر وابسته به ترجمه‌ی
-    خودکار نیستیم و همیشه فارسی نمایش داده می‌شود.
+    و verbose_name پیش‌فرض‌شان انگلیسی است.
     """
     class Meta:
         model = User

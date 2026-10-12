@@ -23,15 +23,11 @@
           <tr><th>برند</th>{% for p in products %}<td>{{ p.brand|default:"—" }}</td>{% endfor %}</tr>
           <tr><th>قیمت</th>{% for p in products %}<td>{% if p.final_price %}{{ p.final_price|intcomma }} تومان{% else %}—{% endif %}</td>{% endfor %}</tr>
           <tr><th>موجودی</th>{% for p in products %}<td>{% if p.is_in_stock %}<span class="badge bg-success">موجود</span>{% else %}<span class="badge bg-danger">ناموجود</span>{% endif %}</td>{% endfor %}</tr>
-          {% for key in spec_keys %}
+          {% for row in comparison_rows %}
           <tr>
-            <th>{{ key }}</th>
-            {% for product in products %}
-            <td>
-              {% for spec in product.specifications.all %}
-                {% if spec.key == key %}{{ spec.value }}{% endif %}
-              {% endfor %}
-            </td>
+            <th>{{ row.key }}</th>
+            {% for value in row.values %}
+            <td>{{ value|default:"—" }}</td>
             {% endfor %}
           </tr>
           {% endfor %}
