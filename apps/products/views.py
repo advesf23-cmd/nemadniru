@@ -7,6 +7,7 @@ from django.shortcuts import get_object_or_404, redirect
 from django.template.loader import render_to_string
 from django.urls import reverse_lazy
 from django.views import View
+from .spec_utils import build_comparison_rows
 from django.views.generic import ListView, DetailView, CreateView, TemplateView
 
 from .models import Product, ProductCategory, ProductInquiry, ProductReview, ProductSpecification, CategoryAttributeTemplate, Attribute, AttributeValue, AttributeSetAttribute
@@ -53,6 +54,17 @@ class ProductFilterMixin:
                 "max_value": self.request.GET.get(f"attr_{template.pk}_max", ""),
             })
         return definitions
+    
+    @staticmethod
+    def _parse_decimal(raw):
+        from decimal import Decimal, InvalidOperation
+        if raw in (None, ""):
+            return None
+        try:
+            value = Decimal(str(raw).strip())
+        except InvalidOperation:
+            return None
+        return value if value.is_finite() else None
 
     def apply_filters(self, qs):
         request = self.request
@@ -129,23 +141,26 @@ class ProductFilterMixin:
                             specifications__value__iregex=r"^(1|true|yes|بله|دارد|موجود)$",
                         )
                 elif template.filter_type == CategoryAttributeTemplate.FILTER_TYPE_RANGE:
-                    min_value = request.GET.get(f"{param}_min")
-                    max_value = request.GET.get(f"{param}_max")
-                    if min_value or max_value:
-                        from django.db.models import DecimalField, Value
+                    min_value = self._parse_decimal(request.GET.get(f"{param}_min"))
+                    max_value = self._parse_decimal(request.GET.get(f"{param}_max"))
+                    if min_value is not None or max_value is not None:
+                        from django.db.models import Case, DecimalField, Value, When
                         from django.db.models.functions import Cast, Replace, Trim
+                        numeric_pattern = r"^[0-9]{1,13}([.][0-9]{1,6})?$"
+                        cleaned = Trim(Replace("value", Value(template.unit or ""), Value("")))
                         spec_qs = ProductSpecification.objects.filter(
-                            product_id=OuterRef("pk"),
-                            key=template.name,
-                        ).annotate(
-                            numeric_value=Cast(
-                                Trim(Replace("value", Value(template.unit or ""), Value(""))),
-                                DecimalField(max_digits=20, decimal_places=6),
+                            product_id=OuterRef("pk"), key=template.name,
+                        ).annotate(cleaned_value=cleaned).annotate(
+                            numeric_value=Case(
+                                When(cleaned_value__regex=numeric_pattern,
+                                     then=Cast("cleaned_value", DecimalField(max_digits=20, decimal_places=6))),
+                                default=None,
+                                output_field=DecimalField(max_digits=20, decimal_places=6),
                             )
                         )
-                        if min_value:
+                        if min_value is not None:
                             spec_qs = spec_qs.filter(numeric_value__gte=min_value)
-                        if max_value:
+                        if max_value is not None:
                             spec_qs = spec_qs.filter(numeric_value__lte=max_value)
                         qs = qs.filter(Exists(spec_qs))
 
@@ -386,20 +401,22 @@ class CompareView(ListView):
         ids = self.request.session.get(COMPARE_SESSION_KEY, [])
         return (
             Product.objects.filter(pk__in=ids, status="published")
-            .select_related("brand").prefetch_related("specifications")
+            .select_related("brand")
+            .prefetch_related(
+                "specifications",
+                "attribute_values__attribute",
+                "attribute_values__selected_values",
+            )
         )
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
-        products = ctx["products"]
-        spec_keys = []
-        for product in products:
-            for spec in product.specifications.all():
-                if spec.key not in spec_keys:
-                    spec_keys.append(spec.key)
-        ctx["spec_keys"] = spec_keys
+        products = list(ctx["products"])
+        rows = build_comparison_rows(products)
+        ctx["products"] = products
+        ctx["comparison_rows"] = rows
+        ctx["spec_keys"] = [row["key"] for row in rows]
         return ctx
-
 
 @staff_member_required
 @require_GET

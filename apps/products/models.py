@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.core.exceptions import ValidationError
-from django.db import models
+from django.db import models, transaction
+from .attribute_utils import adjust_usage_count
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
@@ -397,21 +398,35 @@ class ProductAttributeValue(TimeStampedModel):
             import re
             if not re.fullmatch(r"#[0-9a-fA-F]{6}", value):
                 raise ValidationError({"value_text": "کد رنگ باید به شکل #RRGGBB باشد."})
+        if self.variant_id:
+            raise ValidationError({"variant": "مشخصات مخصوص تنوع باید در «مشخصات تنوع» (VariantAttributeValue) ثبت شود."})
+        if value and self.value_number is None and attribute.data_type == Attribute.NUMBER:
+            raise ValidationError({"value_text": "برای مشخصه عددی، مقدار را در فیلد «مقدار عددی» وارد کنید."})
+        if value and self.value_boolean is None and attribute.data_type == Attribute.BOOLEAN:
+            raise ValidationError({"value_text": "برای مشخصه بله/خیر، فیلد «مقدار بله/خیر» را پر کنید."})
+        if value and self.value_date is None and attribute.data_type == Attribute.DATE:
+            raise ValidationError({"value_text": "برای مشخصه تاریخ، فیلد «تاریخ» را پر کنید."})
 
     def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
-        if self.value_text.strip() and self.attribute_id:
-            from django.db.models import F
-            known, created = AttributeValue.objects.get_or_create(
-                attribute=self.attribute,
-                normalized_value=" ".join(self.value_text.casefold().split()),
-                language_code="fa",
-                defaults={"value": self.value_text.strip()},
-            )
-            if created:
-                AttributeValue.objects.filter(pk=known.pk).update(usage_count=1)
-            else:
-                AttributeValue.objects.filter(pk=known.pk).update(usage_count=F("usage_count") + 1)
+        with transaction.atomic():
+            old = None
+            if self.pk:
+                old = type(self).objects.filter(pk=self.pk).values("attribute_id", "value_text").first()
+            super().save(*args, **kwargs)
+            new = type(self).objects.filter(pk=self.pk).values("attribute_id", "value_text").first()
+
+            def key(row):
+                if not row:
+                    return None
+                text = " ".join((row["value_text"] or "").casefold().split())
+                return (row["attribute_id"], text) if text else None
+
+            old_key, new_key = key(old), key(new)
+            if old_key != new_key:
+                if old_key:
+                    adjust_usage_count(old["attribute_id"], old["value_text"], -1)
+                if new_key:
+                    adjust_usage_count(new["attribute_id"], new["value_text"], +1)
 
     def __str__(self):
         return f"{self.product}: {self.attribute}"
