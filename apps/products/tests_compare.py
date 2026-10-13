@@ -56,6 +56,19 @@ class CompareMergedSpecsTests(TestCase):
         pav.selected_values.add(AttributeValue.objects.create(attribute=color, value="قرمز"))
         self.assertEqual(self.rows()["رنگ"], ["", "قرمز"])
 
+    def test_columns_follow_selection_order_not_default_ordering(self):
+        # ترتیب ستون‌ها باید ترتیب انتخاب کاربر باشد، نه ترتیب پیش‌فرض مدل (جدیدترین اول)
+        self.client.post(reverse("products:compare_toggle", kwargs={"pk": self.a.pk}))  # حذف
+        self.client.post(reverse("products:compare_toggle", kwargs={"pk": self.b.pk}))  # حذف
+        self.client.post(reverse("products:compare_toggle", kwargs={"pk": self.b.pk}))  # اول B
+        self.client.post(reverse("products:compare_toggle", kwargs={"pk": self.a.pk}))  # بعد A
+        response = self.client.get(reverse("products:compare"))
+        self.assertEqual([p.name for p in response.context["products"]], ["B", "A"])
+        self.assertEqual(
+            {r["key"]: r["values"] for r in response.context["comparison_rows"]}["جریان نامی"],
+            ["250A", "120 A"],
+        )
+
 
 class VariantRuleTests(TestCase):
     def test_variant_specific_values_must_not_use_general_model(self):

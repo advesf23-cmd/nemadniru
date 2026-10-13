@@ -411,7 +411,12 @@ class CompareView(ListView):
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
-        products = list(ctx["products"])
+        # ستون‌ها به ترتیب انتخاب کاربر (نه ترتیب پیش‌فرض مدل)
+        selected = [str(i) for i in self.request.session.get(COMPARE_SESSION_KEY, [])]
+        products = sorted(
+            ctx["products"],
+            key=lambda p: selected.index(str(p.pk)) if str(p.pk) in selected else len(selected),
+        )
         rows = build_comparison_rows(products)
         ctx["products"] = products
         ctx["comparison_rows"] = rows
