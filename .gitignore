@@ -8,3 +8,8 @@ media/*
 staticfiles/
 .DS_Store
 logs/
+*.dump
+audit_output.txt
+usage_report.txt
+inventory_output.txt
+private_media/
